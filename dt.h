@@ -53,7 +53,7 @@ namespace submodular {
                 for (std::vector<Set>::iterator it = lastPartition.begin(); it != lastPartition.end(); it++) {
                     Set intersect = Tl.Intersection(it->Extend());
                     if (intersect.Cardinality() > 0)
-                        Ul = Ul.Union(*it);
+                        Ul = Ul.Union(it->Extend());
                 }
                 for (std::vector<Set>::iterator it = lastPartition.begin(); it != lastPartition.end(); it++) {
                     Set intersect = Tl.Intersection(it->Extend());

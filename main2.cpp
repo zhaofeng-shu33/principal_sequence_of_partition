@@ -49,11 +49,12 @@ namespace submodular {
 #define LAMBDA 2
 using namespace submodular;
 int main(){
-    // DilworthTruncation<float>(&SampleFunction<float>(), LAMBDA).Run();
+    DilworthTruncation<float>(&SampleFunction<float>(), LAMBDA).Run();
     // optimal value is 16
     // optimal partition is { 0 }, { 1 },
 
     DilworthTruncation<float>(&HyperGraphicalModel<float>(), 1.5).Run();
-
+    // optimal value is 0
+    // optimal partition is{ 0, 1 }, { 2 },
     return 0;
 }
