@@ -1,91 +1,18 @@
 /**
-*   Example from Literature "Minimum Average Cost Clustering"
-**/
-#include "core/oracles/iwata_test_function.h"
-#include "core/algorithms/sfm_fw.h"
-#include "core/algorithms/brute_force.h"
-#include "core/oracles/modular.h"
-#define NodeSize 2
+* \author: zhaofeng-shu33
+*/
+#include "dt.h"
 namespace submodular {
     template <typename ValueType>
-    class SampleFunctionPartial : public SubmodularOracle<ValueType> {
+    class SampleFunction : public SubmodularOracle<ValueType> {
     public:
         using value_type = typename ValueTraits<ValueType>::value_type;
-        std::string GetName() { return "Sample Function Partial"; }
-        SampleFunctionPartial(std::vector<value_type>& xl, SubmodularOracle<ValueType>* sf, value_type lambda = 0) :
-            XL(xl),
-            lambda_(lambda),
-            submodular_function(sf)
-        {
-            this->SetDomain(Set::MakeDense(xl.size()));
-        }
-        int Call(const Set& X) { // add the constraint X.extend(1)
-            Set X_new = X.Extend(1);
-            return submodular_function->Call(X_new) - XL.Call(X) - lambda_;
-        }
-    private:
-        int lambda_;
-        ModularOracle<int> XL;
-        SubmodularOracle<ValueType> *submodular_function;
-    };
-    template <typename ValueType>
-    class DilworthTruncation {
-    public:
-        using value_type = typename ValueTraits<ValueType>::value_type;
-        DilworthTruncation(SubmodularOracle<ValueType>* sf, value_type lambda):
-            submodular_function(sf),
-            lambda_(lambda), min_value(0){}
-        void Run() {
-            std::vector<value_type> xl;
-            value_type alpha_l = 0;
-            BruteForce<value_type> solver2;
-            for (int i = 0; i < NodeSize; i++) {
-                SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
-                solver2.Minimize(F1);
-                alpha_l = solver2.GetMinimumValue();
-                Set Tl = solver2.GetMinimizer().Extend(1);
-                Set Ul = Tl;
-                for (std::vector<Set>::iterator it = lastPartition.begin(); it != lastPartition.end(); it++) {
-                    Set intersect = Tl.Intersection(it->Extend());
-                    if (intersect.Cardinality() > 0)
-                        Ul = Ul.Union(*it);
-                }
-                for (std::vector<Set>::iterator it = lastPartition.begin(); it != lastPartition.end(); it++) {
-                    Set intersect = Tl.Intersection(it->Extend());
-                    if (intersect.Cardinality() == 0) {
-                        currentPartition.push_back(it->Extend());
-                    }
-                }
-                currentPartition.push_back(Ul);
-                lastPartition = currentPartition;
-                currentPartition.clear();
-                xl.push_back(alpha_l);
-            }
-            for (auto it = xl.begin(); it != xl.end(); it++) {
-                min_value += *it;
-            }
-            std::cout << "optimal value is " << min_value << std::endl;
-            std::cout << "optimal partition is ";
-            for (std::vector<Set>::iterator it = lastPartition.begin(); it != lastPartition.end(); it++) {
-                std::cout << *it << ',';
-            }
-            std::cout << std::endl;
-        }
-    private:
-        SubmodularOracle<ValueType> *submodular_function;
-        value_type min_value;
-        std::vector<Set> lastPartition, currentPartition;
-        value_type lambda_;
-    };
-    class SampleFunction : public SubmodularOracle<int> {
-    public:
-        std::string GetName() { return "Sample Function"; }
+        std::string GetName() { return ""; }
         SampleFunction()
         {
             this->SetDomain(Set::MakeDense(2));
         }
-        int Call(const Set& X) {
-            int return_value;
+        value_type Call(const Set& X) {
             int car = X.Cardinality();
             if (car == 0)
                 return 0;
@@ -98,13 +25,35 @@ namespace submodular {
         }
     };
 
+    template <typename ValueType>
+    class HyperGraphicalModel : public SubmodularOracle<ValueType> {
+    public:
+        std::string GetName() { return ""; }
+        HyperGraphicalModel()
+        {
+            this->SetDomain(Set::MakeDense(3));
+        }
+        value_type Call(const Set& X) {
+            int car = X.Cardinality();
+            if (car == 0) // empty set
+                return 0;
+            else if (car == 1 && X.n_ == 3)
+                return 1;
+            else
+                return 2;
+        }
+    };
 
   
 }
-#define value_type int
 #define LAMBDA 2
 using namespace submodular;
 int main(){
-    DilworthTruncation<int>(&SampleFunction(), LAMBDA).Run();
+    // DilworthTruncation<float>(&SampleFunction<float>(), LAMBDA).Run();
+    // optimal value is 16
+    // optimal partition is { 0 }, { 1 },
+
+    DilworthTruncation<float>(&HyperGraphicalModel<float>(), 1.5).Run();
+
     return 0;
 }
