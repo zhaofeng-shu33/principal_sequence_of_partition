@@ -98,6 +98,15 @@ namespace submodular {
         }
         void split(std::vector<Set> Q, std::vector<Set> P);
         void run() {
+            Set V = Set::MakeDense(NodeSize);
+            Set Empt;
+            std::vector<Set> Q, P;
+            Q.push_back(V);
+            for (int i = 0; i < NodeSize; i++) {
+                Set EmptyExceptOne(NodeSize);
+                EmptyExceptOne.AddElement(i);
+                P.push_back(EmptyExceptOne);
+            }
         }
     private:
         SubmodularOracle<ValueType> *submodular_function;
