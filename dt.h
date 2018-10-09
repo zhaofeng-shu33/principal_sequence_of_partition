@@ -83,5 +83,26 @@ namespace submodular {
         value_type lambda_;
         int NodeSize;
     };
-
+    /**
+    * computing principal sequence of partition for given submodular function
+    */
+    template <typename ValueType>
+    class PSP {
+    public:
+        using value_type = typename ValueTraits<ValueType>::value_type;
+        PSP(SubmodularOracle<ValueType>* sf) :submodular_function(sf)
+        {
+            NodeSize = submodular_function->GetN();
+            critical_values.resize(NodeSize);
+            psp.resize(NodeSize);
+        }
+        void split(std::vector<Set> Q, std::vector<Set> P);
+        void run() {
+        }
+    private:
+        SubmodularOracle<ValueType> *submodular_function;
+        int NodeSize;
+        std::vector<value_type> critical_values;
+        std::vector<std::vector<Set>> psp;
+    };
 }
