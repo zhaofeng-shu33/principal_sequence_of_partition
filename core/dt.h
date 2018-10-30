@@ -104,16 +104,16 @@ namespace submodular {
         }
         void split(std::vector<Set>& Q, std::vector<Set>& P) {
             value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.size() - Q.size());
-            value_type h_apostrophe = (P.size() * evaluate(P) - Q.size() * evaluate(Q)) / (P.size() - Q.size());
+            value_type h_apostrophe = (P.size() * evaluate(Q) - Q.size() * evaluate(P)) / (P.size() - Q.size());
             DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
             dt.Run();
             value_type min_value = dt.Get_min_value();
             std::vector<Set> P_apostrophe = dt.Get_min_partition();
             if (min_value == h_apostrophe) {
-                critical_values[Q.size() - 1] = min_value;
-            }
-            else {
+                critical_values[Q.size() - 1] = gamma_apostrophe;
                 psp[P_apostrophe.size() - 1] = P_apostrophe;
+            }
+            else {                
                 split(Q, P_apostrophe);
                 split(P_apostrophe, P);
             }
@@ -129,6 +129,7 @@ namespace submodular {
                 P.push_back(EmptyExceptOne);
             }
             psp[0] = Q;
+            split(Q, P);
         }
         std::vector<value_type>& Get_critical_values() {
             return critical_values;
