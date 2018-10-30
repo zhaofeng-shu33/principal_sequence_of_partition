@@ -71,4 +71,16 @@ namespace submodular {
         // optimal value is 0
         // optimal partition is{ 0, 1 }, { 2 },        
     }
+    TEST(PSP, HyperGraphicalModel){
+        PSP<float> psp_class(&HyperGraphicalModel<float>());
+        psp_class.run();
+        std::vector<float> gamma_list = psp_class.Get_critical_values();
+        std::vector<std::vector<Set>> psp_list = psp_class.Get_psp();
+        EXPECT_EQ(gamma_list.size(), 2);
+        EXPECT_EQ(gamma_list[0], 1);
+        EXPECT_EQ(gamma_list[1], 2);
+        EXPECT_EQ(psp_list.size(), 3);
+        // partition list is {{{0, 1, 2}}, {{0, 1}, {2}}, {{0}, {1}, {2}}}  
+        // gamma list is {1, 2}
+    }
 }

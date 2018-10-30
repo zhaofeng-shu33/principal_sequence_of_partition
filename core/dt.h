@@ -130,6 +130,13 @@ namespace submodular {
             }
             psp[0] = Q;
         }
+        std::vector<value_type>& Get_critical_values() {
+            return critical_values;
+        }
+        std::vector<std::vector<Set>>& Get_psp() {
+            return psp;
+        }
+    private:
         //! evalute the submodular function at the given partition
         value_type evaluate(std::vector<Set>& P) {
             value_type sum = 0;
@@ -137,7 +144,7 @@ namespace submodular {
                 sum += submodular_function->Call(s);
             return sum;
         }
-    private:
+
         SubmodularOracle<ValueType> *submodular_function;
         int NodeSize;
         std::vector<value_type> critical_values;
