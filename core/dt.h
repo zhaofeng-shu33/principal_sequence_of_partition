@@ -40,6 +40,12 @@ namespace submodular {
         {
             NodeSize = submodular_function->GetN();
         }
+        value_type Get_min_value() {
+            return min_value;
+        }
+        std::vector<Set>& Get_min_partition(){
+            return lastPartition;
+        }
         void Run() {
             std::vector<value_type> xl;
             value_type alpha_l = 0;
@@ -96,7 +102,22 @@ namespace submodular {
             critical_values.resize(NodeSize);
             psp.resize(NodeSize);
         }
-        void split(std::vector<Set> Q, std::vector<Set> P);
+        void split(std::vector<Set>& Q, std::vector<Set>& P) {
+            value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.size() - Q.size());
+            value_type h_apostrophe = (P.size() * evaluate(P) - Q.size() * evaluate(Q)) / (P.size() - Q.size());
+            DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
+            dt.Run();
+            value_type min_value = dt.Get_min_value();
+            std::vector<Set> P_apostrophe = dt.Get_min_partition();
+            if (min_value == h_apostrophe) {
+                critical_values[Q.size() - 1] = min_value;
+            }
+            else {
+                psp[P_apostrophe.size() - 1] = P_apostrophe;
+                split(Q, P_apostrophe);
+                split(P_apostrophe, P);
+            }
+        }
         void run() {
             Set V = Set::MakeDense(NodeSize);
             Set Empt;
@@ -107,6 +128,14 @@ namespace submodular {
                 EmptyExceptOne.AddElement(i);
                 P.push_back(EmptyExceptOne);
             }
+            psp[0] = Q;
+        }
+        //! evalute the submodular function at the given partition
+        value_type evaluate(std::vector<Set>& P) {
+            value_type sum = 0;
+            for (Set& s : P)
+                sum += submodular_function->Call(s);
+            return sum;
         }
     private:
         SubmodularOracle<ValueType> *submodular_function;
