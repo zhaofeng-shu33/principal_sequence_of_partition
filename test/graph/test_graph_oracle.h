@@ -2,8 +2,33 @@
 
 #include "core/graph/generalized_cut.h"
 #include "test/graph/test_graph_base.h"
-
+#include "core/graph.h"
 namespace submodular {
+    template <typename ValueType>
+    SimpleGraph<ValueType> make_dgraph(std::size_t n,
+        const std::vector<std::tuple<std::size_t, std::size_t, ValueType>>& edges)
+    {
+        SimpleGraph<ValueType> graph;
+        int m = edges.size();
+
+        for (std::size_t i = 0; i < n; ++i) {
+            graph.AddNode(i);
+        }
+
+
+        for (std::size_t edge_id = 0; edge_id < m; ++edge_id) {
+            std::size_t src, dst;
+            ValueType cap;
+            std::tie(src, dst, cap) = edges[edge_id];
+            SimpleGraph<float>::Node_s head = graph.GetNode(dst);
+            SimpleGraph<float>::Node_s tail = graph.GetNode(src);
+
+            graph.AddArc(head, tail, cap);
+            
+        }
+
+        return graph;
+    }
     class PINModelTest : public testing::Test {
     protected:
         using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, float>>;
@@ -11,9 +36,9 @@ namespace submodular {
         // {src, dst, capacity}
         std::size_t n_1 = 3;
         std::size_t data_1[3][3] = {
-        { 0, 1, 3 },
-        { 0, 2, 1 },
-        { 1, 3, 3 },
+        { 0, 1, 1 },
+        { 0, 2, 5 },
+        { 1, 2, 1 },
         };
 
         EdgeListFloat edge_list_float_1;
@@ -45,7 +70,21 @@ namespace submodular {
         EXPECT_EQ(gc.Call(Set::FromIndices(3, { 1, 2 })), 12 + offset);
         EXPECT_EQ(gc.Call(Set::FromIndices(4, { 1, 2, 3 })), 6 + offset);
         EXPECT_EQ(gc.Call(Set::FromIndices(4, { 1, 3 })), 3 + offset);
-        EXPECT_EQ(gc.Call(Set::FromIndices(5, { 1, 2, 3, 4 })), 4 + offset);
-    
+        EXPECT_EQ(gc.Call(Set::FromIndices(5, { 1, 2, 3, 4 })), 4 + offset);    
+    }
+    TEST_F(PINModelTest, DGraphBase) {
+        SimpleGraph<float> sg = make_dgraph(n_1, edge_list_float_1);
+        // Test Node Access
+        SimpleGraph<float>::Node_s ns[3] = { sg.GetNode(0), sg.GetNode(1), sg.GetNode(2) };
+        EXPECT_EQ(ns[0]->name, 0);
+        EXPECT_EQ(ns[0]->excess, 0);
+        // Test Node Iterator
+        SimpleGraph<float>::node_range nr = sg.NodeRange();
+        int cnt = 0;
+        for (const auto&  it : nr) {
+            EXPECT_EQ(it->name, cnt);
+            cnt++;
+        }
+
     }
 }

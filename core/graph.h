@@ -135,7 +135,6 @@ public:
   void SetTol(value_type tol) { tol_ = tol; }
 
   // Methods for graph construction
-  //void Reserve(std::size_t n, std::size_t m);
   Node_s AddNode(element_type name);
   void RemoveNode(element_type name);
   void AddArc(const Node_s &head, const Node_s &tail, value_type cap);
@@ -228,7 +227,7 @@ SimpleGraph<ValueType>::MakeArc(const Node_s &head, const Node_s &tail, value_ty
 template <typename ValueType>
 void SimpleGraph<ValueType>::AddArc(const Node_s &head, const Node_s &tail, value_type cap) {
   auto arc = MakeArc(head, tail, cap);
-  adj_[tail->name][arc->name] = arc;
+  adj_[tail->name][head->name] = arc;
 }
 
 template <typename ValueType>
