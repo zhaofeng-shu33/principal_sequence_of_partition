@@ -85,6 +85,17 @@ namespace submodular {
             EXPECT_EQ(it->name, cnt);
             cnt++;
         }
-
+        // Test Arc Access
+        SimpleGraph<float>::Arc_s as[3] = { sg.GetArc(1, 0), sg.GetArc(2, 1), sg.GetArc(2, 0)};
+        EXPECT_EQ(as[2]->capacity, 5);
+        EXPECT_EQ(as[2]->tail_node.lock()->name, 0);
+        EXPECT_EQ(as[2]->head_node.lock()->name, 2);
+        // Test Arc Iterator
+        SimpleGraph<float>::arc_range ar = sg.OutArcRange(0);
+        int sum = 0;
+        for (const auto& it : ar) {
+            sum += it->capacity;
+        }
+        EXPECT_EQ(sum, 6);
     }
 }

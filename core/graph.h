@@ -153,7 +153,36 @@ public:
     return utils::is_abs_close(arc->flow, value_type(0), tol_);
     //return arc->flow <= value_type(0);
   }
+  //! Method of Graph Cut Utility Function
+  value_type GetCutValueByNames(const std::vector<element_type>& members) {
+      std::vector<TermType> cut(nodes_.size(), SINK);
+      for (const auto& name : members) {
+          cut[name2id_[name]] = SOURCE;
+      }
+      return GetCutValue(cut);
+  }
+  value_type GetCutValue(const std::vector<TermType>& cut) {
+      auto accumulate_caps = [&](std::size_t node_id) {
+          for (auto arc_it = adj_.at(node_id).begin(); arc_it != adj_.at(node_id).end(); ++arc_it) {
+              auto arc = *arc_it;
+              auto head_id = arc->GetHeadNode()->name;
+              if (cut[head_id] == SINK) {
+                  out += arc->capacity;
+              }
+          }
+      };
 
+  
+
+      for (auto node_it = nodes_.begin(); node_it != nodes_.end(); ++node_it) {
+          auto node = *node_it;
+          if (cut[node->index] == SOURCE) {
+              accumulate_caps(node->index);
+          }
+      }
+
+      return out;
+  }
   void ClearFlow();
   //void ClearExcess();
   void Push(const Arc_s& arc, value_type amount);
