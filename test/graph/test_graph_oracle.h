@@ -130,8 +130,8 @@ namespace submodular {
         EXPECT_EQ(psp_list[0][0], Set::MakeDense(3));
 
         EXPECT_EQ(psp_list[1].size(), 2);
-        EXPECT_EQ(psp_list[1][0], Set::FromIndices(3, { 0, 2 }));
-        EXPECT_EQ(psp_list[1][1], Set::FromIndices(3, { 1 }));
+        EXPECT_EQ(psp_list[1][0], Set::FromIndices(3, { 1 }));
+        EXPECT_EQ(psp_list[1][1], Set::FromIndices(3, { 0, 2 }));
 
         EXPECT_EQ(psp_list[2].size(), 3);
         EXPECT_EQ(psp_list[2][0], Set::FromIndices(3, { 0 }));

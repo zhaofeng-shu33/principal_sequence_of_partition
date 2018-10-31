@@ -76,12 +76,6 @@ namespace submodular {
             for (auto it = xl.begin(); it != xl.end(); it++) {
                 min_value += *it;
             }
-            std::cout << "optimal value is " << min_value << std::endl;
-            std::cout << "optimal partition is ";
-            for (std::vector<Set>::iterator it = lastPartition.begin(); it != lastPartition.end(); it++) {
-                std::cout << *it << ',';
-            }
-            std::cout << std::endl;
         }
     private:
         SubmodularOracle<ValueType> *submodular_function;
