@@ -1,3 +1,4 @@
+#pragma once
 /**
 *   Example from Literature "Minimum Average Cost Clustering"
 **/

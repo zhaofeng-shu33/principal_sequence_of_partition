@@ -3,7 +3,6 @@ This repo contains code to compute the principal sequence of partition for Dilwo
 
 # How to build
 `main2.cpp` is the user-implemented part.
-In the `core` directory, `Eigen` library is used and should be installed before running `CMakeLists.txt`.
 
 # CMake with GTest
 Testing is enabled by default, which requires gtest library. To disable it, run `cmake` with `-DENABLE_TESTING=OFF`

@@ -9,7 +9,10 @@ namespace submodular {
     public:
         using value_type = typename ValueTraits<ValueType>::value_type;
         std::string GetName() { return " Directed GraphCut Oracle"; }
-        DirectedGraphCutOracle(SimpleGraph<ValueType>& sg_parameter) : sg(sg_parameter){}
+        DirectedGraphCutOracle(SimpleGraph<ValueType>& sg_parameter) : sg(sg_parameter)
+        {
+            this->SetDomain(Set::MakeDense(sg_parameter.GetNodeNumber()));
+        }
         value_type Call(const Set& X) {
             auto members = X.GetMembers();
             value_type val = sg.GetCutValueByNames(members);

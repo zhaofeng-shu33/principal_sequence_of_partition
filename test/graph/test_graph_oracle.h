@@ -4,6 +4,7 @@
 #include "test/graph/test_graph_base.h"
 #include "core/graph.h"
 #include "core/oracles/graph_cut.h"
+#include "core/dt.h"
 namespace submodular {
     template <typename ValueType>
     SimpleGraph<ValueType> make_dgraph(std::size_t n,
@@ -110,5 +111,35 @@ namespace submodular {
         EXPECT_EQ(dgc.Call(Set::FromIndices(3, { 0, 2 })), 1);
         EXPECT_EQ(dgc.Call(Set::FromIndices(3, { 1, 2 })), 6);
         EXPECT_EQ(dgc.Call(Set::MakeDense(3)), 0);
+    }
+    TEST_F(PINModelTest, DGraphPSP) {
+        SimpleGraph<float> sg = make_dgraph(n_1, edge_list_float_1);
+        DirectedGraphCutOracle<float>* dgc = new DirectedGraphCutOracle<float>(sg);
+
+        PSP<float> psp_class(dgc);
+        psp_class.run();
+        std::vector<float> gamma_list = psp_class.Get_critical_values();
+        std::vector<std::vector<Set>> psp_list = psp_class.Get_psp();
+        EXPECT_EQ(gamma_list.size(), 3);
+        EXPECT_EQ(gamma_list[0], 2);
+        EXPECT_EQ(gamma_list[1], 5);
+
+        EXPECT_EQ(psp_list.size(), 3);
+
+        EXPECT_EQ(psp_list[0].size(), 1);
+        EXPECT_EQ(psp_list[0][0], Set::MakeDense(3));
+
+        EXPECT_EQ(psp_list[1].size(), 2);
+        EXPECT_EQ(psp_list[1][0], Set::FromIndices(3, { 0, 2 }));
+        EXPECT_EQ(psp_list[1][1], Set::FromIndices(3, { 1 }));
+
+        EXPECT_EQ(psp_list[2].size(), 3);
+        EXPECT_EQ(psp_list[2][0], Set::FromIndices(3, { 0 }));
+        EXPECT_EQ(psp_list[2][1], Set::FromIndices(3, { 1 }));
+        EXPECT_EQ(psp_list[2][2], Set::FromIndices(3, { 2 }));
+
+        delete dgc;
+        // partition list is {{{0, 1, 2}}, {{0, 2}, {1}}, {{0}, {1}, {2}}}  
+        // gamma list is {2, 5}       
     }
 }
