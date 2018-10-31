@@ -1,3 +1,4 @@
+#include "config.h"
 #include "gtest/gtest.h"
 
 // Utility tests
@@ -13,8 +14,9 @@
 // Algorithm tests
 #include "algorithms/test_brute_force.h"
 //#include "algorithms/test_sfm_iff.h"
+#if USE_EIGEN3
 #include "algorithms/test_sfm_fw.h"
-
+#endif
 // Graph tests
 #include "graph/test_maxflow.h"
 #include "graph/test_divide_conquer.h"
