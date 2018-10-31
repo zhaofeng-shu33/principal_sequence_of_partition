@@ -12,11 +12,8 @@ namespace submodular {
         DirectedGraphCutOracle(SimpleGraph<ValueType>& sg_parameter) : sg(sg_parameter){}
         value_type Call(const Set& X) {
             auto members = X.GetMembers();
-            value_type val(0);
-            if (!graph_.HasAuxiliaryNodes()) {
-                val = sg.GetCutValueByNames(members);
-            }
-            return value;
+            value_type val = sg.GetCutValueByNames(members);
+            return val;
         }
 
 

@@ -155,16 +155,19 @@ public:
   }
   //! Method of Graph Cut Utility Function
   value_type GetCutValueByNames(const std::vector<element_type>& members) {
-      std::vector<TermType> cut(nodes_.size(), SINK);
+      std::vector<TermType> cut(nodes_.size(), SOURCE);
       for (const auto& name : members) {
-          cut[name2id_[name]] = SOURCE;
+          cut[name] = SINK;
       }
       return GetCutValue(cut);
   }
   value_type GetCutValue(const std::vector<TermType>& cut) {
+      value_type out = 0;
       auto accumulate_caps = [&](std::size_t node_id) {
+          if (adj_.find(node_id) == adj_.end())
+              return;
           for (auto arc_it = adj_.at(node_id).begin(); arc_it != adj_.at(node_id).end(); ++arc_it) {
-              auto arc = *arc_it;
+              auto arc = arc_it->second;
               auto head_id = arc->GetHeadNode()->name;
               if (cut[head_id] == SINK) {
                   out += arc->capacity;
@@ -175,9 +178,9 @@ public:
   
 
       for (auto node_it = nodes_.begin(); node_it != nodes_.end(); ++node_it) {
-          auto node = *node_it;
-          if (cut[node->index] == SOURCE) {
-              accumulate_caps(node->index);
+          auto node = node_it->second;
+          if (cut[node->name] == SOURCE) {
+              accumulate_caps(node->name);
           }
       }
 
@@ -272,7 +275,7 @@ void SimpleGraph<ValueType>::AddArcPair(const Node_s &head, const Node_s &tail, 
 template <typename ValueType>
 typename SimpleGraph<ValueType>::Arc_s
 SimpleGraph<ValueType>::GetArc(element_type head_name, element_type tail_name) {
-  if (HasNode(head_name) && HasNode(tail_name) && adj_[tail_name].count(head_name) == 1) {
+  if (HasNode(head_name) && HasNode(tail_name) && adj_.find(tail_name)!=adj_.end() && adj_[tail_name].count(head_name) == 1) {
     return adj_[tail_name][head_name];
   }
   else {

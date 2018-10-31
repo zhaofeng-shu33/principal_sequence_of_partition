@@ -3,6 +3,7 @@
 #include "core/graph/generalized_cut.h"
 #include "test/graph/test_graph_base.h"
 #include "core/graph.h"
+#include "core/oracles/graph_cut.h"
 namespace submodular {
     template <typename ValueType>
     SimpleGraph<ValueType> make_dgraph(std::size_t n,
@@ -97,5 +98,17 @@ namespace submodular {
             sum += it->capacity;
         }
         EXPECT_EQ(sum, 6);
+    }
+    TEST_F(PINModelTest, DGraphCut) {
+        SimpleGraph<float> sg = make_dgraph(n_1, edge_list_float_1);
+        DirectedGraphCutOracle<float> dgc(sg);
+        EXPECT_EQ(dgc.Call(Set()), 0);
+        EXPECT_EQ(dgc.Call(Set::FromIndices(3, { 0 })), 0);
+        EXPECT_EQ(dgc.Call(Set::FromIndices(3, { 1 })), 1);
+        EXPECT_EQ(dgc.Call(Set::FromIndices(3, { 2 })), 6);
+        EXPECT_EQ(dgc.Call(Set::FromIndices(3, { 0, 1})), 0);
+        EXPECT_EQ(dgc.Call(Set::FromIndices(3, { 0, 2 })), 1);
+        EXPECT_EQ(dgc.Call(Set::FromIndices(3, { 1, 2 })), 6);
+        EXPECT_EQ(dgc.Call(Set::MakeDense(3)), 0);
     }
 }
