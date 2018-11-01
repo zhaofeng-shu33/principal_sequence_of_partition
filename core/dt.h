@@ -3,7 +3,6 @@
 *   Example from Literature "Minimum Average Cost Clustering"
 **/
 #include "core/oracles/iwata_test_function.h"
-#include "core/algorithms/sfm_fw.h"
 #include "core/algorithms/brute_force.h"
 #include "core/oracles/modular.h"
 namespace submodular {
