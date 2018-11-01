@@ -1,3 +1,4 @@
+[![Windows](https://ci.appveyor.com/api/projects/status/github/zhaofeng-shu33/principal_sequence_of_partition?branch=master&svg=true)](https://ci.appveyor.com/project/zhaofeng-shu33/principal_sequence_of_partition)
 # Introduction
 This repo contains code to compute the principal sequence of partition for Dilworth truncation function.
 
