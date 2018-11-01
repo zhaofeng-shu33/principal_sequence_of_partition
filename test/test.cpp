@@ -3,8 +3,8 @@
 
 // Utility tests
 #include "test_set_utils.h"
-#include "test_base.h"
 #if USE_EIGEN3
+#include "test_base.h"
 #include "test_linalg.h"
 #endif
 // Oracle tests
