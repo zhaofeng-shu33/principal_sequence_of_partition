@@ -446,7 +446,7 @@ Set Partition::Expand(const Set& X) const {
   Set expanded = Set::MakeEmpty(n_);
   for (const auto& kv: cells_) {
     auto cell = kv.first;
-    if (X[cell]) {
+    if (cell < X.n_ && X[cell]) {
       auto indices = kv.second;
       for (const auto& i: indices) {
         expanded.bits_[i] = 1;
