@@ -29,8 +29,22 @@ if(USE_EIGEN3)
 endif()
 if(USE_PYTHON)
     find_package(PythonLibs)
+    find_package(PythonInterp)
+    find_package(Boost REQUIRED python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
     add_library(psp SHARED ${PROJECT_SOURCE_DIR}/core/python/psp.cpp)
-    target_include_directories(psp PUBLIC ${PYTHON_INCLUDE_DIR})    
+    target_include_directories(psp PUBLIC ${PYTHON_INCLUDE_DIR})
+    target_include_directories(psp PUBLIC ${Boost_INCLUDE_DIRS})   
+    target_link_libraries(psp debug ${Boost_PYTHON36_LIBRARY_DEBUG})    
+    target_link_libraries(psp optimized ${Boost_PYTHON36_LIBRARY_RELEASE})
+    # magic files to extract the release library
+    string(REPLACE "debug" ";" PYTHON_LIBRARY ${PYTHON_LIBRARY})
+    list(GET PYTHON_LIBRARY 0 PYTHON_LIBRARY)
+    string(REPLACE "optimized" ";" PYTHON_LIBRARY ${PYTHON_LIBRARY})
+    list(GET PYTHON_LIBRARY 1 PYTHON_RELEASE_LIBRARY)
+    # we don't link the debug build with Python debug lib, since we are not interested in python core debug info.
+    target_link_libraries(psp ${PYTHON_RELEASE_LIBRARY})        
+    
+    
 endif()
 option(ENABLE_TESTING "Enable testing" ON)
 if(ENABLE_TESTING)
