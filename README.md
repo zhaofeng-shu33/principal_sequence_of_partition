@@ -3,7 +3,7 @@
 This repo contains code to compute the principal sequence of partition for Dilworth truncation function.
 
 # How to build
-`main2.cpp` is the user-implemented part.
+`main.cpp` is the user-implemented part.
 
 # CMake with GTest
 Testing is enabled by default, which requires gtest library. To disable it, run `cmake` with `-DENABLE_TESTING=OFF`
