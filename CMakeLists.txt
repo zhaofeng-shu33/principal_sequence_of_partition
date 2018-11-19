@@ -12,6 +12,13 @@ if(USE_EIGEN3)
 else()
     set(USE_EIGEN3_LIB 0)
 endif()
+
+if(WIN32)
+    set(DYNAMIC_LIB_SUFFIX dll)
+else()
+    set(DYNAMIC_LIB_SUFFIX so)
+endif()
+
 configure_file (
   "${PROJECT_SOURCE_DIR}/core/config.h.in"
   "${PROJECT_BINARY_DIR}/config.h"
@@ -42,9 +49,9 @@ if(USE_PYTHON)
     string(REPLACE "optimized" ";" PYTHON_LIBRARY ${PYTHON_LIBRARY})
     list(GET PYTHON_LIBRARY 1 PYTHON_RELEASE_LIBRARY)
     # we don't link the debug build with Python debug lib, since we are not interested in python core debug info.
-    target_link_libraries(psp ${PYTHON_RELEASE_LIBRARY})        
-    
-    
+    target_link_libraries(psp ${PYTHON_RELEASE_LIBRARY})            
+    execute_process(COMMAND python -c "import site;print(site.getsitepackages()[-1])" OUTPUT_VARIABLE PYTHON_SIDE_PACKAGES)
+    install(FILES ${PROJECT_BINARY_DIR}/Release/psp.${DYNAMIC_LIB_SUFFIX} DESTINATION ${PYTHON_SIDE_PACKAGES} RENAME psp.pyd)
 endif()
 option(ENABLE_TESTING "Enable testing" ON)
 if(ENABLE_TESTING)
