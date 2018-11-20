@@ -9,7 +9,7 @@ This repo contains code to compute the principal sequence of partition for Dilwo
 Testing is enabled by default, which requires gtest library. To disable it, run `cmake` with `-DENABLE_TESTING=OFF`
 
 # Python binding
-Distabled by default. The binding requires boost-python library. To enable it, run `cmake` with `-DENABLE_PYTHON=ON`
+Disabled by default. The binding requires boost-python library. To enable it, run `cmake` with `-DENABLE_PYTHON=ON`
 
 # Reference
 1. [2016]Info-Clustering: A Mathematical Theory for Data Clustering
