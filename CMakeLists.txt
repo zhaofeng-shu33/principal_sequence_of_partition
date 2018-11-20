@@ -44,9 +44,14 @@ if(USE_PYTHON)
     endif()
     add_library(psp SHARED ${PROJECT_SOURCE_DIR}/core/python/psp.cpp)
     target_include_directories(psp PUBLIC ${PYTHON_INCLUDE_DIR})
-    target_include_directories(psp PUBLIC ${Boost_INCLUDE_DIRS})   
+    target_include_directories(psp PUBLIC ${Boost_INCLUDE_DIRS})
+    
+    if(WIN32)
     target_link_libraries(psp debug ${Boost_PYTHON${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_LIBRARY_DEBUG})    
     target_link_libraries(psp optimized ${Boost_PYTHON${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_LIBRARY_RELEASE})
+    else()
+    target_link_libraries(psp ${Boost_PYTHON-PY${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_LIBRARY_RELEASE})
+    endif()
     # magic files to extract the release library
     
     if(WIN32)
