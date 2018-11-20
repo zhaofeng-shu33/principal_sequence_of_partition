@@ -60,7 +60,7 @@ if(USE_PYTHON)
     target_link_libraries(psp ${PYTHON_LIBRARY}) 
     endif()
     
-    execute_process(COMMAND python -c "import site;print(site.getsitepackages()[-1],end='')" OUTPUT_VARIABLE PYTHON_SIDE_PACKAGES)
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import site;print(site.getsitepackages()[-1],end='')" OUTPUT_VARIABLE PYTHON_SIDE_PACKAGES)
     install(FILES ${PROJECT_BINARY_DIR}/Release/psp.${DYNAMIC_LIB_SUFFIX} DESTINATION ${PYTHON_SIDE_PACKAGES} RENAME psp.pyd)
 endif()
 option(ENABLE_TESTING "Enable testing" ON)
