@@ -33,6 +33,7 @@ namespace submodular {
     template <typename ValueType>
     class HyperGraphicalModel : public SubmodularOracle<ValueType> {
     public:
+        using value_type = typename ValueTraits<ValueType>::value_type;
         std::string GetName() { return ""; }
         HyperGraphicalModel()
         {
