@@ -48,12 +48,18 @@ if(USE_PYTHON)
     target_link_libraries(psp debug ${Boost_PYTHON${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_LIBRARY_DEBUG})    
     target_link_libraries(psp optimized ${Boost_PYTHON${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_LIBRARY_RELEASE})
     # magic files to extract the release library
+    
+    if(WIN32)
     string(REPLACE "debug" ";" PYTHON_LIBRARY ${PYTHON_LIBRARY})
     list(GET PYTHON_LIBRARY 0 PYTHON_LIBRARY)
     string(REPLACE "optimized" ";" PYTHON_LIBRARY ${PYTHON_LIBRARY})
     list(GET PYTHON_LIBRARY 1 PYTHON_RELEASE_LIBRARY)
     # we don't link the debug build with Python debug lib, since we are not interested in python core debug info.
-    target_link_libraries(psp ${PYTHON_RELEASE_LIBRARY})            
+    target_link_libraries(psp ${PYTHON_RELEASE_LIBRARY}) 
+    else()
+    target_link_libraries(psp ${PYTHON_LIBRARY}) 
+    endif()
+    
     execute_process(COMMAND python -c "import site;print(site.getsitepackages()[-1],end='')" OUTPUT_VARIABLE PYTHON_SIDE_PACKAGES)
     install(FILES ${PROJECT_BINARY_DIR}/Release/psp.${DYNAMIC_LIB_SUFFIX} DESTINATION ${PYTHON_SIDE_PACKAGES} RENAME psp.pyd)
 endif()
