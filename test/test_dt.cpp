@@ -83,7 +83,8 @@ namespace submodular {
 
     };
     TEST(DilworthTruncation, SampleFunction){
-        DilworthTruncation<float> dt(&SampleFunction<float>(), 2);
+        SampleFunction<float> sff;
+        DilworthTruncation<float> dt(&sff, 2);
         dt.Run();
         // optimal value is 16
         // optimal partition is { 0 }, { 1 },        
@@ -95,7 +96,8 @@ namespace submodular {
         EXPECT_EQ(p[1], Set::FromIndices(2, { 1 }));
     }
     TEST(DilworthTruncation, HyperGraphicalModel){
-        DilworthTruncation<float> dt(&HyperGraphicalModel<float>(), 1.5);
+        HyperGraphicalModel<float> hgm;
+        DilworthTruncation<float> dt(&hgm, 1.5);
         dt.Run();
         EXPECT_EQ(dt.Get_min_value(), 0);
         std::vector<Set> p = dt.Get_min_partition();
@@ -134,7 +136,8 @@ namespace submodular {
         // gamma list is {1, 2}
     }
     TEST(DilworthTruncation, HyperGraphicalModel2) {
-        DilworthTruncation<float> dt(&HyperGraphicalModel2<float>(), 1.5);
+        HyperGraphicalModel2<float> hgm2;
+        DilworthTruncation<float> dt(&hgm2, 1.5);
         dt.Run();
         EXPECT_EQ(dt.Get_min_value(), -1.5);
         std::vector<Set> p = dt.Get_min_partition();
