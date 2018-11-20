@@ -17,6 +17,7 @@ if(WIN32)
     set(DYNAMIC_LIB_SUFFIX dll)
 else()
     set(DYNAMIC_LIB_SUFFIX so)
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fpermissive")
 endif()
 
 configure_file (
