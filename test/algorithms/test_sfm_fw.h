@@ -7,7 +7,7 @@
 #include "core/oracles/modular.h"
 #include "core/oracles/iwata_test_function.h"
 #include "core/algorithms/sfm_fw.h"
-
+#include "core/algorithms/brute_force.h"
 namespace submodular {
 
 TEST(FWRobust, Modular) {
@@ -64,18 +64,6 @@ TEST(FWRobust, IwataTestFunctionDouble10) {
   EXPECT_EQ(solver1.GetMinimumValue(), solver2.GetMinimumValue());
 }
 
-/*
-TEST(FWRobust, IwataTestFunction20) {
-  IwataTestFunction<int> F1(20);
-  FWRobust<int> solver1;
-  BruteForce<int> solver2;
-  solver1.Minimize(F1);
-  solver2.Minimize(F1);
-  std::cout << solver1.GetReporter() << std::endl;
-  std::cout << solver2.GetReporter() << std::endl;
-  EXPECT_EQ(solver1.GetMinimumValue(), solver2.GetMinimumValue());
-}
-*/
 
 TEST(FWRobust, IwataTestFunction30) {
   IwataTestFunction<int> F1(30);
