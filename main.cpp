@@ -79,7 +79,7 @@ int main(){
     for (int i = 0; i < gl.size(); i++) {
         if (psp_l[i].size() == 0)
             continue;
-        std::cout << "critical value: " << gl[i] << std::endl;
+        std::cout << "critical value: " << gl[i] << std::endl; // the last critical value is not set
         std::cout << psp_l[i] << std::endl;
     }
     return 0;

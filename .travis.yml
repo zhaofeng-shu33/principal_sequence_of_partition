@@ -8,8 +8,7 @@ matrix:
           - ubuntu-toolchain-r-test
         packages:
           - g++-6
-    env:
-      - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+
   #- os: osx
     
 before_install:
@@ -20,7 +19,7 @@ before_install:
   - sudo utility/gtest.sh
   - mkdir build 
   - cd build
-  - cmake -DUSE_PYTHON=ON ../ 
+  - cmake -DUSE_PYTHON=ON -DCMAKE_CXX_COMPILER=g++-6 ../ 
 install:
   - make install
 
