@@ -20,7 +20,7 @@ namespace demo {
             // generator num_points 2D points ~ N(0,1) located at different positions
             std::vector<float> x_pos;
             std::vector<float> y_pos;
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < 4; j++) {
                 for (int i = 0; i < num_points / 4; i++) {
                     x_pos.push_back(distribution(generator) + data_1[j][0]);
                     y_pos.push_back(distribution(generator) + data_1[j][1]);
