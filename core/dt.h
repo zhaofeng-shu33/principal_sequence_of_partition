@@ -103,7 +103,7 @@ namespace submodular {
             dt.Run();
             value_type min_value = dt.Get_min_value();
             std::vector<Set> P_apostrophe = dt.Get_min_partition();
-            if ( abs(min_value-h_apostrophe)<1e-4) {
+            if ( std::abs(min_value-h_apostrophe)<1e-4) {
                 critical_values[Q.size() - 1] = gamma_apostrophe;
                 psp[P_apostrophe.size() - 1] = P_apostrophe;
             }

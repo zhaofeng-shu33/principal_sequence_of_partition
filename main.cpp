@@ -3,8 +3,9 @@
 * \brief : accomplish real task by info-clustering technique
 */
 #include <random>
+#include <chrono>
 #include <iostream>
-
+#include <fstream>
 #include "core/graph.h"
 #include "core/oracles/graph_cut.h"
 #include "core/dt.h"
@@ -18,6 +19,8 @@ namespace demo {
             num_points(np)
         {
             // generator num_points 2D points ~ N(0,1) located at different positions
+            unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+            generator = std::default_random_engine(seed);
             std::vector<float> x_pos;
             std::vector<float> y_pos;
             for (int j = 0; j < 4; j++) {
@@ -25,6 +28,11 @@ namespace demo {
                     x_pos.push_back(distribution(generator) + data_1[j][0]);
                     y_pos.push_back(distribution(generator) + data_1[j][1]);
                 }
+            }
+            // print the coordinates to the file
+            std::ofstream fout("coordinates.txt");
+            for (int i = 0; i < num_points; i++) {
+                fout << x_pos[i] << '\t' << y_pos[i] << std::endl;
             }
             for (int i = 0; i < num_points; i++) 
                 for(int j = i+1; j< num_points; j++){
