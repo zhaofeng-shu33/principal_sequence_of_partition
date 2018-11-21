@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include "gtest/gtest.h"
+#include "core/dt.h"
 #include "core/set_utils.h"
 #include "core/oracles/modular.h"
 #include "core/oracles/iwata_test_function.h"
@@ -19,6 +20,18 @@ TEST(FWRobust, EmptyDomain) {
     Set Tl = solver1.GetMinimizer();
     EXPECT_EQ(alpha_l, -1);
     EXPECT_EQ(Tl.Cardinality(), 0);
+}
+TEST(FWRobust, HyperGraphicalModel) {
+    std::vector<float> xl({ 0.5,0 });
+    BruteForce<float> solver1;
+    FWRobust<float> solver2;
+    HyperGraphicalModel<float>* hg = new HyperGraphicalModel<float>();
+    SampleFunctionPartial<float> F1(xl, hg, 1.5);
+    solver1.Minimize(F1);
+    solver2.Minimize(F1);
+    float alpha_l = solver2.GetMinimumValue();        
+    EXPECT_EQ(alpha_l, solver1.GetMinimumValue());
+    delete hg;
 }
 TEST(FWRobust, EmptyModular) {
     ModularOracle<int> F1({ 1, 2, 3, 4, 5 });
