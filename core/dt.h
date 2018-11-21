@@ -49,7 +49,7 @@ namespace submodular {
         void Run() {
             std::vector<value_type> xl;
             value_type alpha_l = 0;
-            BruteForce<value_type> solver2;
+            FWRobust<value_type> solver2;
             for (int i = 0; i < NodeSize; i++) {
                 SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
                 solver2.Minimize(F1);

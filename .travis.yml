@@ -15,11 +15,10 @@ before_install:
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gsl boost-python; fi 
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libgtest-dev libboost-all-dev; fi
   # build and install gtest library manually  
-  - eval "${MATRIX_EVAL}"
+  - cmake /usr/src/gtest
   - sudo utility/gtest.sh
   - mkdir build 
   - cd build
-  - which cmake
   - cmake -DUSE_PYTHON=ON -DCMAKE_CXX_COMPILER=g++-6 ../ 
 install:
   - make install
