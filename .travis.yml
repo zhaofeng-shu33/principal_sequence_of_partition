@@ -19,6 +19,7 @@ before_install:
   - sudo utility/gtest.sh
   - mkdir build 
   - cd build
+  - which cmake
   - cmake -DUSE_PYTHON=ON -DCMAKE_CXX_COMPILER=g++-6 ../ 
 install:
   - make install

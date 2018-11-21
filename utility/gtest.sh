@@ -1,6 +1,7 @@
 #!/bin/bash
 # build and install gtest
 pushd /usr/src/gtest
+pwd
 /usr/bin/cmake ./
 make
 # install by symobolic linking
