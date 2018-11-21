@@ -98,7 +98,9 @@ struct Arc {
   Node_s GetHeadNode() { return head_node.lock(); }
   Node_s GetTailNode() { return tail_node.lock(); }
 };
-
+template <typename ValueType>
+SimpleGraph<ValueType> make_dgraph(std::size_t n,
+    const std::vector<std::tuple<std::size_t, std::size_t, ValueType>>& edges);
 template <typename ValueType>
 class SimpleGraph {
 public:
@@ -470,7 +472,31 @@ auto FindSTPath(GraphType& G, const Set& S, const Set& T) {
   path.clear();
   return path;
 }
+template <typename ValueType>
+SimpleGraph<ValueType> make_dgraph(std::size_t n,
+    const std::vector<std::tuple<std::size_t, std::size_t, ValueType>>& edges)
+{
+    SimpleGraph<ValueType> graph;
+    int m = edges.size();
 
+    for (std::size_t i = 0; i < n; ++i) {
+        graph.AddNode(i);
+    }
+
+
+    for (std::size_t edge_id = 0; edge_id < m; ++edge_id) {
+        std::size_t src, dst;
+        ValueType cap;
+        std::tie(src, dst, cap) = edges[edge_id];
+        SimpleGraph<float>::Node_s head = graph.GetNode(dst);
+        SimpleGraph<float>::Node_s tail = graph.GetNode(src);
+
+        graph.AddArc(head, tail, cap);
+
+    }
+
+    return graph;
+}
 }
 
 #endif
