@@ -9,7 +9,24 @@
 #include "core/algorithms/sfm_fw.h"
 #include "core/algorithms/brute_force.h"
 namespace submodular {
-
+TEST(FWRobust, EmptyModular) {
+    ModularOracle<int> F1({ 1, 2, 3, 4, 5 });
+    FWRobust<int> solver1;
+    solver1.Minimize(F1);
+    auto X1 = solver1.GetMinimizer();
+    auto val1 = solver1.GetMinimumValue();
+    EXPECT_EQ(X1, Set(std::string("00000")));
+    EXPECT_EQ(val1, 0);
+}
+TEST(FWRobust, FullModular) {
+    ModularOracle<int> F1({ -1, -2, -3, -4, -5 });
+    FWRobust<int> solver1;
+    solver1.Minimize(F1);
+    auto X1 = solver1.GetMinimizer();
+    auto val1 = solver1.GetMinimumValue();
+    EXPECT_EQ(X1, Set(std::string("11111")));
+    EXPECT_EQ(val1, -15);
+}
 TEST(FWRobust, Modular) {
   ModularOracle<int> F1({ -1, -2, -3, 4, 5 });
   FWRobust<int> solver1;

@@ -4,6 +4,9 @@
 **/
 #include "core/oracles/iwata_test_function.h"
 #include "core/algorithms/brute_force.h"
+#ifdef USE_EIGEN3
+#include "core/algorithms/sfm_fw.h"
+#endif
 #include "core/oracles/modular.h"
 namespace submodular {
     template <typename ValueType>
@@ -49,7 +52,11 @@ namespace submodular {
         void Run() {
             std::vector<value_type> xl;
             value_type alpha_l = 0;
+#ifdef USE_EIGEN3
             FWRobust<value_type> solver2;
+#else
+            BruteForce<value_type> solver2;
+#endif
             for (int i = 0; i < NodeSize; i++) {
                 SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
                 solver2.Minimize(F1);
