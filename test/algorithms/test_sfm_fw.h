@@ -8,7 +8,18 @@
 #include "core/oracles/iwata_test_function.h"
 #include "core/algorithms/sfm_fw.h"
 #include "core/algorithms/brute_force.h"
+#include "test/test_extreme.h"
 namespace submodular {
+
+TEST(FWRobust, EmptyDomain) {   
+    EmptyDomain ed;
+    FWRobust<float> solver1;
+    solver1.Minimize(ed);
+    float alpha_l = solver1.GetMinimumValue();
+    Set Tl = solver1.GetMinimizer();
+    EXPECT_EQ(alpha_l, -1);
+    EXPECT_EQ(Tl.Cardinality(), 0);
+}
 TEST(FWRobust, EmptyModular) {
     ModularOracle<int> F1({ 1, 2, 3, 4, 5 });
     FWRobust<int> solver1;

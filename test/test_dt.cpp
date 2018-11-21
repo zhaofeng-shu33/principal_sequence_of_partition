@@ -95,6 +95,13 @@ namespace submodular {
         EXPECT_EQ(p[0], Set::FromIndices(2, { 0 }));
         EXPECT_EQ(p[1], Set::FromIndices(2, { 1 }));
     }
+    TEST(DilworthTruncation, SampleFunctionPartial) {
+        std::vector<float> xl(1);
+        SampleFunction<float>* sf = new SampleFunction<float>();
+        SampleFunctionPartial<float> F1(xl, sf, 3.5);
+        F1.Call(Set::MakeDense(1));
+        delete sf;
+    }
     TEST(DilworthTruncation, HyperGraphicalModel){
         HyperGraphicalModel<float> hgm;
         DilworthTruncation<float> dt(&hgm, 1.5);

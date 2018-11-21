@@ -186,6 +186,8 @@ template <typename ValueType>
 Set FWRobust<ValueType>::GetX() const {
   auto order = GetAscendingOrder(x_data_, members_, inverse_);
   Set X = Set::MakeEmpty(n_ground_);
+  if (X.n_ == 0)
+      return X;
   if (x_data_[inverse_[order[0]]] < 0)
       X.AddElement(order[0]);
 
