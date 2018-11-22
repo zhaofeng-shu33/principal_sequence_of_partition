@@ -16,7 +16,8 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libgtest-dev libboost-all-dev libeigen3-dev; fi
   # build and install gtest library manually  
   - pushd /usr/src/gtest
-  - sudo cmake ./
+  - sudo chmod -R a+w ./
+  - cmake ./
   - sudo utility/gtest.sh
   - popd
   - mkdir build
