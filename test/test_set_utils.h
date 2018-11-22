@@ -30,7 +30,7 @@ TEST(Set, ConstructorB) {
 
   //EXPECT_THROW(new Set(5, {10}), std::range_error);
   //NOTE: Set(5, {10}) matches constructor (d), and this test may fail.
-  //In order to avoid such ambiguity, one of these constructors should be depricated.
+  //In order to avoid such ambiguity, one of these constructors should be deprecated.
   EXPECT_THROW(new Set(5, std::vector<size_t>{10}), std::range_error);
 }
 */
@@ -75,7 +75,14 @@ TEST(Set, Complement) {
   EXPECT_TRUE(V1.Complement() == V2);
   EXPECT_TRUE(V1.Complement().Complement() == V1);
 }
-
+TEST(SET, Map) {
+    Set V1(std::string("0101100"));
+    auto members = V1.GetMembers(); //index
+    auto inverse_map = V1.GetInverseMap();
+    for (element_type i: members) {
+        EXPECT_EQ(i, members[inverse_map[i]]);
+    }
+}
 TEST(Partition, RemoveCell) {
   Partition p = Partition::MakeFine(5); // p = {{0}, {1}, {2}, {3}, {4}}
   EXPECT_EQ(Set(std::string("11111")), p.Expand());
