@@ -27,7 +27,7 @@ configure_file (
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_BINARY_DIR})
 if(USE_EIGEN3)
-    find_package(Eigen3 CONFIG REQUIRED)
+    find_package(Eigen3 REQUIRED)
     if(UNIX)
     include_directories(${EIGEN3_INCLUDE_DIR})
     endif()
