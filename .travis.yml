@@ -19,7 +19,7 @@ before_install:
   - sudo utility/gtest.sh
   - cmake -DUSE_PYTHON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_EIGEN3=ON ./ 
 install:
-  - make install
+  - make
 
 script:
 # used for testing

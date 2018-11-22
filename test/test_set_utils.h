@@ -75,7 +75,7 @@ TEST(Set, Complement) {
   EXPECT_TRUE(V1.Complement() == V2);
   EXPECT_TRUE(V1.Complement().Complement() == V1);
 }
-TEST(SET, Map) {
+TEST(Set, Map) {
     Set V1(std::string("0101100"));
     auto members = V1.GetMembers(); //index
     auto inverse_map = V1.GetInverseMap();
