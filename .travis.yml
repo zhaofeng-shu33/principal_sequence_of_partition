@@ -18,7 +18,8 @@ before_install:
   - pushd /usr/src/gtest
   - sudo chmod -R a+w ./
   - cmake ./
-  - sudo utility/gtest.sh
+  - make
+  - ln -s -t /usr/lib /usr/src/gtest/libgtest.a /usr/src/gtest/libgtest_main.a
   - popd
   - mkdir build
   - cd build
