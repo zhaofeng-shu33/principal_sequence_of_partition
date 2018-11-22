@@ -17,7 +17,7 @@ before_install:
   # build and install gtest library manually  
   - cmake /usr/src/gtest
   - sudo utility/gtest.sh
-  - cmake -DUSE_PYTHON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_EIGEN3=ON ../ 
+  - cmake -DUSE_PYTHON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_EIGEN3=ON ./ 
 install:
   - make
 
