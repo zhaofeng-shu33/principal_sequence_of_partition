@@ -15,16 +15,18 @@ before_install:
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gsl boost-python; fi 
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libgtest-dev libboost-all-dev libeigen3-dev; fi
   # build and install gtest library manually  
-  - cmake /usr/src/gtest
+  - pushd /usr/src/gtest
+  - cmake ./
   - sudo utility/gtest.sh
-  - cmake -DUSE_PYTHON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_EIGEN3=ON ./ 
+  - popd
+  - mkdir build
+  - cd build
+  - cmake -DUSE_PYTHON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_EIGEN3=ON ../ 
 install:
-  - make
+  - make install
 
 script:
 # used for testing
-  - ls
-  - cd test
   - ls
   - test/TestAll
   - python3 -c "import psp;print(psp.__version__)"
