@@ -21,6 +21,8 @@ before_install:
   - cd build
   - cmake -DUSE_PYTHON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_EIGEN3=ON ../ 
 install:
+  - pwd
+  - ls
   - make
 
 script:
