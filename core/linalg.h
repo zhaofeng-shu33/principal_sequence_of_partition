@@ -95,12 +95,10 @@ std::size_t reduce_bases(std::size_t n, std::vector<std::vector<double>>& bases,
   while (!is_injective) {
     Eigen::MatrixXd ker = decomp.kernel();
     Eigen::MatrixXd::ColXpr mu = ker.col(0);
-    std::cout << "mu = " << mu << std::endl;
 
     double update = std::numeric_limits<double>::max();
     std::size_t i_erase = m;
     for (std::size_t i = 0; i < m; ++i) {
-        std::cout << mu.size() << std::endl;
       if (mu(i) > 0 && !utils::is_abs_close(mu(i), 0.0, tol)) {
         double theta = coef[i] / mu(i);
         if (theta < update) {
