@@ -68,7 +68,7 @@ std::size_t reduce_bases(std::size_t n, std::vector<std::vector<double>>& bases,
     }
   }
 
-  auto decomp = Y.fullPivLu();
+  Eigen::FullPivLU<Eigen::MatrixXd> decomp = Y.fullPivLu();
   bool is_injective = decomp.isInjective();
 
   double tol = decomp.threshold();
@@ -93,12 +93,14 @@ std::size_t reduce_bases(std::size_t n, std::vector<std::vector<double>>& bases,
   _delete_zero();
 
   while (!is_injective) {
-    auto mu = decomp.kernel().col(0);
-    //std::cout << "mu = " << mu << std::endl;
+    Eigen::MatrixXd ker = decomp.kernel();
+    Eigen::MatrixXd::ColXpr mu = ker.col(0);
+    std::cout << "mu = " << mu << std::endl;
 
     double update = std::numeric_limits<double>::max();
     std::size_t i_erase = m;
     for (std::size_t i = 0; i < m; ++i) {
+        std::cout << mu.size() << std::endl;
       if (mu(i) > 0 && !utils::is_abs_close(mu(i), 0.0, tol)) {
         double theta = coef[i] / mu(i);
         if (theta < update) {
