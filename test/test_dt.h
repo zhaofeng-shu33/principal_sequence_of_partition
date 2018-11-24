@@ -1,3 +1,4 @@
+#pragma once
 /**
 * \author: zhaofeng-shu33
 */

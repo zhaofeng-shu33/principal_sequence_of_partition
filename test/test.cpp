@@ -24,4 +24,7 @@
 #include "graph/test_graph_oracle.h"
 
 // Dilworth truncation tests
-#include "test_dt.cpp"
+#include "test_dt.h"
+
+// Gaussian test
+#include "test_gaussian.h"

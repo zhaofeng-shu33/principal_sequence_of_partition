@@ -13,21 +13,25 @@ namespace demo {
             distribution(0, 1),
             num_points(np)
         {
-            // generator num_points 2D points ~ N(0,1) located at different positions
-            unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-            generator = std::default_random_engine(seed);
-            std::vector<float> x_pos;
-            std::vector<float> y_pos;
-            for (int j = 0; j < 4; j++) {
-                for (int i = 0; i < num_points / 4; i++) {
-                    x_pos.push_back(distribution(generator) + data_1[j][0]);
-                    y_pos.push_back(distribution(generator) + data_1[j][1]);
+            if(a == NULL){
+                // generator num_points 2D points ~ N(0,1) located at different positions
+                unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+                generator = std::default_random_engine(seed);
+
+                for (int j = 0; j < 4; j++) {
+                    for (int i = 0; i < num_points / 4; i++) {
+                        x_pos.push_back(distribution(generator) + data_1[j][0]);
+                        y_pos.push_back(distribution(generator) + data_1[j][1]);
+                    }
                 }
             }
-            // print the coordinates to the file
-            std::ofstream fout("coordinates.txt");
-            for (int i = 0; i < num_points; i++) {
-                fout << x_pos[i] << '\t' << y_pos[i] << std::endl;
+            else {
+                for (int j = 0; j < 4; j++) {
+                    for (int i = 0; i < num_points / 4; i++) {
+                        x_pos.push_back(a[j][0]);
+                        y_pos.push_back(a[j][1]);
+                    }
+                }
             }
             for (int i = 0; i < num_points; i++)
                 for (int j = i + 1; j < num_points; j++) {
@@ -48,12 +52,21 @@ namespace demo {
         std::vector<std::vector<submodular::Set>>& get_psp_list() {
             return psp_list;
         }
+        std::vector<float>& get_x_pos_list() {
+            return x_pos;
+        }
+        std::vector<float>& get_y_pos_list() {
+            return y_pos;
+        }
+
     private:
         // {src, dst, capacity}
         int num_points;
         std::default_random_engine generator;
         std::normal_distribution<float> distribution;
         submodular::SimpleGraph<float> sg;
+        std::vector<float> x_pos;
+        std::vector<float> y_pos;
         std::vector<float> gamma_list;
         std::vector<std::vector<submodular::Set>> psp_list;
         EdgeListFloat edge_list_float_1;
