@@ -9,7 +9,7 @@ namespace demo {
     class Gaussian2DGraph {
     public:
         using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, float>>;
-        Gaussian2DGraph(int np) :
+        Gaussian2DGraph(int np, float a[][2] = NULL) :
             distribution(0, 1),
             num_points(np)
         {

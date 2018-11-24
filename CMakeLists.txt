@@ -33,9 +33,7 @@ configure_file (
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_BINARY_DIR})
 if(USE_EIGEN3)    
-    if(UNIX)
     include_directories(${EIGEN3_INCLUDE_DIR})
-    endif()
 endif()
 
 add_executable(main main.cpp)
