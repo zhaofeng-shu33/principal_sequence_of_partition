@@ -2,11 +2,12 @@
 * \author : zhaofeng-shu33
 * \brief : accomplish real task by info-clustering technique
 */
-//#include "config.h"
+#include "config.h"
 #include "utility/gaussian2Dcase.h"
 //! To be finished
 int main(){
-    demo::Gaussian2DGraph* g2g = new demo::Gaussian2DGraph(4);
+    float a[4][2] = { {3,3},{3,-3},{-3,3},{-3,-3} };
+    demo::Gaussian2DGraph* g2g = new demo::Gaussian2DGraph(4,a);
     g2g->run();
     std::vector<float> gl = g2g->get_gamma_list();
     std::vector<std::vector<submodular::Set>> psp_l = g2g->get_psp_list();

@@ -163,7 +163,7 @@ void FWRobust<ValueType>::Minimize(SubmodularOracle<ValueType>& F) {
 
   Initialize(F);
 
-  auto order = LinearOrder(domain_);
+  std::vector<std::size_t> order = LinearOrder(domain_);
   x_data_ = std::move(GreedyBaseData(F, order, inverse_, &(this->reporter_)));
   bases_.push_back(x_data_);
   coeffs_.emplace_back(1);
@@ -171,7 +171,7 @@ void FWRobust<ValueType>::Minimize(SubmodularOracle<ValueType>& F) {
   base_type vertex_new = std::move(LinearMinimizerData(F, x_data_, members_, inverse_, &(this->reporter_)));
 
   while (!CheckNorm(vertex_new)) {
-    FWUpdate(vertex_new);
+    FWUpdate(vertex_new);//update x_data_
     vertex_new = std::move(LinearMinimizerData(F, x_data_, members_, inverse_, &(this->reporter_)));
   }
 
