@@ -1,6 +1,7 @@
 #pragma once
 #include "gtest/gtest.h"
 #include "core/graph.h"
+#include "core/dt.h"
 #include "core/oracles/graph_cut.h"
 #include "core/set_utils.h"
 #include "core/algorithms/sfm_fw.h"
@@ -28,11 +29,26 @@ TEST(Gaussian2D, GivenPoint) {
     EXPECT_EQ(psp_list[3].size(), 4);
 }
 TEST(Gaussian2D, GivenPoint8) {
-    double a[8][2] = { {3,3},{3,-3},{-3,3},{-3,-3},{3.1,3.1},{3.1,-3.1},{-3.1,3.1},{-3.1,-3.1} };
+    double a[8][2] = { {3.1, 3.2},
+                       {4.0, 4.0 },
+                       {1.1, -2.2},
+                       {3.9, -2.0},
+                       {-3.9, -2.0},
+                       {-2.2, -3.5},
+                       {-3.9, 2.4},
+                       {-3.1, 2.6}
+                     };
     Gaussian2DGraph<double> g2g(8, a);
-    g2g.run();
+    g2g.run(true);
     std::vector<double> gamma_list = g2g.get_gamma_list();
     std::vector<std::vector<submodular::Set>> psp_list = g2g.get_psp_list();
+    for (int i = 0; i < gamma_list.size(); i++) {
+        if (psp_list[i].size() == 0)
+            continue;
+        std::cout << "critical value: " << gamma_list[i] << std::endl; // the last critical value is not set
+        std::cout << psp_list[i] << std::endl;
+    }
+    g2g.run(false);
     EXPECT_EQ(psp_list[0].size(), 1);
     EXPECT_EQ(psp_list[7].size(), 8);
 }
@@ -78,7 +94,22 @@ TEST_F(Graph4PointTest, NotReturn) {
     submodular::SampleFunctionPartial<double> F1(xl, dgc, 1+2/3.0);
     submodular::FWRobust<double> solver2;
     solver2.Minimize(F1);
+    submodular::BruteForce<double> solver1;
+    solver1.Minimize(F1);
+    EXPECT_DOUBLE_EQ(solver2.GetMinimumValue(), solver1.GetMinimumValue());
     std::cout << solver2.GetReporter() << std::endl;
+    std::cout << solver1.GetReporter() << std::endl;
 }
 #endif
+// This test is used to verify the FWRobust algorithm returns the right solution to SFM problem
+TEST_F(Graph4PointTest, ReturnTrue) {
+    submodular::DilworthTruncation<double> dt(dgc, 5/3.0);
+    dt.Run(true);//BruteForce
+    double min_value = dt.Get_min_value();
+    std::vector<submodular::Set> P_apostrophe = dt.Get_min_partition();
+    EXPECT_EQ(P_apostrophe.size(), 4);
+    dt.Run(); //FWRobust
+    EXPECT_DOUBLE_EQ(dt.Get_min_value(), min_value);
+    EXPECT_EQ(dt.Get_min_partition().size(), 4);
+}
 }

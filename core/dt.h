@@ -49,19 +49,26 @@ namespace submodular {
         std::vector<Set>& Get_min_partition(){
             return lastPartition;
         }
-        void Run() {
+        void Run(bool bruteForce = false) {
+            min_value = 0;
+            lastPartition.resize(0);
+            currentPartition.resize(0);
             std::vector<value_type> xl;
             value_type alpha_l = 0;
-#ifdef USE_EIGEN3
-            FWRobust<value_type> solver2;
-#else
-            BruteForce<value_type> solver2;
-#endif
+            #ifdef USE_EIGEN3
+                SFMAlgorithm<value_type>* solver2;
+                if(bruteForce)
+                    solver2 = new BruteForce<value_type>;
+                else
+                    solver2 = new FWRobust<value_type>(0.1);
+            #else
+                SFMAlgorithm<value_type>* solve2 = new BruteForce<value_type>;
+            #endif
             for (int i = 0; i < NodeSize; i++) {
                 SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
-                solver2.Minimize(F1);
-                alpha_l = solver2.GetMinimumValue();
-                Set Tl = solver2.GetMinimizer().Extend(1);
+                solver2->Minimize(F1);
+                alpha_l = solver2->GetMinimumValue();
+                Set Tl = solver2->GetMinimizer().Extend(1);
                 Set Ul = Tl;
                 for (std::vector<Set>::iterator it = lastPartition.begin(); it != lastPartition.end(); it++) {
                     Set intersect = Tl.Intersection(it->Extend());
@@ -82,6 +89,7 @@ namespace submodular {
             for (auto it = xl.begin(); it != xl.end(); it++) {
                 min_value += *it;
             }
+            delete solver2;
         }
     private:
         SubmodularOracle<ValueType> *submodular_function;
@@ -103,11 +111,11 @@ namespace submodular {
             critical_values.resize(NodeSize);
             psp.resize(NodeSize);
         }
-        void split(std::vector<Set>& Q, std::vector<Set>& P) {
+        void split(std::vector<Set>& Q, std::vector<Set>& P, bool bruteForce = false) {
             value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.size() - Q.size());
             value_type h_apostrophe = (P.size() * evaluate(Q) - Q.size() * evaluate(P)) / (P.size() - Q.size());
             DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
-            dt.Run();
+            dt.Run(bruteForce);
             value_type min_value = dt.Get_min_value();
             std::vector<Set> P_apostrophe = dt.Get_min_partition();
             if (min_value>h_apostrophe-1e-4) {
@@ -115,11 +123,11 @@ namespace submodular {
             }
             else {                
                 psp[P_apostrophe.size() - 1] = P_apostrophe;
-                split(Q, P_apostrophe);
-                split(P_apostrophe, P);
+                split(Q, P_apostrophe, bruteForce);
+                split(P_apostrophe, P, bruteForce);
             }
         }
-        void run() {
+        void run(bool bruteForce = false) {
             Set V = Set::MakeDense(NodeSize);
             Set Empt;
             std::vector<Set> Q, P;
@@ -131,7 +139,7 @@ namespace submodular {
             }
             psp[0] = Q;
             psp[P.size()-1] = P;
-            split(Q, P);
+            split(Q, P, bruteForce);
         }
         std::vector<value_type>& Get_critical_values() {
             return critical_values;

@@ -41,10 +41,10 @@ namespace demo {
                 }
             sg = submodular::make_dgraph(num_points, edge_list_float_1);
         }
-        void run() {
+        void run(bool bruteForce = false) {
             submodular::DirectedGraphCutOracle<ValueType>* dgc = new submodular::DirectedGraphCutOracle<ValueType>(sg);
             submodular::PSP<ValueType> psp_class(dgc);
-            psp_class.run();
+            psp_class.run(bruteForce);
             gamma_list = psp_class.Get_critical_values();
             psp_list = psp_class.Get_psp();
         }

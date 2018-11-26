@@ -199,7 +199,7 @@ Set FWRobust<ValueType>::GetX() const {
       X.AddElement(order[0]);
 
   for (std::size_t i = 1; i < order.size(); ++i) {    
-    if (x_data_[inverse_[order[i]]] >= 0) { //&& static_cast<rational_type>(n_ * (x_data_[inverse_[order[i]]] - x_data_[inverse_[order[i-1]]])) >= eps_
+    if (x_data_[inverse_[order[i]]] >= 1e-10) { //&& static_cast<rational_type>(n_ * (x_data_[inverse_[order[i]]] - x_data_[inverse_[order[i-1]]])) >= eps_
       break;
     }
     X.AddElement(order[i]);
