@@ -102,8 +102,9 @@ TEST_F(Graph4PointTest, NotReturn) {
 }
 #endif
 // This test is used to verify the FWRobust algorithm returns the right solution to SFM problem
+// When two min solution exists, FWRobust not necessarily returns the finest partition
 TEST_F(Graph4PointTest, ReturnTrue) {
-    submodular::DilworthTruncation<double> dt(dgc, 5/3.0);
+    submodular::DilworthTruncation<double> dt(dgc, 5/3.0+0.1);
     dt.Run(true);//BruteForce
     double min_value = dt.Get_min_value();
     std::vector<submodular::Set> P_apostrophe = dt.Get_min_partition();
