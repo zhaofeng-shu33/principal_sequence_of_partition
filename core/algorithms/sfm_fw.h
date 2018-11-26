@@ -116,6 +116,13 @@ void FWRobust<ValueType>::FWUpdate(const base_type& q) {
 
   while (true) {// minor cycle
     CalcAffineMinimizer(); // update alpha_ and y_
+
+    double diff = 0;
+    for (const auto& i : members_) {
+        diff += y_[inverse_[i]] * (y_[inverse_[i]]);
+    }
+
+    // check y_ * q = y_ * y_
     auto m = bases_.size();
 
     if (IsConvexCombination(alpha_)) {

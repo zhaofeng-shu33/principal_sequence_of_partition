@@ -110,11 +110,11 @@ namespace submodular {
             dt.Run();
             value_type min_value = dt.Get_min_value();
             std::vector<Set> P_apostrophe = dt.Get_min_partition();
-            if ( std::abs(min_value-h_apostrophe)<1e-4) {
+            if (min_value>h_apostrophe-1e-4) {
                 critical_values[Q.size() - 1] = gamma_apostrophe;
-                psp[P_apostrophe.size() - 1] = P_apostrophe;
             }
             else {                
+                psp[P_apostrophe.size() - 1] = P_apostrophe;
                 split(Q, P_apostrophe);
                 split(P_apostrophe, P);
             }
@@ -130,6 +130,7 @@ namespace submodular {
                 P.push_back(EmptyExceptOne);
             }
             psp[0] = Q;
+            psp[P.size()-1] = P;
             split(Q, P);
         }
         std::vector<value_type>& Get_critical_values() {

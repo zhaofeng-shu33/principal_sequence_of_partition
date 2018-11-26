@@ -6,10 +6,12 @@
 #include "core/oracles/graph_cut.h"
 #include "core/dt.h"
 namespace demo {
+    template <typename ValueType>
     class Gaussian2DGraph {
     public:
-        using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, float>>;
-        Gaussian2DGraph(int np, float a[][2] = NULL) :
+        using value_type = ValueType;
+        using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, value_type>>;
+        Gaussian2DGraph(int np, value_type a[][2] = NULL) :
             distribution(0, 1),
             num_points(np)
         {
@@ -40,22 +42,22 @@ namespace demo {
             sg = submodular::make_dgraph(num_points, edge_list_float_1);
         }
         void run() {
-            submodular::DirectedGraphCutOracle<float>* dgc = new submodular::DirectedGraphCutOracle<float>(sg);
-            submodular::PSP<float> psp_class(dgc);
+            submodular::DirectedGraphCutOracle<ValueType>* dgc = new submodular::DirectedGraphCutOracle<ValueType>(sg);
+            submodular::PSP<ValueType> psp_class(dgc);
             psp_class.run();
             gamma_list = psp_class.Get_critical_values();
             psp_list = psp_class.Get_psp();
         }
-        std::vector<float>& get_gamma_list() {
+        std::vector<value_type>& get_gamma_list() {
             return gamma_list;
         }
         std::vector<std::vector<submodular::Set>>& get_psp_list() {
             return psp_list;
         }
-        std::vector<float>& get_x_pos_list() {
+        std::vector<value_type>& get_x_pos_list() {
             return x_pos;
         }
-        std::vector<float>& get_y_pos_list() {
+        std::vector<value_type>& get_y_pos_list() {
             return y_pos;
         }
 
@@ -63,16 +65,16 @@ namespace demo {
         // {src, dst, capacity}
         int num_points;
         std::default_random_engine generator;
-        std::normal_distribution<float> distribution;
-        submodular::SimpleGraph<float> sg;
-        std::vector<float> x_pos;
-        std::vector<float> y_pos;
-        std::vector<float> gamma_list;
+        std::normal_distribution<value_type> distribution;
+        submodular::SimpleGraph<ValueType> sg;
+        std::vector<value_type> x_pos;
+        std::vector<value_type> y_pos;
+        std::vector<value_type> gamma_list;
         std::vector<std::vector<submodular::Set>> psp_list;
         EdgeListFloat edge_list_float_1;
         int data_1[4][2] = { {3,3},{3,-3},{-3,-3},{-3,3} };
         //! use Gaussian similarity function $exp(-||p_1 - p_2||^2/2) $
-        float compute_similarity(float x_1, float y_1, float x_2, float y_2) {
+        value_type compute_similarity(value_type x_1, value_type y_1, value_type x_2, value_type y_2) {
             return exp(-pow(x_1 - x_2, 2) / 2 - pow(y_1 - y_2, 2) / 2);
         }
 
