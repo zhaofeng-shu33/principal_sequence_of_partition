@@ -141,10 +141,24 @@ namespace submodular {
     TEST(PSP, HyperGraphModelDT) {
         HyperGraphicalModel2<double>* hgm = new HyperGraphicalModel2<double>();
         DilworthTruncation<double> dt(hgm, 0.0);
-        dt.Run(false); //BruteForce
+        dt.Run(true); //BruteForce
         double min_value = dt.Get_min_value();
         std::vector<Set> min_p = dt.Get_min_partition();
         EXPECT_DOUBLE_EQ(min_value, 4.0);
+        delete hgm;
+    }
+    TEST(PSP, HyperGraphModelSFM) {
+        HyperGraphicalModel2<double>* hgm = new HyperGraphicalModel2<double>();
+        BruteForce<double> solver2;
+        std::vector<double> xl({2,0,0});
+        SampleFunctionPartial<double> F1(xl, hgm, 0.0);
+        solver2.Minimize(F1);
+        double alpha_2 = solver2.GetMinimumValue();
+        EXPECT_DOUBLE_EQ(alpha_2, 1.0);
+        FWRobust<double> solver1;
+        solver1.Minimize(F1);
+        double alpha_l = solver1.GetMinimumValue();
+        EXPECT_DOUBLE_EQ(alpha_l, 1.0);
         delete hgm;
     }
     TEST(PSP, HyperGraphicalModel2) {
