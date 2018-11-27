@@ -8,7 +8,10 @@
 #include <utility>
 
 namespace submodular {
-
+    //! n: number of nodes
+    //! s: source node id
+    //! t: sink node id
+    //! edges: vector of (u,v,cap)
     template <typename ValueType>
     MaxflowGraph<ValueType> st_graph(std::size_t n, std::size_t s, std::size_t t,
         const std::vector<std::tuple<std::size_t, std::size_t, ValueType>>& edges)

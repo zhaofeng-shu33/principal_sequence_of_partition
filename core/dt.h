@@ -63,7 +63,7 @@ namespace submodular {
             if(bruteForce)
                 solver2 = new BruteForce<value_type>;
             else{
-                solver2 = new FWRobust<value_type>(1e-5);
+                solver2 = new FWRobust<value_type>(1e-5,1e-9);
             }
 #else
             SFMAlgorithm<value_type>* solve2 = new BruteForce<value_type>;

@@ -46,7 +46,9 @@ public:
   virtual std::size_t GetNGround() const { return domain_.n_; };
   virtual value_type Call(const Set& X) = 0;
   virtual std::string GetName() = 0;
-
+  virtual value_type GetArcCap(element_type head_name, element_type tail_name) {
+      return 0;
+  }
   value_type Call(const Set& X, SFMReporter* reporter) {
     if (reporter != nullptr) {
       reporter->TimerStart(ReportKind::ORACLE);

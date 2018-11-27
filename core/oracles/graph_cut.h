@@ -19,7 +19,7 @@ namespace submodular {
             value_type val = sg.GetCutValueByNames(members);
             return val;
         }
-
+        value_type GetArcCap(element_type head_name, element_type tail_name) { return 0; }
 
     private:
         SimpleGraph<ValueType> sg;

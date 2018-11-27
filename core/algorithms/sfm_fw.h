@@ -37,7 +37,7 @@ public:
   using base_type = std::vector<rational_type>;
 
   FWRobust(): precision_(0.5), tol_(1e-10), x_data_(0) {}
-  explicit FWRobust(rational_type precision): precision_(precision), tol_(1e-10), x_data_(0) {}
+  explicit FWRobust(rational_type precision, rational_type tol=1e-10): precision_(precision), tol_(tol), x_data_(0) {}
 
   void Minimize(SubmodularOracle<ValueType>& F);
 
@@ -93,7 +93,7 @@ bool FWRobust<ValueType>::CheckNorm(const base_type& q) {
   }
   bool diff_not_change = (last_diff == diff);
   last_diff = diff;
-  return (diff <= tol_ || diff_not_change);
+  return (diff <= eps_ * eps_ || diff_not_change);
 }
 
 template <typename ValueType>
