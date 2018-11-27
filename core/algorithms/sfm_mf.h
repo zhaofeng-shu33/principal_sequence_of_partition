@@ -22,27 +22,28 @@ public:
         this->reporter_.SetNames(GetName(), sf->GetName());
         //construct s-t graph
         int graph_size = xl.size();
-        //sink node id is graph_size-1, source node id is graph_size
+        //sink node id is graph_size, source node id is graph_size+1
         MaxflowGraph<ValueType> g;
-        int s = graph_size, t = graph_size-1;
-        MaxflowGraph<ValueType>::Node_s ss = g.GetNodeById(s), tt = g.GetNodeById(t);
-        for (std::size_t i = 0; i <= graph_size; ++i) {
+        int s = graph_size + 1, t = graph_size;
+        for (std::size_t i = 0; i <= graph_size + 1; ++i) {
             g.AddNode(i);
         }
-        for (int v = 0; v < graph_size-1; ++v) {
+        MaxflowGraph<ValueType>::Node_s ss = g.GetNodeById(s), tt = g.GetNodeById(t);
+
+        for (int v = 0; v < graph_size; ++v) {
             MaxflowGraph<ValueType>::Node_s vv = g.GetNodeById(v);
             if(xl[v]<0)
-                g.AddSVArcPair(ss, vv, xl[v], 0);
+                g.AddSVArcPair(vv, ss, xl[v], 0);
             else
-                g.AddVTArcPair(vv, tt, xl[v], 0);
-            for(int w = v+1; w < graph_size-1; w++)
+                g.AddVTArcPair(tt, vv, xl[v], 0);
+            for(int w = v+1; w < graph_size; w++)
                 g.AddArcPair(g.GetNodeById(w), vv, sf->GetArcCap(w, v), 0);
         }        
         g.MakeGraph(ss,tt);
         g.FindMinCut();
         
-        Set X = Set::MakeEmpty(graph_size-1);
-        for (int v = 0; v < graph_size-1; ++v) {
+        Set X = Set::MakeEmpty(graph_size);
+        for (int v = 0; v < graph_size; ++v) {
             if(g.WhatSegment(v)==TermType::SINK)
                 X.AddElement(v);
         }
