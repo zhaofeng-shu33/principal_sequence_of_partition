@@ -97,7 +97,7 @@ template <typename ValueType>
 bool FWRobust<ValueType>::IsConvexCombination(const std::vector<rational_type>& alpha) {
   // NOTE: Despite the name, this method actually checks if coeffs_ >= 0
   for (std::size_t i = 0; i < alpha.size(); ++i) {
-    if (alpha[i] < 0) {
+    if (alpha[i] < -1e-16) {
       return false;
     }
   }
@@ -195,14 +195,14 @@ Set FWRobust<ValueType>::GetX() const {
   Set X = Set::MakeEmpty(n_ground_);
   if (X.n_ == 0)
       return X;
-  if (x_data_[inverse_[order[0]]] < 0)
-      X.AddElement(order[0]);
+ 
+      
 
-  for (std::size_t i = 1; i < order.size(); ++i) {    
-    if (x_data_[inverse_[order[i]]] >= 1e-10) { //&& static_cast<rational_type>(n_ * (x_data_[inverse_[order[i]]] - x_data_[inverse_[order[i-1]]])) >= eps_
-      break;
+  for (std::size_t i = 0; i < order.size(); ++i) {    
+    if (x_data_[inverse_[order[i]]] < 0) { //&& static_cast<rational_type>(n_ * (x_data_[inverse_[order[i]]] - x_data_[inverse_[order[i-1]]])) >= eps_
+        X.AddElement(order[i]);
     }
-    X.AddElement(order[i]);
+    
   }
   return X;
 }

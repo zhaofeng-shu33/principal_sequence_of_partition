@@ -154,7 +154,9 @@ namespace submodular {
         SampleFunctionPartial<double> F1(xl, hgm, 0.0);
         solver2.Minimize(F1);
         double alpha_2 = solver2.GetMinimumValue();
+        Set p_2 = solver2.GetMinimizer();
         EXPECT_DOUBLE_EQ(alpha_2, 1.0);
+        EXPECT_DOUBLE_EQ(F1.Call(p_2), alpha_2);
         FWRobust<double> solver1;
         solver1.Minimize(F1);
         double alpha_l = solver1.GetMinimumValue();
