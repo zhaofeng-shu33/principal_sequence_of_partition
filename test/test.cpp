@@ -15,7 +15,7 @@
 // Algorithm tests
 #include "algorithms/test_brute_force.h"
 //#include "algorithms/test_sfm_iff.h"
-#if USE_EIGEN3
+#ifdef USE_EIGEN3
 // can be only used when the domain of submodular function is integer!
 #include "algorithms/test_sfm_fw.h"
 #endif
