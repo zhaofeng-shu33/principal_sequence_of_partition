@@ -154,6 +154,7 @@ void FWRobust<ValueType>::FWUpdate(const base_type& q) {
   }//minor cycle
 
   x_data_ = y_;
+  coeffs_= alpha_;
 }
 
 template <typename ValueType>
