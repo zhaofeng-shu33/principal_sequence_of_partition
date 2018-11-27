@@ -55,19 +55,29 @@ namespace submodular {
             currentPartition.resize(0);
             std::vector<value_type> xl;
             value_type alpha_l = 0;
-            #ifdef USE_EIGEN3
-                SFMAlgorithm<value_type>* solver2;
-                if(bruteForce)
-                    solver2 = new BruteForce<value_type>;
-                else
-                    solver2 = new FWRobust<value_type>(0.1);
-            #else
-                SFMAlgorithm<value_type>* solve2 = new BruteForce<value_type>;
-            #endif
+#ifdef USE_EIGEN3
+            SFMAlgorithm<value_type>* solver2;
+#ifdef _DEBUG
+            BruteForce<value_type>* solver1 = new BruteForce<value_type>;
+#endif
+            if(bruteForce)
+                solver2 = new BruteForce<value_type>;
+            else{
+                solver2 = new FWRobust<value_type>(1e-5);
+            }
+#else
+            SFMAlgorithm<value_type>* solve2 = new BruteForce<value_type>;
+#endif
             for (int i = 0; i < NodeSize; i++) {
                 SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
                 solver2->Minimize(F1);
                 alpha_l = solver2->GetMinimumValue();
+#ifdef _DEBUG
+                solver1->Minimize(F1);
+                if (std::abs(solver1->GetMinimumValue() - alpha_l) > 1e-5) {
+                    solver2->Minimize(F1);
+                }
+#endif
                 Set Tl = solver2->GetMinimizer().Extend(1);
                 Set Ul = Tl;
                 for (std::vector<Set>::iterator it = lastPartition.begin(); it != lastPartition.end(); it++) {

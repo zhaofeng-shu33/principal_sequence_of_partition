@@ -6,25 +6,39 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set (PSP_VERSION_MAJOR 1)
 option(USE_EIGEN3 "USE Eigen3 Library" OFF)
 option(USE_PYTHON "USE Python Library" OFF)
-option(USE_BOOST "USE BOOST Library" OFF)
+option(USE_BOOST_OPTION "USE BOOST OPTION Library" OFF)
 if(USE_EIGEN3)
     find_package(Eigen3 REQUIRED)
     set(USE_EIGEN3_LIB 1)
 else()
     set(USE_EIGEN3_LIB 0)
 endif()
-if(USE_BOOST OR USE_PYTHON) # USE PYTHON depedens on USE_BOOST
-    find_package(Boost REQUIRED)
+
+add_executable(main main.cpp)
+
+if(USE_BOOST_OPTION OR USE_PYTHON)
     set(USE_BOOST_INCLUDE 1)
+    find_package(Boost REQUIRED)
+    target_include_directories(main PUBLIC ${Boost_INCLUDE_DIRS})
 else()
     set(USE_BOOST_INCLUDE 0)
 endif()
+
 if(WIN32)
     set(DYNAMIC_LIB_SUFFIX dll)
 else()
     set(DYNAMIC_LIB_SUFFIX so)
 endif()
 
+if(USE_BOOST_OPTION)
+    find_package(Boost REQUIRED program_options)
+    if(WIN32)
+    target_link_libraries(main debug ${Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG})    
+    target_link_libraries(main optimized ${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE})
+    else()    
+    target_link_libraries(main ${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE})
+    endif()
+endif()
 configure_file (
   "${PROJECT_SOURCE_DIR}/core/config.h.in"
   "${PROJECT_BINARY_DIR}/config.h"
@@ -36,7 +50,7 @@ if(USE_EIGEN3)
     include_directories(${EIGEN3_INCLUDE_DIR})
 endif()
 
-add_executable(main main.cpp)
+
 if(USE_PYTHON)
     find_package(PythonLibs)
     find_package(PythonInterp)

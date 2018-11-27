@@ -49,7 +49,7 @@ private:
   rational_type precision_; // = 2 * n_ * epsilon_
   rational_type eps_;
   rational_type tol_;
-
+  rational_type last_diff;
   base_type x_data_; // x
   std::vector<base_type> bases_;
   std::vector<rational_type> coeffs_;
@@ -82,6 +82,7 @@ void FWRobust<ValueType>::Initialize(SubmodularOracle<ValueType>& F) {
   coeffs_.clear();
   coeffs_.reserve(n_);
   eps_ = precision_ / static_cast<rational_type>(2 * n_);
+  last_diff = -1;
 }
 
 template <typename ValueType>
@@ -90,7 +91,9 @@ bool FWRobust<ValueType>::CheckNorm(const base_type& q) {
   for (const auto& i: members_) {
     diff += x_data_[inverse_[i]] * (x_data_[inverse_[i]] - q[inverse_[i]]);
   }
-  return diff <= eps_ * eps_;
+  bool diff_not_change = (last_diff == diff);
+  last_diff = diff;
+  return (diff <= tol_ || diff_not_change);
 }
 
 template <typename ValueType>
@@ -200,7 +203,7 @@ Set FWRobust<ValueType>::GetX() const {
       
 
   for (std::size_t i = 0; i < order.size(); ++i) {    
-    if (x_data_[inverse_[order[i]]] < 1e-14) { //&& static_cast<rational_type>(n_ * (x_data_[inverse_[order[i]]] - x_data_[inverse_[order[i-1]]])) >= eps_
+    if (x_data_[inverse_[order[i]]] < eps_/ n_) { //&& static_cast<rational_type>(n_ * (x_data_[inverse_[order[i]]] - x_data_[inverse_[order[i-1]]])) >= eps_
         X.AddElement(order[i]);
     }
     

@@ -1,6 +1,6 @@
+#include "config.h"
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#include "config.h"
 #include "utility/gaussian2Dcase.h"
 using namespace boost::python;
 #define GaussianGraph demo::Gaussian2DGraph<double>
