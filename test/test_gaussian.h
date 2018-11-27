@@ -89,7 +89,7 @@ TEST_F(Graph4PointTest, TwoCase) {
     EXPECT_EQ(psp_list[2].size(), 0);
     EXPECT_EQ(psp_list[3].size(), 4);
 }
-#ifdef USE_EIGEN3
+#if USE_EIGEN3
 // This test is used to verify the FWRobust algorithm can return in finite times
 TEST_F(Graph4PointTest, NotReturn) {
     std::vector<double> xl({ -1-2/3.0,-2/3.0,-1/6.0 });

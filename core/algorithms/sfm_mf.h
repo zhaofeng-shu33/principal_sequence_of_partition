@@ -18,23 +18,27 @@ class MF: public SFMAlgorithm<ValueType> {
 public:
     using value_type = typename ValueTraits<ValueType>::value_type;
     void Minimize(SubmodularOracle<ValueType>& F){}
-    void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type> xl, value_type lambda_){
+    void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl, value_type lambda_){
+        this->reporter_.SetNames(GetName(), sf->GetName());
         //construct s-t graph
         int graph_size = xl.size();
         //sink node id is graph_size-1, source node id is graph_size
         MaxflowGraph<ValueType> g;
         int s = graph_size, t = graph_size-1;
+        MaxflowGraph<ValueType>::Node_s ss = g.GetNodeById(s), tt = g.GetNodeById(t);
         for (std::size_t i = 0; i <= graph_size; ++i) {
             g.AddNode(i);
         }
         for (int v = 0; v < graph_size-1; ++v) {
-            
-            graph.AddSVArcPair(s, v, std::max(0, -xl[v]),0);
-            graph.AddVTArcPair(v, t, std::max(0, xl[v]), 0);
+            MaxflowGraph<ValueType>::Node_s vv = g.GetNodeById(v);
+            if(xl[v]<0)
+                g.AddSVArcPair(ss, vv, xl[v], 0);
+            else
+                g.AddVTArcPair(vv, tt, xl[v], 0);
             for(int w = v+1; w < graph_size-1; w++)
-                graph.AddArcPair(w, v, sf->GetArcCap(w, v), 0);
+                g.AddArcPair(g.GetNodeById(w), vv, sf->GetArcCap(w, v), 0);
         }        
-        g.MakeGraph(s,t);
+        g.MakeGraph(ss,tt);
         g.FindMinCut();
         
         Set X = Set::MakeEmpty(graph_size-1);
@@ -42,9 +46,10 @@ public:
             if(g.WhatSegment(v)==TermType::SINK)
                 X.AddElement(v);
         }
-        minimum_value = g.GetMaxFlowValue();
+        value_type minimum_value = g.GetMaxFlowValue();
         this->SetResults(minimum_value, X);
     }
     std::string GetName() { return "maximal flow"; }
-}    
+};
+
 }
