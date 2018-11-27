@@ -47,12 +47,20 @@ namespace demo {
             psp_class.run(bruteForce);
             gamma_list = psp_class.Get_critical_values();
             psp_list = psp_class.Get_psp();
+            delete dgc;
         }
         std::vector<value_type>& get_gamma_list() {
             return gamma_list;
         }
         std::vector<std::vector<submodular::Set>>& get_psp_list() {
             return psp_list;
+        }
+        //! get the smallest partition whose size >= k
+        std::vector<submodular::Set>& get_smallest_partition(int k) {
+            for (std::vector<submodular::Set>& i : psp_list) {
+                if (i.size() >= k)
+                    return i;
+            }
         }
         std::vector<value_type>& get_x_pos_list() {
             return x_pos;

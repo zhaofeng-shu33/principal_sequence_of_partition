@@ -42,15 +42,17 @@ TEST(Gaussian2D, GivenPoint8) {
     g2g.run(true);
     std::vector<double> gamma_list = g2g.get_gamma_list();
     std::vector<std::vector<submodular::Set>> psp_list = g2g.get_psp_list();
+    g2g.run(false);
+    std::vector<double> gamma_list_2 = g2g.get_gamma_list();
+    std::vector<std::vector<submodular::Set>> psp_list_2 = g2g.get_psp_list();
+
     for (int i = 0; i < gamma_list.size(); i++) {
         if (psp_list[i].size() == 0)
             continue;
-        std::cout << "critical value: " << gamma_list[i] << std::endl; // the last critical value is not set
-        std::cout << psp_list[i] << std::endl;
+        EXPECT_DOUBLE_EQ(gamma_list[i], gamma_list_2[i]);
+        EXPECT_EQ(psp_list[i], psp_list_2[i]);
     }
-    g2g.run(false);
-    EXPECT_EQ(psp_list[0].size(), 1);
-    EXPECT_EQ(psp_list[7].size(), 8);
+
 }
 class Graph4PointTest : public testing::Test {
 protected:
