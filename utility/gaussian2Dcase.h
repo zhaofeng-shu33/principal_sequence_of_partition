@@ -64,7 +64,7 @@ namespace demo {
             }
         }
         //! get the smallest partition whose size >= k, label each data point with an integer
-        std::vector<int>& get_category(int k) {            
+        std::vector<int> get_category(int k) {            
             for (std::vector<submodular::Set>& i : psp_list) {
                 if (i.size() >= k){
                     return to_category(i);
@@ -95,7 +95,7 @@ namespace demo {
             return exp(-pow(x_1 - x_2, 2) / 2 - pow(y_1 - y_2, 2) / 2);
         }
         //! form conversion
-        std::vector<int>& to_category(std::vector<submodular::Set>& partation) {
+        std::vector<int> to_category(std::vector<submodular::Set>& partation) {
             std::vector<int> cat(num_points, 0);
             int t = 0;
             for (submodular::Set& j : partation) {

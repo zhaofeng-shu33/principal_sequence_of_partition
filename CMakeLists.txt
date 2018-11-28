@@ -84,11 +84,8 @@ if(USE_PYTHON)
     
     execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import site;print(site.getsitepackages()[-1],end='')" OUTPUT_VARIABLE PYTHON_SIDE_PACKAGES)
     if(WIN32)
-        if(EXISTS "${PROJECT_BINARY_DIR}/Debug/psp.${DYNAMIC_LIB_SUFFIX}")
-            set(INSTALL_TYPE Debug)
-        else()
-            set(INSTALL_TYPE Release)
-        endif()
+        # only install release type
+        set(INSTALL_TYPE Release)
         install(FILES ${PROJECT_BINARY_DIR}/${INSTALL_TYPE}/psp.${DYNAMIC_LIB_SUFFIX} DESTINATION ${PYTHON_SIDE_PACKAGES} RENAME psp.pyd)
     else()
         install(FILES ${PROJECT_BINARY_DIR}/libpsp.${DYNAMIC_LIB_SUFFIX} DESTINATION ${PYTHON_SIDE_PACKAGES} RENAME psp.${DYNAMIC_LIB_SUFFIX})

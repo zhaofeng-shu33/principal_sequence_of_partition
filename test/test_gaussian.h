@@ -27,6 +27,15 @@ TEST(Gaussian2D, GivenPoint) {
     EXPECT_EQ(psp_list[1].size(), 0);
     EXPECT_EQ(psp_list[2].size(), 0);
     EXPECT_EQ(psp_list[3].size(), 4);
+
+    std::vector<int> cat = g2g.get_category(2);
+    std::cout << cat << std::endl;
+    EXPECT_EQ(cat.size(), 4);
+    EXPECT_EQ(cat[0], 0);
+    EXPECT_EQ(cat[1], 1);
+    EXPECT_EQ(cat[2], 2);
+    EXPECT_EQ(cat[3], 3);
+
 }
 TEST(Gaussian2D, GivenPoint8) {
     double a[8][2] = { {3.1, 3.2},
