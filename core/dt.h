@@ -4,9 +4,7 @@
 **/
 #include "core/oracles/iwata_test_function.h"
 #include "core/algorithms/brute_force.h"
-#ifdef USE_EIGEN3
-#include "core/algorithms/sfm_fw.h"
-#endif
+#include "core/algorithms/sfm_mf.h"
 #include "core/oracles/modular.h"
 namespace submodular {
     template <typename ValueType>

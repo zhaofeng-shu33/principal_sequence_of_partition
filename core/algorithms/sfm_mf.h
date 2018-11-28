@@ -48,7 +48,10 @@ public:
             if(g.WhatSegment(v)==TermType::SINK)
                 X.AddElement(v);
         }
-        value_type minimum_value = g.GetMaxFlowValue() - lambda_;
+        // value_type minimum_value = g.GetMaxFlowValue() - lambda_;
+        value_type minimum_value = sf->Call(X.Extend(1)) - lambda_;
+        for (int i : X.GetMembers())
+            minimum_value -= xl[i];
         this->SetResults(minimum_value, X);
     }
     std::string GetName() { return "maximal flow"; }

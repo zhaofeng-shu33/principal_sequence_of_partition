@@ -42,15 +42,15 @@ TEST(Gaussian2D, GivenPoint8) {
     g2g.run(true);
     std::vector<double> gamma_list = g2g.get_gamma_list();
     std::vector<std::vector<submodular::Set>> psp_list = g2g.get_psp_list();
-//    g2g.run(false);
-//    std::vector<double> gamma_list_2 = g2g.get_gamma_list();
-//    std::vector<std::vector<submodular::Set>> psp_list_2 = g2g.get_psp_list();
+    g2g.run(false);
+    std::vector<double> gamma_list_2 = g2g.get_gamma_list();
+    std::vector<std::vector<submodular::Set>> psp_list_2 = g2g.get_psp_list();
 
     for (int i = 0; i < gamma_list.size(); i++) {
         if (psp_list[i].size() == 0)
             continue;
-        // EXPECT_DOUBLE_EQ(gamma_list[i], gamma_list_2[i]);
-        // EXPECT_EQ(psp_list[i], psp_list_2[i]);
+        EXPECT_DOUBLE_EQ(gamma_list[i], gamma_list_2[i]);
+        EXPECT_EQ(psp_list[i], psp_list_2[i]);
     }
 
 }
@@ -77,7 +77,7 @@ protected:
 
     }
 };
-// This test is used to verify that FWRobust algorithm works
+// This test is used to verify that MaxFlow algorithm works
 TEST_F(Graph4PointTest, TwoCase) {
     submodular::PSP<double> psp_class(dgc);
     psp_class.run();
@@ -111,7 +111,7 @@ TEST_F(Graph4PointTest, ReturnTrue) {
     double min_value = dt.Get_min_value();
     std::vector<submodular::Set> P_apostrophe = dt.Get_min_partition();
     EXPECT_EQ(P_apostrophe.size(), 4);
-    dt.Run(); //FWRobust
+    dt.Run(); //MaxFlow
     EXPECT_DOUBLE_EQ(dt.Get_min_value(), min_value);
     EXPECT_EQ(dt.Get_min_partition().size(), 4);
 }

@@ -3,6 +3,7 @@
 * \author: zhaofeng-shu33
 */
 #include "core/dt.h"
+#include "test/algorithms/test_sfm_fw.h"
 #include "test/test_extreme.h"
 namespace submodular {
     /**
