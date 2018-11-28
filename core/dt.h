@@ -47,6 +47,13 @@ namespace submodular {
         std::vector<Set>& Get_min_partition(){
             return lastPartition;
         }
+        value_type evaluate(std::vector<Set>& partition) {
+            value_type result = 0;
+            for (const Set& i : partition) {
+                result += submodular_function->Call(i);
+            }
+            return result - lambda_ * partition.size();
+        }
         void Run(bool bruteForce = false) {
             min_value = 0;
             lastPartition.resize(0);
@@ -122,6 +129,9 @@ namespace submodular {
             psp.resize(NodeSize);
         }
         void split(std::vector<Set>& Q, std::vector<Set>& P, bool bruteForce = false) {
+            if (Q.size() == P.size()) {
+                throw std::exception("Q and P have the same size");
+            }
             value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.size() - Q.size());
             value_type h_apostrophe = (P.size() * evaluate(Q) - Q.size() * evaluate(P)) / (P.size() - Q.size());
             DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
