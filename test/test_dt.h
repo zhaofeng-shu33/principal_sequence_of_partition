@@ -66,7 +66,7 @@ namespace submodular {
     TEST(DilworthTruncation, SampleFunction){
         SampleFunction<double> sff;
         DilworthTruncation<double> dt(&sff, 2);
-        dt.Run();
+        dt.Run(true);
         // optimal value is 16
         // optimal partition is { 0 }, { 1 },        
         
@@ -86,7 +86,7 @@ namespace submodular {
     TEST(DilworthTruncation, HyperGraphicalModel){
         HyperGraphicalModel<double> hgm;
         DilworthTruncation<double> dt(&hgm, 1.5);
-        dt.Run();
+        dt.Run(true);
         EXPECT_EQ(dt.Get_min_value(), 0);
         std::vector<Set> p = dt.Get_min_partition();
         EXPECT_EQ(p.size(), 2);
@@ -98,7 +98,7 @@ namespace submodular {
     TEST(PSP, HyperGraphicalModel){
         HyperGraphicalModel<double>* hgm = new HyperGraphicalModel<double>();
         PSP<double> psp_class(hgm);
-        psp_class.run();
+        psp_class.run(true);
         std::vector<double> gamma_list = psp_class.Get_critical_values();
         std::vector<std::vector<Set>> psp_list = psp_class.Get_psp();
         EXPECT_EQ(gamma_list.size(), 3);
@@ -126,7 +126,7 @@ namespace submodular {
     TEST(DilworthTruncation, HyperGraphicalModel2) {
         HyperGraphicalModel2<double> hgm2;
         DilworthTruncation<double> dt(&hgm2, 1.5);
-        dt.Run();
+        dt.Run(true);
         EXPECT_EQ(dt.Get_min_value(), -1.5);
         std::vector<Set> p = dt.Get_min_partition();
         EXPECT_EQ(p.size(), 5);
@@ -166,7 +166,7 @@ namespace submodular {
     TEST(PSP, HyperGraphicalModel2) {
         HyperGraphicalModel2<double>* hgm = new HyperGraphicalModel2<double>();
         PSP<double> psp_class(hgm);
-        psp_class.run();
+        psp_class.run(true);
         std::vector<double> gamma_list = psp_class.Get_critical_values();
         std::vector<std::vector<Set>> psp_list = psp_class.Get_psp();
         EXPECT_EQ(gamma_list.size(), 6);

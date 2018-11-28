@@ -33,9 +33,10 @@ public:
         for (int v = 0; v < graph_size; ++v) {
             MaxflowGraph<ValueType>::Node_s vv = g.GetNodeById(v);
             if(xl[v]<0)
-                g.AddSVArcPair(vv, ss, xl[v], 0);
+                g.AddSVArcPair(vv, ss, -xl[v], 0);
             else
                 g.AddVTArcPair(tt, vv, xl[v], 0);
+            g.AddVTArcPair(tt, vv, sf->GetArcCap(t, v), 0);
             for(int w = v+1; w < graph_size; w++)
                 g.AddArcPair(g.GetNodeById(w), vv, sf->GetArcCap(w, v), 0);
         }        
@@ -47,7 +48,7 @@ public:
             if(g.WhatSegment(v)==TermType::SINK)
                 X.AddElement(v);
         }
-        value_type minimum_value = g.GetMaxFlowValue();
+        value_type minimum_value = g.GetMaxFlowValue() - lambda_;
         this->SetResults(minimum_value, X);
     }
     std::string GetName() { return "maximal flow"; }

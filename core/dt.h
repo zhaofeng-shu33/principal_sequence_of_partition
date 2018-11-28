@@ -55,27 +55,29 @@ namespace submodular {
             currentPartition.resize(0);
             std::vector<value_type> xl;
             value_type alpha_l = 0;
-#ifdef USE_EIGEN3
-            SFMAlgorithm<value_type>* solver2;
+            SFMAlgorithm<ValueType>* solver2;
 #ifdef _DEBUG
             BruteForce<value_type>* solver1 = new BruteForce<value_type>;
 #endif
             if(bruteForce)
                 solver2 = new BruteForce<value_type>;
             else{
-                solver2 = new FWRobust<value_type>(1e-5,1e-9);
+                solver2 = new MF<value_type>;
             }
-#else
-            SFMAlgorithm<value_type>* solve2 = new BruteForce<value_type>;
-#endif
             for (int i = 0; i < NodeSize; i++) {
-                SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
-                solver2->Minimize(F1);
+                if(bruteForce){
+                    SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
+                    solver2->Minimize(F1);
+                }
+                else {
+                    solver2->Minimize(submodular_function, xl, lambda_);
+                }
                 alpha_l = solver2->GetMinimumValue();
 #ifdef _DEBUG
+                SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
                 solver1->Minimize(F1);
                 if (std::abs(solver1->GetMinimumValue() - alpha_l) > 1e-5) {
-                    solver2->Minimize(F1);
+                    throw std::exception("error occurs, MF returns different values from bruteForce");
                 }
 #endif
                 Set Tl = solver2->GetMinimizer().Extend(1);

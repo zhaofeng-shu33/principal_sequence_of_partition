@@ -42,7 +42,7 @@ public:
   // Some statistics should be reported as stats_.
   // NOTE: SubmodularOracle object F will possibly be modified by the algorithm.
   virtual void Minimize(SubmodularOracle<ValueType>& F) = 0;
-
+  virtual void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl, value_type lambda_) {}
   virtual std::string GetName() = 0;
 
   value_type GetMinimumValue();
