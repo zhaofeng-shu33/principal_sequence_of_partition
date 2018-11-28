@@ -7,32 +7,13 @@ using namespace boost::python;
 template class std::vector<double>;
 typedef std::vector<double> dList;
 typedef std::vector<int> iList;
-namespace std{
-    ostream& operator<<(ostream& os, iList category) {
-        os << '[';
-        int i = 0;
-        for (; i < category.size() - 1; i++)
-            os << category[i] << ", ";
-        os << category[i];
-        os << ']';
-        return os;
-    }
-    ostream& operator<<(ostream& os, const dList& dArray) {
-        os << '[';
-        int i = 0;
-        for (; i < dArray.size() - 1; i++)
-            os << dArray[i] << ", ";
-        os << dArray[i];
-        os << ']';
-        return os;
-    }
-}
+
 
 BOOST_PYTHON_MODULE(psp)
 {
     scope().attr("__version__") = PSP_VERSION_MAJOR;
     class_<dList>("dList").def(vector_indexing_suite<iList>())
-        .def(vector_indexing_suite<dList>());
+        .def(self_ns::str(self_ns::self));
         
         
     class_<iList>("iList").def(vector_indexing_suite<iList>())

@@ -14,11 +14,14 @@ Disabled by default. The binding requires boost-python library. To enable it, ru
 
 ## Demo code
 
-    import psp
-    g = psp.Gaussian2DGraph(16) # generate 16 2D points
-    g.run(False) # use maximal flow algorithm to classify them
-    cat = g.get_category(4) # get the result which has at least 4 categories
-    
+```Python
+import psp
+g = psp.Gaussian2DGraph(16) # generate 16 2D points
+g.run(False) # use maximal flow algorithm to classify them
+cat = g.get_category(4) # get the result which has at least 4 categories
+print(cat) # very likely [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
+```    
+
 # Reference
 1. [2016]Info-Clustering: A Mathematical Theory for Data Clustering
 1. [https://github.com/ktrmnm/SFM](https://github.com/ktrmnm/SFM)
