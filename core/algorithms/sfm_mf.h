@@ -29,13 +29,15 @@ public:
             g.AddNode(i);
         }
         MaxflowGraph<ValueType>::Node_s ss = g.GetNodeById(s), tt = g.GetNodeById(t);
-
+        value_type const_difference = lambda_;
         for (int v = 0; v < graph_size; ++v) {
             MaxflowGraph<ValueType>::Node_s vv = g.GetNodeById(v);
             if(xl[v]<0)
                 g.AddSVArcPair(vv, ss, -xl[v], 0);
-            else
+            else {
                 g.AddVTArcPair(tt, vv, xl[v], 0);
+                const_difference += xl[v];
+            }
             g.AddVTArcPair(tt, vv, sf->GetArcCap(t, v), 0);
             for(int w = v+1; w < graph_size; w++)
                 g.AddArcPair(g.GetNodeById(w), vv, sf->GetArcCap(w, v), 0);
@@ -48,10 +50,10 @@ public:
             if(g.WhatSegment(v)==TermType::SINK)
                 X.AddElement(v);
         }
-        // value_type minimum_value = g.GetMaxFlowValue() - lambda_;
-        value_type minimum_value = sf->Call(X.Extend(1)) - lambda_;
-        for (int i : X.GetMembers())
-            minimum_value -= xl[i];
+        value_type minimum_value = g.GetMaxFlowValue() - const_difference;
+        //value_type minimum_value = sf->Call(X.Extend(1)) - lambda_;
+        //for (int i : X.GetMembers())
+        //    minimum_value -= xl[i];
         this->SetResults(minimum_value, X);
     }
     std::string GetName() { return "maximal flow"; }
