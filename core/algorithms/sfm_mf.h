@@ -28,10 +28,10 @@ public:
         for (std::size_t i = 0; i <= graph_size + 1; ++i) {
             g.AddNode(i);
         }
-        MaxflowGraph<ValueType>::Node_s ss = g.GetNodeById(s), tt = g.GetNodeById(t);
+        typename MaxflowGraph<ValueType>::Node_s ss = g.GetNodeById(s), tt = g.GetNodeById(t);
         value_type const_difference = lambda_;
         for (int v = 0; v < graph_size; ++v) {
-            MaxflowGraph<ValueType>::Node_s vv = g.GetNodeById(v);
+            typename MaxflowGraph<ValueType>::Node_s vv = g.GetNodeById(v);
             if(xl[v]<0)
                 g.AddSVArcPair(vv, ss, -xl[v], 0);
             else {
