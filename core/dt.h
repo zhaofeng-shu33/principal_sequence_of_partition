@@ -143,7 +143,12 @@ namespace submodular {
             }
             else {                
                 psp[P_apostrophe.size() - 1] = P_apostrophe;
-                split(Q, P_apostrophe, bruteForce);
+                try{
+                    split(Q, P_apostrophe, bruteForce);
+                }
+                catch (std::exception e) {
+
+                }
                 split(P_apostrophe, P, bruteForce);
             }
         }
