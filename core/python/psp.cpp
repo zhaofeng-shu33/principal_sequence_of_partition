@@ -12,7 +12,7 @@ typedef std::vector<int> iList;
 BOOST_PYTHON_MODULE(psp)
 {
     scope().attr("__version__") = PSP_VERSION_MAJOR;
-    class_<dList>("dList").def(vector_indexing_suite<iList>())
+    class_<dList>("dList").def(vector_indexing_suite<dList>())
         .def(self_ns::str(self_ns::self));
         
         
