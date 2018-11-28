@@ -488,8 +488,8 @@ SimpleGraph<ValueType> make_dgraph(std::size_t n,
         std::size_t src, dst;
         ValueType cap;
         std::tie(src, dst, cap) = edges[edge_id];
-        SimpleGraph<ValueType>::Node_s head = graph.GetNode(dst);
-        SimpleGraph<ValueType>::Node_s tail = graph.GetNode(src);
+        typename SimpleGraph<ValueType>::Node_s head = graph.GetNode(dst);
+        typename SimpleGraph<ValueType>::Node_s tail = graph.GetNode(src);
 
         graph.AddArc(head, tail, cap);
 
