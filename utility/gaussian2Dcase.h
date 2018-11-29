@@ -32,8 +32,9 @@ namespace demo {
     public:
         using value_type = ValueType;
         using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, value_type>>;
-        Gaussian2DGraph(int np, value_type a[][2] = NULL) :
+        Gaussian2DGraph(int np, value_type gamma = 1, value_type a[][2] = NULL) :
             distribution(0, 1),
+            _gamma(gamma),
             num_points(np)
         {
             if(a == NULL){
@@ -117,10 +118,11 @@ namespace demo {
         std::vector<value_type> gamma_list;
         std::vector<std::vector<submodular::Set>> psp_list;
         EdgeListFloat edge_list_float_1;
+        value_type _gamma;
         int data_1[4][2] = { {3,3},{3,-3},{-3,-3},{-3,3} };
         //! use Gaussian similarity function $exp(-||p_1 - p_2||^2/2) $
         value_type compute_similarity(value_type x_1, value_type y_1, value_type x_2, value_type y_2) {
-            return exp(-pow(x_1 - x_2, 2) / 2 - pow(y_1 - y_2, 2) / 2);
+            return exp(-1.0 * _gamma* pow(x_1 - x_2, 2) / 2 - _gamma * pow(y_1 - y_2, 2) / 2);
         }
         //! form conversion
         std::vector<int> to_category(std::vector<submodular::Set>& partation) {

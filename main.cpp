@@ -27,7 +27,7 @@ int main(int argc, const char *argv[]){
         std::cout << desc << '\n';
         return 0;
     }
-    demo::Gaussian2DGraph<double>* g2g = new demo::Gaussian2DGraph<double>(vm["size"].as<int>());
+    demo::Gaussian2DGraph<double>* g2g = new demo::Gaussian2DGraph<double>(vm["size"].as<int>(),0.5);
     g2g->run();
     std::vector<submodular::Set> p = g2g->get_smallest_partition(4);
     std::cout << p;

@@ -19,16 +19,36 @@ class MF: public SFMAlgorithm<ValueType> {
 public:
     using value_type = typename ValueTraits<ValueType>::value_type;
     void Minimize(SubmodularOracle<ValueType>& F){}
+#ifdef USE_LEMON
     void Minimize(std::vector<value_type>& xl, SubmodularOracle<ValueType>* sf, value_type lambda_) {
         this->reporter_.SetNames(GetName(), sf->GetName());
         //construct lemon graph
+        lemon::ListDigraph g;
+        std::vector<ListDigraph::Node> node_list;
         int graph_size = xl.size();
+        g.reserveNode(graph_size);
+        g.reserverArc(graph_size*(graph_size - 1) / 2);
+        for (int i = 0; i < graph_size; i++) {
+            node_list.push_back(g.addNode());
+        }
+        //construct edge cost map
+        lemon::ListGraph::ArcMap<value_type> edge_cost_map(g);
+
+        for (int i = 0; i < graph_size; i++) {
+            for (int j = i+1; i < graph_size; i++) {
+                lemon::ListDigraph::Arc arc = g.addArc(node_list[i], node_list[j]);
+                edge_cost_map[arc] = sf->GetArcCap(j, i);
+            }
+        }
+
+
         Set X = Set::MakeEmpty(graph_size);
       
         value_type minimum_value;
 
         this->SetResults(minimum_value, X);
     }
+#else
     void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl, value_type lambda_){
         this->reporter_.SetNames(GetName(), sf->GetName());
         //construct s-t graph
@@ -73,6 +93,7 @@ public:
 #endif
         this->SetResults(minimum_value, X);
     }
+#endif
     std::string GetName() { return "maximal flow"; }
 };
 
