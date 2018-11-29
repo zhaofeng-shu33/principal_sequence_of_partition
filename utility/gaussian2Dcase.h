@@ -129,10 +129,4 @@ namespace demo {
     };
 
 }
-std::ostream& operator<<(std::ostream& os, std::vector<submodular::Set> partition) {
-    os << '{';
-    for (const submodular::Set& s : partition)
-        os << s;
-    os << '}';
-    return os;
-}
+

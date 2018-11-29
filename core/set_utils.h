@@ -101,7 +101,13 @@ public:
   std::vector<char> bits_;
   friend std::ostream& operator << (std::ostream&, const Set&);
 };
-
+std::ostream& operator<<(std::ostream& os, std::vector<submodular::Set> partition) {
+    os << '{';
+    for (const submodular::Set& s : partition)
+        os << s;
+    os << '}';
+    return os;
+}
 class Partition {
 public:
   Partition() = default;

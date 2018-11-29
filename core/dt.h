@@ -106,6 +106,13 @@ namespace submodular {
             for (auto it = xl.begin(); it != xl.end(); it++) {
                 min_value += *it;
             }
+            value_type min_value_check = evaluate(lastPartition);
+            if (std::abs(min_value - min_value_check) > 1e-4) {
+                std::cout << "min_value_check error: " << std::endl;
+                std::cout << min_value << std::endl;
+                std::cout << min_value_check << std::endl;
+                exit(0);
+            }
             delete solver2;
         }
     private:
@@ -128,6 +135,7 @@ namespace submodular {
             critical_values.resize(NodeSize);
             psp.resize(NodeSize);
         }
+        //! |Q| < |P|
         void split(std::vector<Set>& Q, std::vector<Set>& P, bool bruteForce = false) {
             if (Q.size() == P.size()) {
                 throw std::exception("Q and P have the same size");
@@ -145,11 +153,19 @@ namespace submodular {
                 psp[P_apostrophe.size() - 1] = P_apostrophe;
                 try{
                     split(Q, P_apostrophe, bruteForce);
+                    split(P_apostrophe, P, bruteForce);
                 }
                 catch (std::exception e) {
-
+                    value_type q_value = dt.evaluate(Q);
+                    value_type p_a_value = dt.evaluate(P_apostrophe);
+                    value_type p_value = dt.evaluate(P);
+                    std::cout << Q.size() << " at " << Q << " = " << q_value << std::endl;
+                    std::cout << P_apostrophe.size() << " at " << P_apostrophe << " = " << p_a_value << std::endl;
+                    std::cout << P.size() << " at " << P << " = " << p_value << std::endl;
+                    std::cout << "h: " << h_apostrophe << std::endl;
+                    std::cout << "min_value: " << min_value << std::endl;
+                    exit(0);
                 }
-                split(P_apostrophe, P, bruteForce);
             }
         }
         void run(bool bruteForce = false) {

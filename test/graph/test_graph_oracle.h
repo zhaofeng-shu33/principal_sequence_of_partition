@@ -77,7 +77,7 @@ namespace submodular {
     TEST_F(PINModelTest, DGraphCut) {
         SimpleGraph<float> sg = make_dgraph(n_1, edge_list_float_1);
         DirectedGraphCutOracle<float> dgc(sg);
-        EXPECT_EQ(dgc.Call(Set()), 0);
+        EXPECT_EQ(dgc.Call(Set()), 0);// Empty set is zero
         EXPECT_EQ(dgc.Call(Set::FromIndices(3, { 0 })), 0);
         EXPECT_EQ(dgc.Call(Set::FromIndices(3, { 1 })), 1);
         EXPECT_EQ(dgc.Call(Set::FromIndices(3, { 2 })), 6);
