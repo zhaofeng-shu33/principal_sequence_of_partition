@@ -11,6 +11,7 @@
 #pragma once
 #include <core/graph.h>
 #include <core/graph/maxflow.h>
+#include <lemon/list_graph.h>
 namespace submodular{
 
 template <typename ValueType>
@@ -18,6 +19,16 @@ class MF: public SFMAlgorithm<ValueType> {
 public:
     using value_type = typename ValueTraits<ValueType>::value_type;
     void Minimize(SubmodularOracle<ValueType>& F){}
+    void Minimize(std::vector<value_type>& xl, SubmodularOracle<ValueType>* sf, value_type lambda_) {
+        this->reporter_.SetNames(GetName(), sf->GetName());
+        //construct lemon graph
+        int graph_size = xl.size();
+        Set X = Set::MakeEmpty(graph_size);
+      
+        value_type minimum_value;
+
+        this->SetResults(minimum_value, X);
+    }
     void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl, value_type lambda_){
         this->reporter_.SetNames(GetName(), sf->GetName());
         //construct s-t graph
@@ -51,9 +62,15 @@ public:
                 X.AddElement(v);
         }
         value_type minimum_value = g.GetMaxFlowValue() - const_difference;
-        //value_type minimum_value = sf->Call(X.Extend(1)) - lambda_;
-        //for (int i : X.GetMembers())
-        //    minimum_value -= xl[i];
+#ifdef _DEBUG
+        value_type minimum_value_2 = sf->Call(X.Extend(1)) - lambda_;
+        for (int i : X.GetMembers())
+            minimum_value_2 -= xl[i];
+        if (std::abs(minimum_value - minimum_value_2) > 1e-5) {
+            std::cout << "maxflow value differs: " << minimum_value << " != " << minimum_value_2 << std::endl;
+            exit(0);
+        }
+#endif
         this->SetResults(minimum_value, X);
     }
     std::string GetName() { return "maximal flow"; }

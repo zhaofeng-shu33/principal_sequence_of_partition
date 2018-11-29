@@ -80,9 +80,18 @@ namespace submodular {
                 alpha_l = solver2->GetMinimumValue();
 #ifdef _DEBUG
                 SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
-                solver1->Minimize(F1);
-                if (std::abs(solver1->GetMinimumValue() - alpha_l) > 1e-5) {
-                    throw std::exception("error occurs, MF returns different values from bruteForce");
+                Set T2 = solver2->GetMinimizer();
+                value_type alpha_2 = F1.Call(T2);
+                if (std::abs(alpha_2 - alpha_l) > 1e-5) {
+                    std::cout << "error occurs, min value differs from function evaluated at " << T2 << std::endl;
+                    std::cout << alpha_l << " != " << alpha_2 << std::endl;
+                    std::cout << "lambda = " << lambda_ << std::endl;
+                    std::cout << "xl.size = " << xl.size();
+                    for (value_type a : xl) {
+                        std::cout << a << ',';
+                    }
+                    std::cout << std::endl;
+                    exit(0);
                 }
 #endif
                 Set Tl = solver2->GetMinimizer().Extend(1);

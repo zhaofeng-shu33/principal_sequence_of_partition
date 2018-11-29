@@ -56,6 +56,14 @@ namespace demo {
                     }
                 }
             }
+#ifdef _DEBUG
+            //dump x_pos, y_pos
+            std::ofstream fout("x_y_pos.txt");
+            for (int j = 0; j < x_pos.size(); j++) {
+                fout << '{' << x_pos[j] << ',' << y_pos[j] << '}' << ',' << std::endl;
+            }
+            fout.close();
+#endif
             for (int i = 0; i < num_points; i++)
                 for (int j = i + 1; j < num_points; j++) {
                     edge_list_float_1.push_back(std::make_tuple(i, j, compute_similarity(x_pos[i], y_pos[i], x_pos[j], y_pos[j])));
