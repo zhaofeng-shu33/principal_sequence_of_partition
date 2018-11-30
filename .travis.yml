@@ -26,7 +26,7 @@ before_install:
   - cd build
   # build and install liblemon
   - wget http://lemon.cs.elte.hu/pub/sources/lemon-1.3.1.zip
-  - unzip lemon-1.3.1.zip ./
+  - unzip lemon-1.3.1.zip -d ./
   - cd lemon-1.3.1.zip
   - mkdir build
   - cd build
