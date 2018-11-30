@@ -35,7 +35,8 @@ before_install:
   - sudo make install
   - pushd /usr/local/share/lemon/cmake
   - sudo mv LEMONConfig.cmake lemonConfig.cmake
-  - popd  
+  - popd
+  - cd ../..  
   - cmake -DUSE_PYTHON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_EIGEN3=ON ../ 
 install:
   - sudo make install
