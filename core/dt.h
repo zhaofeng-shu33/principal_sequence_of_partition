@@ -147,7 +147,7 @@ namespace submodular {
         //! |Q| < |P|
         void split(std::vector<Set>& Q, std::vector<Set>& P, bool bruteForce = false) {
             if (Q.size() == P.size()) {
-                throw std::exception("Q and P have the same size");
+                throw std::logic_error("Q and P have the same size");
             }
             value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.size() - Q.size());
             value_type h_apostrophe = (P.size() * evaluate(Q) - Q.size() * evaluate(P)) / (P.size() - Q.size());
