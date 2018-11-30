@@ -86,7 +86,7 @@ namespace submodular {
                     std::cout << "error occurs, min value differs from function evaluated at " << T2 << std::endl;
                     std::cout << alpha_l << " != " << alpha_2 << std::endl;
                     std::cout << "lambda = " << lambda_ << std::endl;
-                    std::cout << "xl.size = " << xl.size();
+                    std::cout << "xl.size = " << xl.size() << std::endl;
                     for (value_type a : xl) {
                         std::cout << a << ',';
                     }

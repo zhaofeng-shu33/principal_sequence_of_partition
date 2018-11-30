@@ -45,6 +45,9 @@ if(USE_BOOST_OPTION)
     target_link_libraries(main ${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE})
     endif()
 endif()
+if(USE_LEMON)
+target_link_libraries(main ${LEMON_LIBRARY})
+endif()
 configure_file (
   "${PROJECT_SOURCE_DIR}/core/config.h.in"
   "${PROJECT_BINARY_DIR}/config.h"
@@ -77,6 +80,9 @@ if(USE_PYTHON)
     else()
     target_link_libraries(psp ${Boost_PYTHON-PY${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_LIBRARY_RELEASE})
     endif()
+    if(USE_LEMON)
+    target_link_libraries(psp ${LEMON_LIBRARY})
+    endif()    
     # magic files to extract the release library
     
     if(WIN32)

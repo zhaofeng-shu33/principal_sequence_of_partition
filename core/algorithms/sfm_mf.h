@@ -29,39 +29,46 @@ public:
         int graph_size = xl.size();
         //sink node id is graph_size, source node id is graph_size+1
         g.reserveNode(graph_size + 2);
-        g.reserveArc(graph_size*(graph_size - 1) / 2 + 2 * (graph_size - 1));
+        g.reserveArc(graph_size*(graph_size + 1) / 2 + 2 * graph_size);
         for (int i = 0; i < graph_size + 2; i++) {
             node_list.push_back(g.addNode());
         }
         // construct edge cost map
-        typedef typename lemon::ListGraph::template ArcMap<value_type> ArcMap;
+        typedef typename lemon::ListDigraph::template ArcMap<value_type> ArcMap;
         ArcMap edge_cost_map(g);
         lemon::ListDigraph::Node source_node = node_list[graph_size + 1];
         lemon::ListDigraph::Node sink_node = node_list[graph_size];
         value_type const_difference = lambda_;
         for (int i = 0; i < graph_size; i++) {
             lemon::ListDigraph::Arc arc = g.addArc(source_node, node_list[i]);
-            edge_cost_map[arc] = std::max(0, -xl[i]);
+            edge_cost_map[arc] = std::max<value_type>(0, -xl[i]);
             arc = g.addArc(node_list[i], sink_node);
-            edge_cost_map[arc] = std::max(0, xl[i]) + sf->GetArcCap(i, graph_size); // sink_node_id = graph_size
-            const_difference += xl[i];
-            for (int j = i+1; i < graph_size; i++) {
+            edge_cost_map[arc] = std::max<value_type>(0, xl[i]) + sf->GetArcCap(graph_size, i); // sink_node_id = graph_size
+            const_difference += std::max<value_type>(0, xl[i]);
+            for (int j = i+1; j < graph_size; j++) {
                 lemon::ListDigraph::Arc arc = g.addArc(node_list[i], node_list[j]);
                 edge_cost_map[arc] = sf->GetArcCap(j, i);
             }
         }
         
-        lemon::Preflow<lemon::ListDigraph, ArcMap> pf(g,edge_cost_map);
-        pf.source(source_node).target(sink_node);
+        lemon::Preflow<lemon::ListDigraph, ArcMap> pf(g,edge_cost_map, source_node, sink_node);
         pf.run();
         value_type minimum_value = pf.flowValue() - const_difference;
 
         Set X = Set::MakeEmpty(graph_size);
         for (int v = 0; v < graph_size; ++v) {
-            if (!pf.minCut(v))
+            if (!pf.minCut(node_list[v]))
                 X.AddElement(v);
         }
-
+#ifdef _DEBUG
+        value_type minimum_value_2 = sf->Call(X.Extend(1)) - lambda_;
+        for (int i : X.GetMembers())
+            minimum_value_2 -= xl[i];
+        if (std::abs(minimum_value - minimum_value_2) > 1e-5) {
+            std::cout << "maxflow value differs: " << minimum_value << " != " << minimum_value_2 << std::endl;
+            exit(0);
+        }
+#endif
         this->SetResults(minimum_value, X);
     }
 #else

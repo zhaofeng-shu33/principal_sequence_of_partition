@@ -19,7 +19,7 @@ BOOST_PYTHON_MODULE(psp)
     class_<iList>("iList").def(vector_indexing_suite<iList>())
         .def(self_ns::str(self_ns::self));
 
-    class_<GaussianGraph>("Gaussian2DGraph", init<int>())
+    class_<GaussianGraph>("Gaussian2DGraph", init<int,double>())
         .def("run", &GaussianGraph::run)
         .def("get_gamma_list", &GaussianGraph::get_gamma_list, return_internal_reference<>())
         .def("get_x_pos_list", &GaussianGraph::get_x_pos_list, return_internal_reference<>())
