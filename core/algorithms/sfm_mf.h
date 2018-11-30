@@ -12,6 +12,7 @@
 #include <core/graph.h>
 #include <core/graph/maxflow.h>
 #include <lemon/list_graph.h>
+#include <lemon/preflow.h>
 namespace submodular{
 
 template <typename ValueType>
@@ -20,31 +21,46 @@ public:
     using value_type = typename ValueTraits<ValueType>::value_type;
     void Minimize(SubmodularOracle<ValueType>& F){}
 #ifdef USE_LEMON
-    void Minimize(std::vector<value_type>& xl, SubmodularOracle<ValueType>* sf, value_type lambda_) {
+    void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl,value_type lambda_) {
         this->reporter_.SetNames(GetName(), sf->GetName());
         //construct lemon graph
         lemon::ListDigraph g;
-        std::vector<ListDigraph::Node> node_list;
+        std::vector<lemon::ListDigraph::Node> node_list;
         int graph_size = xl.size();
-        g.reserveNode(graph_size);
-        g.reserverArc(graph_size*(graph_size - 1) / 2);
-        for (int i = 0; i < graph_size; i++) {
+        //sink node id is graph_size, source node id is graph_size+1
+        g.reserveNode(graph_size + 2);
+        g.reserveArc(graph_size*(graph_size - 1) / 2 + 2 * (graph_size - 1));
+        for (int i = 0; i < graph_size + 2; i++) {
             node_list.push_back(g.addNode());
         }
-        //construct edge cost map
-        lemon::ListGraph::ArcMap<value_type> edge_cost_map(g);
-
+        // construct edge cost map
+        typedef typename lemon::ListGraph::template ArcMap<value_type> ArcMap;
+        ArcMap edge_cost_map(g);
+        lemon::ListDigraph::Node source_node = node_list[graph_size + 1];
+        lemon::ListDigraph::Node sink_node = node_list[graph_size];
+        value_type const_difference = lambda_;
         for (int i = 0; i < graph_size; i++) {
+            lemon::ListDigraph::Arc arc = g.addArc(source_node, node_list[i]);
+            edge_cost_map[arc] = std::max(0, -xl[i]);
+            arc = g.addArc(node_list[i], sink_node);
+            edge_cost_map[arc] = std::max(0, xl[i]) + sf->GetArcCap(i, graph_size); // sink_node_id = graph_size
+            const_difference += xl[i];
             for (int j = i+1; i < graph_size; i++) {
                 lemon::ListDigraph::Arc arc = g.addArc(node_list[i], node_list[j]);
                 edge_cost_map[arc] = sf->GetArcCap(j, i);
             }
         }
-
+        
+        lemon::Preflow<lemon::ListDigraph, ArcMap> pf(g,edge_cost_map);
+        pf.source(source_node).target(sink_node);
+        pf.run();
+        value_type minimum_value = pf.flowValue() - const_difference;
 
         Set X = Set::MakeEmpty(graph_size);
-      
-        value_type minimum_value;
+        for (int v = 0; v < graph_size; ++v) {
+            if (!pf.minCut(v))
+                X.AddElement(v);
+        }
 
         this->SetResults(minimum_value, X);
     }

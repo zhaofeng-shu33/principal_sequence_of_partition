@@ -10,7 +10,7 @@ namespace demo {
 
 TEST(Gaussian2D, GivenPoint) {
     double a[4][2] = { {3,3},{3,-3},{-3,3},{-3,-3} };
-    Gaussian2DGraph<double> g2g(4,a);
+    Gaussian2DGraph<double> g2g(4, 1.0, a);
     std::vector<double> x_pos = g2g.get_x_pos_list();
     std::vector<double> y_pos = g2g.get_y_pos_list();
     EXPECT_EQ(x_pos.size(), 4);
@@ -47,7 +47,7 @@ TEST(Gaussian2D, GivenPoint8) {
                        {-3.9, 2.4},
                        {-3.1, 2.6}
                      };
-    Gaussian2DGraph<double> g2g(8, a);
+    Gaussian2DGraph<double> g2g(8, 1.0, a);
     g2g.run(true);
     std::vector<double> gamma_list = g2g.get_gamma_list();
     std::vector<std::vector<submodular::Set>> psp_list = g2g.get_psp_list();
