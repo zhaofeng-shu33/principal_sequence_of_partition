@@ -82,6 +82,26 @@ namespace demo {
         std::vector<value_type>& get_gamma_list() {
             return gamma_list;
         }
+        std::vector<value_type> get_critical_values() {
+            std::vector<value_type> critical_value_list;
+            for (int i = 0; i < psp_list.size(); i++) {
+                if (psp_list[i].size() > 0) {
+                    critical_value_list.push_back(gamma_list[i]);
+                }
+            }
+            critical_value_list.pop_back(); // the last value is invalid
+            return critical_value_list;
+        }
+        std::vector<int> get_partitions() {
+            std::vector<int> partations;
+            for (int i = 0; i < psp_list.size(); i++) {
+                if (psp_list[i].size() > 0) {
+                    partations.push_back(psp_list[i].size());
+                }
+            }
+            return partations;
+        }
+
         std::vector<std::vector<submodular::Set>>& get_psp_list() {
             return psp_list;
         }
@@ -99,6 +119,7 @@ namespace demo {
                     return to_category(i);
                 }
             }
+            return std::vector<int>();
         }
         std::vector<value_type>& get_x_pos_list() {
             return x_pos;

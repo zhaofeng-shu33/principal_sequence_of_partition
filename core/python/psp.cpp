@@ -21,8 +21,9 @@ BOOST_PYTHON_MODULE(psp)
 
     class_<GaussianGraph>("Gaussian2DGraph", init<int,double>())
         .def("run", &GaussianGraph::run)
-        .def("get_gamma_list", &GaussianGraph::get_gamma_list, return_internal_reference<>())
+        .def("get_critical_values", &GaussianGraph::get_critical_values)
         .def("get_x_pos_list", &GaussianGraph::get_x_pos_list, return_internal_reference<>())
         .def("get_y_pos_list", &GaussianGraph::get_y_pos_list, return_internal_reference<>())
+        .def("get_partations", &GaussianGraph::get_partitions)
         .def("get_category", &GaussianGraph::get_category);
 }
