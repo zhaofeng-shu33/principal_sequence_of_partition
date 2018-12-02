@@ -34,7 +34,7 @@ if(cat_3>8):
     exit(0)
 print(lambda_list, 'critical values at three figures')    
 for index, cat_num in enumerate(cat_num_list):
-    plt.subplot(1,3,index+1)    
+    ax = plt.subplot(1,3,index+1)    
     cat = g.get_category(cat_num)
     print('num of cat:', cat_num)
     for i in range(cat_num):
@@ -45,5 +45,7 @@ for index, cat_num in enumerate(cat_num_list):
                 xx.append(x[j])
                 yy.append(y[j])
         plt.scatter(xx,yy, c=color_list[i], marker = marker_list[i])
+    ax.set_title('$\lambda = %.2f$' % lambda_list[index])
+plt.savefig('4part.eps')
 plt.show()
 #cat
