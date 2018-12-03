@@ -2,10 +2,12 @@
 import math
 import unittest
 import psp
-
+def to_py_list(L):
+    return [i for i in L]
 class gaussian2Dcase:
     def __init__(self, np, gamma=1, pos_list = []):
         self._gamma = gamma;
+        self._np = np;
         if(pos_list!=[]):
             self.pos_sim_list = [];
             for s_i in range(len(pos_list)):
@@ -17,12 +19,12 @@ class gaussian2Dcase:
         else:
             raise("pos_list is empty")
     def run(self):
-        self.g = psp.PyGraph(self.pos_sim_list, self._gamma)
+        self.g = psp.PyGraph(self._np,self.pos_sim_list, self._gamma)
         self.g.run(False)
-        self.critical_values = g.get_critical_values()
-        self.partation_num_list = g.get_partations()
+        self.critical_values = to_py_list(self.g.get_critical_values())
+        self.partation_num_list = to_py_list(self.g.get_partations())
     def get_category(self, i):
-        return self.g.get_category(i)        
+        return to_py_list(self.g.get_category(i))        
     def compute_similarity(self, x_1, y_1, x_2, y_2):
         return math.exp(-1.0 * self._gamma* math.pow(x_1 - x_2, 2) / 2 - self._gamma * math.pow(y_1 - y_2, 2) / 2);
         
@@ -36,9 +38,9 @@ class TestPyGraph(unittest.TestCase):
         pos_list = construct_pos_list(g.get_x_pos_list(), g.get_y_pos_list())
         # Method 1
         g.run(False)
-        cv_list = g.get_critical_values()
-        p_list = g.get_partations()
-        cat_2_list = g.get_category(2)        
+        cv_list = to_py_list(g.get_critical_values())
+        p_list = to_py_list(g.get_partations())
+        cat_2_list = to_py_list(g.get_category(2))
         # Method 2
         g2 = gaussian2Dcase(4, gamma, pos_list)
         g2.run()
