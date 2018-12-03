@@ -2,31 +2,9 @@
 import math
 import unittest
 import psp
+from graph_cluster import GraphCluster
 def to_py_list(L):
     return [i for i in L]
-class gaussian2Dcase:
-    def __init__(self, np, gamma=1, pos_list = []):
-        self._gamma = gamma;
-        self._np = np;
-        if(pos_list!=[]):
-            self.pos_sim_list = [];
-            for s_i in range(len(pos_list)):
-                for s_j in range(s_i+1,len(pos_list)):
-                    x_1,y_1 = pos_list[s_i]
-                    x_2,y_2 = pos_list[s_j]
-                    sim = self.compute_similarity(x_1, y_1, x_2, y_2)
-                    self.pos_sim_list.append((s_i, s_j, sim))
-        else:
-            raise("pos_list is empty")
-    def run(self):
-        self.g = psp.PyGraph(self._np,self.pos_sim_list, self._gamma)
-        self.g.run(False)
-        self.critical_values = to_py_list(self.g.get_critical_values())
-        self.partation_num_list = to_py_list(self.g.get_partations())
-    def get_category(self, i):
-        return to_py_list(self.g.get_category(i))        
-    def compute_similarity(self, x_1, y_1, x_2, y_2):
-        return math.exp(-1.0 * self._gamma* math.pow(x_1 - x_2, 2) / 2 - self._gamma * math.pow(y_1 - y_2, 2) / 2);
         
 def construct_pos_list(x_pos_list, y_pos_list):
     return [[x_pos_list[i], y_pos_list[i]] for i in range(len(x_pos_list))]
@@ -42,7 +20,7 @@ class TestPyGraph(unittest.TestCase):
         p_list = to_py_list(g.get_partations())
         cat_2_list = to_py_list(g.get_category(2))
         # Method 2
-        g2 = gaussian2Dcase(4, gamma, pos_list)
+        g2 = GraphCluster(4, gamma, pos_list)
         g2.run()
         # assert
         self.assertEqual(cat_2_list, g2.get_category(2))
@@ -60,7 +38,7 @@ class TestPyGraph(unittest.TestCase):
         p_list = to_py_list(g.get_partations())
         cat_2_list = to_py_list(g.get_category(4))
         # Method 2
-        g2 = gaussian2Dcase(num_points, gamma, pos_list)
+        g2 = GraphCluster(num_points, gamma, pos_list)
         g2.run()
         # assert
         self.assertEqual(cat_2_list, g2.get_category(4))

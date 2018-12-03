@@ -93,7 +93,7 @@ if(USE_PYTHON)
     endif()    
     # magic files to extract the release library
     
-    if(WIN32 and NOT "$ENV{APPVEYOR}")
+    if(WIN32 AND "$ENV{APPVEYOR}" STREQUAL "")
     string(REPLACE "debug" ";" PYTHON_LIBRARY ${PYTHON_LIBRARY})
     list(GET PYTHON_LIBRARY 0 PYTHON_LIBRARY)
     string(REPLACE "optimized" ";" PYTHON_LIBRARY ${PYTHON_LIBRARY})
