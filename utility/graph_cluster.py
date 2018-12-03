@@ -6,6 +6,7 @@ class GraphCluster:
         self._gamma = gamma;
         self._np = np;
         if(pos_list!=[]):
+            self.pos_list = pos_list
             self.pos_sim_list = [];
             for s_i in range(len(pos_list)):
                 for s_j in range(s_i+1,len(pos_list)):
@@ -26,7 +27,7 @@ class GraphCluster:
         return math.exp(-1.0 * self._gamma* math.pow(x_1 - x_2, 2) / 2 - self._gamma * math.pow(y_1 - y_2, 2) / 2)
         
 class ThreeCircle(GraphCluster):
-    def init(self, np, gamma=1):
+    def __init__(self, np, gamma=1):
         '''
         np is the number of points at each circle
         '''
@@ -42,7 +43,7 @@ class ThreeCircle(GraphCluster):
         super(ThreeCircle, self).__init__(3*np + 10, gamma, pos_list)
         
 class FourPart(GraphCluster):
-    def init(self, np, gamma=1):
+    def __init__(self, np, gamma=1):
         '''
         np is the number of points at each part
         '''

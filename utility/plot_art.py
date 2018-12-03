@@ -21,37 +21,58 @@ def check_cat(min_num, partition):
         return -2
     else:    
         return i
-def plot_FourPart():
-    global color_list, marker_list, MAX_CAT
-    i = -1
-    while(i < 0): # check category requirement, regenerate the points if necessary
-        g = graph_cluster.FourPart(25, 0.6)
-        g.run(False)    
-        p = g.partition_num_list
-        cv = g.critical_values
-        # divide into >=4 parts        
-        i = check_cat(4, p)
+
+def plot_inner(index, grach_cluster_object, fileName):  
+    '''
+    Parameters
+    ----------
+    index: starting index whose element has at least required categories
+    grach_cluster_object: instance of GraphCluster
+    fileName: graph output file name
+    '''
+    p = grach_cluster_object.partition_num_list
+    cv = grach_cluster_object.critical_values
+    i = index
+
     lambda_list = [cv[i-1],cv[i],cv[i+1]]
-    cat_num_list = [p[i], p[i+1], p[i+2]]
+    cat_num_list = [p[i], p[i+1], p[i+2]]    
     for index, cat_num in enumerate(cat_num_list):
-        ax = plt.subplot(1,3,index+1)    
-        cat = g.get_category(cat_num)
+        ax = plt.subplot(1,3,index+1)          
+        cat = grach_cluster_object.get_category(cat_num)
         print('num of cat:', cat_num)
         for i in range(cat_num):
             xx=[]
             yy=[]
             for j in range(len(cat)):
                 if(cat[j]==i):
-                    xx.append(g.pos_sim_list[j][0])
-                    yy.append(g.pos_sim_list[j][1])
+                    xx.append(grach_cluster_object.pos_list[j][0])
+                    yy.append(grach_cluster_object.pos_list[j][1])
             plt.scatter(xx,yy, c=color_list[i], marker = marker_list[i])
         ax.set_title('$\lambda = %.2f$' % lambda_list[index])
     plt.savefig('4part.eps')
     plt.show()
+  
+def plot_FourPart():
+    global color_list, marker_list, MAX_CAT
+    i = -1
+    while(i < 0): # check category requirement, regenerate the points if necessary
+        g = graph_cluster.FourPart(25, 0.6)
+        g.run()    
+        # divide into >=4 parts        
+        i = check_cat(4, g.partition_num_list)
+    plot_inner(i, g, '4part.eps')
     
 def plot_ThreeCircle():
-    pass
+    global color_list, marker_list, MAX_CAT
+    i = -1
+    while(i < 0): # check category requirement, regenerate the points if necessary
+        g = graph_cluster.ThreeCircle(20, 1)
+        g.run()    
+        # divide into >=4 parts        
+        i = check_cat(2, g.partition_num_list)
+    plot_inner(i, g, '3circle.eps')
+
     
 if __name__ == '__main__':
-    plot_FourPart()
+    #plot_FourPart()
     plot_ThreeCircle()
