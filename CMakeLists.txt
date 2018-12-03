@@ -109,7 +109,6 @@ if(USE_PYTHON)
         # only install release type
         set(INSTALL_TYPE Release)
         install(FILES ${PROJECT_BINARY_DIR}/${INSTALL_TYPE}/psp.${DYNAMIC_LIB_SUFFIX} DESTINATION ${PYTHON_SIDE_PACKAGES} RENAME psp.pyd)
-        install(FILES ${PROJECT_SOURCE_DIR}/utility/gaussian2Dcase.py DESTINATION ${PROJECT_BINARY_DIR}/${INSTALL_TYPE})
 
     else()
         install(FILES ${PROJECT_BINARY_DIR}/libpsp.${DYNAMIC_LIB_SUFFIX} DESTINATION ${PYTHON_SIDE_PACKAGES} RENAME psp.${DYNAMIC_LIB_SUFFIX})

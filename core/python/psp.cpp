@@ -25,12 +25,12 @@ BOOST_PYTHON_MODULE(psp)
         .def("get_critical_values", &GaussianGraph::get_critical_values)
         .def("get_x_pos_list", &GaussianGraph::get_x_pos_list, return_internal_reference<>())
         .def("get_y_pos_list", &GaussianGraph::get_y_pos_list, return_internal_reference<>())
-        .def("get_partations", &GaussianGraph::get_partitions)
+        .def("get_partitions", &GaussianGraph::get_partitions)
         .def("get_category", &GaussianGraph::get_category);
 
     class_<submodular::PyGraph>("PyGraph", init<int,list, double>())
         .def("run", &submodular::PyGraph::run)
         .def("get_critical_values", &submodular::PyGraph::get_critical_values)
-        .def("get_partations", &submodular::PyGraph::get_partitions)
+        .def("get_partitions", &submodular::PyGraph::get_partitions)
         .def("get_category", &submodular::PyGraph::get_category);
 }
