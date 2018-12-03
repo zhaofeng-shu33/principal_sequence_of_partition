@@ -29,8 +29,8 @@ BOOST_PYTHON_MODULE(psp)
         .def("get_category", &GaussianGraph::get_category);
 
     class_<submodular::PyGraph>("PyGraph", init<list, double>())
-        .def("run", &GaussianGraph::run)
-        .def("get_critical_values", &GaussianGraph::get_critical_values)
-        .def("get_partations", &GaussianGraph::get_partitions)
-        .def("get_category", &GaussianGraph::get_category);
+        .def("run", &submodular::PyGraph::run)
+        .def("get_critical_values", &submodular::PyGraph::get_critical_values)
+        .def("get_partations", &submodular::PyGraph::get_partitions)
+        .def("get_category", &submodular::PyGraph::get_category);
 }

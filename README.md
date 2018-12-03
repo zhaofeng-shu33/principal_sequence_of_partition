@@ -25,3 +25,6 @@ print(cat) # very likely [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
 # Reference
 1. [2016]Info-Clustering: A Mathematical Theory for Data Clustering
 1. [https://github.com/ktrmnm/SFM](https://github.com/ktrmnm/SFM)
+
+# ChangeLog
+Version 1.1: expose Gaussian2DGraph class
