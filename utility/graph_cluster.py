@@ -28,22 +28,26 @@ class GraphCluster:
         return math.exp(-1.0 * self._gamma* math.pow(x_1 - x_2, 2) / 2 - self._gamma * math.pow(y_1 - y_2, 2) / 2)
         
 class ThreeCircle(GraphCluster):
-    def __init__(self, np, gamma_1=1, gamma_2=1):
+    def __init__(self, np_list, gamma_1=1, gamma_2=1):
         '''
         np is the number of points at each circle
         '''
         #  (0, 0.1) to (0, 0.2)
         pos_list = []
+        self._np = 10;
         for i in range(10):
             pos_list.append([0, random.random()*0.1+0.1])
+        
         for i in range(1,4): # radius: 0.1*i
-            for j in range(np):
+            self._np += np_list[i-1]
+            for j in range(np_list[i-1]):
                 r = 0.1*i
                 angle = 2*math.pi * random.random()
                 pos_list.append([r * math.cos(angle), r * math.sin(angle)])
+                
         self._gamma_1 = gamma_1;
         self._gamma_2 = gamma_2;
-        self._np = 3*np + 10;
+        
         self.pos_list = pos_list
         self.pos_sim_list = [];
         for s_i in range(len(pos_list)):

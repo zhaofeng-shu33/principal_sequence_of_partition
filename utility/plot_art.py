@@ -13,7 +13,7 @@ def check_cat(min_num, partition):
     return the index of partition whose first element is no smaller than min_num,
     '''
     for i in range(len(partition)):
-        if(partition[i]>=4):
+        if(partition[i]>=min_num):
             break
     if(i>=len(partition)-2):
         return -1
@@ -66,7 +66,9 @@ def plot_ThreeCircle():
     global color_list, marker_list, MAX_CAT
     i = -1
     while(i < 0): # check category requirement, regenerate the points if necessary
-        g = graph_cluster.ThreeCircle(20, 1)
+        gamma_2 = 1
+        ratio = 900
+        g = graph_cluster.ThreeCircle([60,100,140], ratio*gamma_2, gamma_2)
         g.run()    
         # divide into >=4 parts        
         i = check_cat(2, g.partition_num_list)
