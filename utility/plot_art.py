@@ -67,7 +67,7 @@ def plot_ThreeCircle():
     i = -1
     while(i < 0): # check category requirement, regenerate the points if necessary
         gamma_2 = 1
-        ratio = 900
+        ratio = 2000
         g = graph_cluster.ThreeCircle([60,100,140], ratio*gamma_2, gamma_2)
         g.run()    
         # divide into >=4 parts        

@@ -9,11 +9,10 @@ namespace submodular {
     public:
         using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, double>>;
 
-        PyGraph(int np, boost::python::list py_list, double gamma = 1) :
-            _gamma(gamma)
+        PyGraph(int np, boost::python::list py_list):
+            num_points(np)
         {
             EdgeListFloat edge_list;
-            num_points = np;
             for (int i = 0; i < boost::python::len(py_list); i++) {
                 boost::python::tuple pt = boost::python::extract<boost::python::tuple>(py_list[i]);
                 int source_node_id = boost::python::extract<int>(pt[0]);
@@ -86,7 +85,6 @@ namespace submodular {
         std::vector<double> gamma_list;
         int num_points;
         std::vector<std::vector<submodular::Set>> psp_list;
-        double _gamma;
         //! form conversion
         std::vector<int> to_category(std::vector<submodular::Set>& partation) {
             std::vector<int> cat(num_points, 0);
