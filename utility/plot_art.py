@@ -49,7 +49,7 @@ def plot_inner(index, grach_cluster_object, fileName):
                     yy.append(grach_cluster_object.pos_list[j][1])
             plt.scatter(xx,yy, c=color_list[i], marker = marker_list[i])
         ax.set_title('$\lambda = %.2f$' % lambda_list[index])
-    plt.savefig('4part.eps')
+    plt.savefig(fileName)
     plt.show()
   
 def plot_FourPart():
