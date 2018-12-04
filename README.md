@@ -27,4 +27,5 @@ print(cat) # very likely [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
 1. [https://github.com/ktrmnm/SFM](https://github.com/ktrmnm/SFM)
 
 # ChangeLog
-Version 1.1: expose `Gaussian2DGraph` (C++) class, which can be used directly in python.
+* Version 1.1: expose `Gaussian2DGraph` (C++) class, which can be used directly in python.
+* Version 1.2: expose `PyGraph` (C++) class, which is high customizable in python.
