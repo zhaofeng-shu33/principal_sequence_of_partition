@@ -28,7 +28,7 @@ def _generate_three_circle_data():
             angle = 2*np.pi * random.random()
             pos_list.append([r * np.cos(angle), r * np.sin(angle)])
             ground_truth.append(i)
-    return (pos_list,ground_truth)
+    return (pos_list, ground_truth)
 
 def _kmeans(feature, ground_truth):
     global NUM_OF_CLUSTER
@@ -45,33 +45,52 @@ def _kmeans(feature, ground_truth):
     ars_kmeans = metrics.adjusted_rand_score(ground_truth, y_pred_kmeans)    
     return ars_kmeans
 
-def _spectral_clustering(sim_matrix, ground_truth):
+def _spectral_clustering(feature, ground_truth):
     global NUM_OF_CLUSTER
     ref_sc = 0
     optimal_n_c = 0
     for n_c in NUM_OF_CLUSTER:
-        c = cluster.SpectralClustering(sim_matrix, n_clusters=n_c)
-        scores = cross_validate(c, feature, ground_truth, scoring='adjusted_rand_score', cv=5, return_train_score=False)
-        sc = scores['test_score'].mean()
+        c = cluster.SpectralClustering(n_clusters=n_c, affinity="nearest_neighbors") # construct affinity matrix from rbf kernel function
+        # cannot use cv since spectral clustering does not provide fitting method
+        y_pred_sc = c.fit_predict(feature)
+        sc = metrics.adjusted_rand_score(ground_truth, y_pred_sc)
         if(sc>ref_sc):
             optimal_n_c = n_c
             ref_sc = sc
-    y_pred_kmeans = cluster.SpectralClustering(n_clusters=optimal_n_c).fit_predict(feature)
-    ars_kmeans = metrics.adjusted_rand_score(ground_truth, y_pred_kmeans)    
-    return ars_kmeans
+    return ref_sc
 
+def _info_clustering(feature, ground_truth):
+    # we should fine tuning the min required cluster instead of lambda s.t. I(Z_V)>lambda
+    # this is because lambda is variant in difference cases, and grid search is not economic
+    global NUM_OF_CLUSTER
+    ref_sc = 0
+    optimal_n_c = 0
+    
+    g = graph_cluster.InfoCluster(num_points, 0.6, feature)
+    g.run()
+    y_pred_ic = g.get_category(4)
+    ars_ic = metrics.adjusted_rand_score(ground_truth, y_pred_ic)    
+    for n_c in NUM_OF_CLUSTER:
+        c = cluster.SpectralClustering(n_clusters=n_c, affinity="nearest_neighbors") # construct affinity matrix from rbf kernel function
+        # cannot use cv since spectral clustering does not provide fitting method
+        y_pred_sc = c.fit_predict(feature)
+        sc = metrics.adjusted_rand_score(ground_truth, y_pred_sc)
+        if(sc>ref_sc):
+            optimal_n_c = n_c
+            ref_sc = sc
+    return ref_sc
+    
 def compute_adjusted_rand_score(feature, ground_truth):
     num_points = len(feature)
-    g = graph_cluster.GraphCluster(num_points, 0.6, feature)
+
                 
     
     ars_kmeans = _kmeans(feature, ground_truth)
     
-    sim_matrix = construct_sim_matrix(num_points, g.pos_sim_list)
-    y_pred_sc = cluster.spectral_clustering(sim_matrix, n_clusters=4)
-    ars_sc = metrics.adjusted_rand_score(ground_truth, y_pred_sc)
+    ars_sc = _spectral_clustering(feature, ground_truth)
     
-    af = cluster.AffinityPropagation(preference=-60).fit(feature)
+    # there are hyperparameters (preference and damping)in AP algorithm, but we don't fine tune it.
+    af = cluster.AffinityPropagation().fit(feature)
     y_pred_af = af.labels_
     ars_af = metrics.adjusted_rand_score(ground_truth, y_pred_af)
     

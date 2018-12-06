@@ -1,33 +1,51 @@
 import random
 import math
 import cmath
-import psp # [package] principal sequence of partition 
-class GraphCluster:
-    def __init__(self, np, gamma=1, pos_list = []):
+import numpy as np
+import psp # [package] principal sequence of partition
+from sklearn.metrics.pairwise import pairwise_kernel
+class InfoCluster:
+    '''Info clustering is a kind of hierarchical clustering method.
+    It uses top down approach to build the hierarchical tree.
+    
+    Parameters
+    ----------
+    gamma : float, default=1.0
+        Kernel coefficient for rbf kernels.
+    affinity : string, default 'rbf'
+        may be one of 'precomputed', 'rbf'.        
+    '''
+    def __init__(self, gamma=1, affinity='rbf'):    
         self._gamma = gamma;
-        self._np = np;
-        if(pos_list!=[]):
-            self.pos_list = pos_list
-            self.pos_sim_list = [];
-            for s_i in range(len(pos_list)):
-                for s_j in range(s_i+1,len(pos_list)):
-                    x_1,y_1 = pos_list[s_i]
-                    x_2,y_2 = pos_list[s_j]
-                    sim = self.compute_similarity(x_1, y_1, x_2, y_2)
-                    self.pos_sim_list.append((s_i, s_j, sim))
+        self.affinity = affinity
+    def fit(self, X):
+        '''Construct an affinity graph from X using rbf kernel function,
+        then applies info clustering to this affinity graph.
+        Parameters
+        ----------
+        X : array-like, shape (n_samples, n_features)
+           
+        '''
+        n_samples = X.shape[0]
+        if(self.affinity == 'precomputed'):
+            affinity_matrix = X
         else:
-            raise Exception("pos_list is empty")
-    def run(self):
-        self.g = psp.PyGraph(self._np,self.pos_sim_list)
+            affinity_matrix = pairwise_kernels(X, metric='rbf', gamma = self._gamma)
+            
+        sim_list = []
+        for s_i in range(n_samples):
+            for s_j in range(s_i+1, n_samples):
+                sim_list.append((s_i, s_j, affinity_matrix[s_i, s_j]))       
+
+        self.g = psp.PyGraph(n_samples, sim_list)
         self.g.run(False)
+        
         self.critical_values = to_py_list(self.g.get_critical_values())
-        self.partition_num_list = to_py_list(self.g.get_partitions())
+        self.partition_num_list = to_py_list(self.g.get_partitions())    
     def get_category(self, i):
         return to_py_list(self.g.get_category(i))        
-    def compute_similarity(self, x_1, y_1, x_2, y_2):
-        return math.exp(-1.0 * self._gamma* math.pow(x_1 - x_2, 2) / 2 - self._gamma * math.pow(y_1 - y_2, 2) / 2)
         
-class ThreeCircle(GraphCluster):
+class ThreeCircle(InfoCluster):
     def __init__(self, np_list, gamma_1=1, gamma_2=1):
         '''
         np is the number of points at each circle
@@ -62,7 +80,7 @@ class ThreeCircle(GraphCluster):
         phi_distance = min(abs(phi_1 - phi_2), 2*math.pi-abs(phi_1 - phi_2))
         return math.exp(-1.0 * self._gamma_1 * math.pow(r_1 - r_2, 2) / 2 - self._gamma_2 * math.pow(phi_distance, 2) / 2)
         
-class FourPart(GraphCluster):
+class FourPart(InfoCluster):
     def __init__(self, np, gamma=1):
         '''
         np is the number of points at each part
