@@ -3,7 +3,7 @@ import math
 import cmath
 import numpy as np
 import psp # [package] principal sequence of partition
-from sklearn.metrics.pairwise import pairwise_kernel
+from sklearn.metrics.pairwise import pairwise_kernels
 class InfoCluster:
     '''Info clustering is a kind of hierarchical clustering method.
     It uses top down approach to build the hierarchical tree.

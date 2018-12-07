@@ -1,13 +1,14 @@
 # \author: zhaofeng-shu33
 import sklearn
-import graph_cluster
+import info_cluster
 from sklearn import metrics
 from sklearn import cluster
 from sklearn import datasets
 from sklearn.model_selection import cross_validate
+from uci_glass import fetch_uci_glass
 import numpy as np
 import random
-NUM_OF_CLUSTER = [3, 4, 5]
+NUM_OF_CLUSTER = [3, 4, 5, 6]
 def construct_sim_matrix(num_of_points, pos_sim_list):
     '''
     each element of pos_sim_list is a tuple of the form `(pos_x, pos_y, sim_value)`
@@ -28,12 +29,12 @@ def _generate_three_circle_data():
             angle = 2*np.pi * random.random()
             pos_list.append([r * np.cos(angle), r * np.sin(angle)])
             ground_truth.append(i)
-    return (pos_list, ground_truth)
+    return (np.asarray(pos_list), ground_truth)
 
 def _kmeans(feature, ground_truth):
     global NUM_OF_CLUSTER
     ref_sc = 0
-    optimal_n_c = 0
+    optimal_n_c = -1
     for n_c in NUM_OF_CLUSTER:
         c = cluster.KMeans(n_clusters=n_c)
         scores = cross_validate(c, feature, ground_truth, scoring='adjusted_rand_score', cv=5, return_train_score=False)
@@ -48,7 +49,7 @@ def _kmeans(feature, ground_truth):
 def _spectral_clustering(feature, ground_truth):
     global NUM_OF_CLUSTER
     ref_sc = 0
-    optimal_n_c = 0
+    optimal_n_c = -1
     for n_c in NUM_OF_CLUSTER:
         c = cluster.SpectralClustering(n_clusters=n_c, affinity="nearest_neighbors") # construct affinity matrix from rbf kernel function
         # cannot use cv since spectral clustering does not provide fitting method
@@ -66,15 +67,11 @@ def _info_clustering(feature, ground_truth):
     ref_sc = 0
     optimal_n_c = 0
     
-    g = graph_cluster.InfoCluster(num_points, 0.6, feature)
-    g.run()
-    y_pred_ic = g.get_category(4)
-    ars_ic = metrics.adjusted_rand_score(ground_truth, y_pred_ic)    
+    g = info_cluster.InfoCluster(gamma = 0.6)
+    g.fit(feature)
     for n_c in NUM_OF_CLUSTER:
-        c = cluster.SpectralClustering(n_clusters=n_c, affinity="nearest_neighbors") # construct affinity matrix from rbf kernel function
-        # cannot use cv since spectral clustering does not provide fitting method
-        y_pred_sc = c.fit_predict(feature)
-        sc = metrics.adjusted_rand_score(ground_truth, y_pred_sc)
+        y_pred_ic = g.get_category(n_c)
+        sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
         if(sc>ref_sc):
             optimal_n_c = n_c
             ref_sc = sc
@@ -94,9 +91,7 @@ def compute_adjusted_rand_score(feature, ground_truth):
     y_pred_af = af.labels_
     ars_af = metrics.adjusted_rand_score(ground_truth, y_pred_af)
     
-    g.run()
-    y_pred_ic = g.get_category(4)
-    ars_ic = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
+    ars_ic = _info_clustering(feature, ground_truth)
     
     return {'k-means':ars_kmeans, 'spectral clustering':ars_sc, 'affinity propagation': ars_af, 'info-clustering': ars_ic}
     
@@ -115,12 +110,18 @@ def Circle():
 def Iris():
     feature, ground_truth = datasets.load_iris(return_X_y = True)
     return compute_adjusted_rand_score(feature, ground_truth)    
+
+def Glass():
+    feature, ground_truth = fetch_uci_glass()
+    return compute_adjusted_rand_score(feature, ground_truth)
     
 def compute():
     dic = {}
     dic['Gaussian'] = Gaussian()
     dic['Circle'] = Circle()
     dic['Iris'] = Iris()
+    dic['Glass'] = Glass()
     return dic
+    
 if __name__ == '__main__':
     print(compute())
