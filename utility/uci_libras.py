@@ -1,6 +1,6 @@
-"""Glass Identification dataset.
+"""Libras Identification dataset.
 The original dataset description was available from 
-    https://archive.ics.uci.edu/ml/datasets/glass+identification
+    https://archive.ics.uci.edu/ml/datasets/Libras+Movement
 
 """
 
@@ -19,24 +19,24 @@ from sklearn.datasets.base import _pkl_filepath
 from sklearn.utils import _joblib
 from sklearn.utils import check_random_state, Bunch
 
-GLASS = RemoteFileMetadata(
-    filename='movement_libras.data',
-    url='https://archive.ics.uci.edu/ml/machine-learning-databases/glass/glass.data',
-    checksum=('dd67373f4baf2807345df02cbfef2093'
-              'd342e61ad0d82a4fb79af43ef8ce449d'))
+LIBRAS = RemoteFileMetadata(
+    filename='libras.data',
+    url='https://archive.ics.uci.edu/ml/machine-learning-databases/libras/movement_libras.data',
+    checksum=('97ebdaa6a9b28ab4a2cdd84b14f19a95'
+              'a7456a46137c362b65a0669eca3c3c4d'))
 
 
-def fetch_uci_libra(data_home=None, shuffle=False, random_state=0,
+def fetch_uci_libras(data_home=None, shuffle=False, random_state=0,
                          download_if_missing=True):
-    """Load the UCI glass data-set from AT&T (classification).
+    """Load the UCI libra  data-set from AT&T (classification).
     Download it if necessary.
+
     =================   =====================
-    Classes                                6
-    Samples total                         214
-    Dimensionality                       9
+    Classes                                15
+    Samples total                         360
+    Dimensionality                       91
     Features                            real
-    =================   =====================
-    
+    =================   =====================    
     Parameters
     ----------
     data_home : optional, default: None
@@ -54,41 +54,41 @@ def fetch_uci_libra(data_home=None, shuffle=False, random_state=0,
         instead of trying to download the data from the source site.
     Returns
     -------    
-    data : numpy array of shape (214, 9)
-        Each row corresponds to a glass feature of 9 dimension
-    target : numpy array of shape (214, )
+    data : numpy array of shape (360, 90)
+        Each row corresponds to a libras feature of 9 dimension
+    target : numpy array of shape (360, )
         Labels associated to each glas. Those labels are from
-        [1,2,3,5,6,7] and correspond to the Subject IDs.
+        range(15) and correspond to the Subject IDs.
     """
-    global GLASS
+    global LIBRAS
     data_home = get_data_home(data_home=data_home)
     if not exists(data_home):
         makedirs(data_home)
-    filepath = _pkl_filepath(data_home, 'uci_glass.pkz')
+    filepath = _pkl_filepath(data_home, 'uci_libras.pkz')
     if not exists(filepath):
         if not download_if_missing:
             raise IOError("Data not found and `download_if_missing` is False")
 
-        print('downloading UCI GLASS from %s to %s'
-              % (GLASS.url, data_home))
-        data_path = _fetch_remote(GLASS, dirname=data_home)
+        print('downloading UCI LIBRAS from %s to %s'
+              % (LIBRAS.url, data_home))
+        data_path = _fetch_remote(LIBRAS, dirname=data_home)
 
-        glass = np.genfromtxt(data_path, delimiter=",")
-        _joblib.dump(glass, filepath, compress=6)
+        libras = np.genfromtxt(data_path, delimiter=",")
+        _joblib.dump(libras, filepath, compress=6)
         remove(data_path)
         
     else:
-        glass = _joblib.load(filepath)
+        libras = _joblib.load(filepath)
 
-    feature = glass[:,1:-1]
-    target = glass[:,-1]
+    feature = libras[:,0:-1]
+    target = libras[:,-1]
     if shuffle:
         random_state = check_random_state(random_state)
-        order = random_state.permutation(len(glass))
-        feature = glass[order]
+        order = random_state.permutation(len(libras))
+        feature = libras[order]
         target = target[order]
 
 
     return (feature,target)
 if __name__ == '__main__':
-    fetch_uci_glass()
+    fetch_uci_libras()

@@ -4,6 +4,7 @@ import info_cluster
 from sklearn import metrics
 from sklearn import cluster
 from sklearn import datasets
+from sklearn import preprocessing
 from sklearn.model_selection import cross_validate
 from uci_glass import fetch_uci_glass
 import numpy as np
@@ -109,10 +110,12 @@ def Circle():
         
 def Iris():
     feature, ground_truth = datasets.load_iris(return_X_y = True)
+    feature = preprocessing.scale(feature)
     return compute_adjusted_rand_score(feature, ground_truth)    
 
 def Glass():
     feature, ground_truth = fetch_uci_glass()
+    feature = preprocessing.scale(feature)
     return compute_adjusted_rand_score(feature, ground_truth)
     
 def compute():
