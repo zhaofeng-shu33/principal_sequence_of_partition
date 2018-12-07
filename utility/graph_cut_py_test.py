@@ -2,7 +2,8 @@
 import math
 import unittest
 import psp
-from graph_cluster import GraphCluster,to_py_list
+import numpy as np
+from info_cluster import InfoCluster,to_py_list
 
         
 def construct_pos_list(x_pos_list, y_pos_list):
@@ -10,8 +11,8 @@ def construct_pos_list(x_pos_list, y_pos_list):
 
 class TestPyGraph(unittest.TestCase):
     def test_4point(self):
-        gamma = 1
-        g = psp.Gaussian2DGraph(4,gamma)
+        _gamma = 1
+        g = psp.Gaussian2DGraph(4, _gamma)
         pos_list = construct_pos_list(g.get_x_pos_list(), g.get_y_pos_list())
         # Method 1
         g.run(False)        
@@ -19,17 +20,17 @@ class TestPyGraph(unittest.TestCase):
         p_list = to_py_list(g.get_partitions())
         cat_2_list = to_py_list(g.get_category(2))
         # Method 2
-        g2 = GraphCluster(4, gamma, pos_list)
-        g2.run()
+        info_cluster = InfoCluster(gamma = _gamma)
+        info_cluster.fit(np.asarray(pos_list))
         # assert
-        self.assertEqual(cat_2_list, g2.get_category(2))
-        self.assertEqual(cv_list, g2.critical_values)
-        self.assertEqual(p_list, g2.partition_num_list)
+        self.assertEqual(cat_2_list, info_cluster.get_category(2))
+        self.assertEqual(cv_list, info_cluster.critical_values)
+        self.assertEqual(p_list, info_cluster.partition_num_list)
 
     def test_8point(self):
-        gamma = 0.6
+        _gamma = 0.6
         num_points = 8
-        g = psp.Gaussian2DGraph(num_points,gamma)
+        g = psp.Gaussian2DGraph(num_points, _gamma)
         pos_list = construct_pos_list(g.get_x_pos_list(), g.get_y_pos_list())
         # Method 1
         g.run(False)
@@ -37,11 +38,12 @@ class TestPyGraph(unittest.TestCase):
         p_list = to_py_list(g.get_partitions())
         cat_2_list = to_py_list(g.get_category(4))
         # Method 2
-        g2 = GraphCluster(num_points, gamma, pos_list)
-        g2.run()
+        info_cluster = InfoCluster(gamma=_gamma)
+        info_cluster.fit(pos_list)
         # assert
-        self.assertEqual(cat_2_list, g2.get_category(4))
-        self.assertEqual(cv_list, g2.critical_values)
-        self.assertEqual(p_list, g2.partition_num_list)        
+        self.assertEqual(cat_2_list, info_cluster.get_category(4))
+        self.assertEqual(cv_list, info_cluster.critical_values)
+        self.assertEqual(p_list, info_cluster.partition_num_list)
+        
 if __name__ == '__main__':
     unittest.main()
