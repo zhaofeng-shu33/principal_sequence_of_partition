@@ -152,8 +152,10 @@ def make_table(dic):
     table = [['k-means'],['spectral clustering'],['affinity propagation'],['info-clustering']]
     for i in table:
         for _, v in dic.items():
-            i.append('%.2f'%v.get_item(i[0]))
-    latex_table_string = tabulate(table, headers = [''].extend(list(dic.keys())), tablefmt = 'latex_raw')
+            i.append('%.2f'%v.get(i[0]))
+    _headers = ['']
+    _headers.extend(list(dic.keys()))
+    latex_table_string = tabulate(table, headers = _headers, tablefmt = 'latex_raw')
     open(LATEX_TABLE_NAME,'w').write(latex_table_string)
     
 if __name__ == '__main__':
