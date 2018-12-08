@@ -7,7 +7,7 @@ from info_cluster import InfoCluster,to_py_list
 
         
 def construct_pos_list(x_pos_list, y_pos_list):
-    return [[x_pos_list[i], y_pos_list[i]] for i in range(len(x_pos_list))]
+    return np.asarray([[x_pos_list[i], y_pos_list[i]] for i in range(len(x_pos_list))])
 
 class TestPyGraph(unittest.TestCase):
     def test_4point(self):
@@ -18,13 +18,18 @@ class TestPyGraph(unittest.TestCase):
         g.run(False)        
         cv_list = to_py_list(g.get_critical_values())
         p_list = to_py_list(g.get_partitions())
-        cat_2_list = to_py_list(g.get_category(2))
+        cat_1_list = to_py_list(g.get_category(2))
         # Method 2
         info_cluster = InfoCluster(gamma = _gamma)
         info_cluster.fit(np.asarray(pos_list))
+        cat_2_list = info_cluster.get_category(4)
         # assert
-        self.assertEqual(cat_2_list, info_cluster.get_category(2))
-        self.assertEqual(cv_list, info_cluster.critical_values)
+        total_diff = get_total_diff(cat_1_list, cat_2_list)
+        self.assertTrue(total_diff<1e-5)
+        
+        total_diff = get_total_diff(cv_list, info_cluster.critical_values)
+        self.assertTrue(total_diff<1e-5)
+        
         self.assertEqual(p_list, info_cluster.partition_num_list)
 
     def test_8point(self):
@@ -36,14 +41,25 @@ class TestPyGraph(unittest.TestCase):
         g.run(False)
         cv_list = to_py_list(g.get_critical_values())
         p_list = to_py_list(g.get_partitions())
-        cat_2_list = to_py_list(g.get_category(4))
+        cat_1_list = to_py_list(g.get_category(4))
         # Method 2
         info_cluster = InfoCluster(gamma=_gamma)
         info_cluster.fit(pos_list)
-        # assert
-        self.assertEqual(cat_2_list, info_cluster.get_category(4))
-        self.assertEqual(cv_list, info_cluster.critical_values)
-        self.assertEqual(p_list, info_cluster.partition_num_list)
+        cat_2_list = info_cluster.get_category(4)
         
+        # assert
+        total_diff = get_total_diff(cat_1_list, cat_2_list)
+        self.assertTrue(total_diff<1e-5)
+        
+        total_diff = get_total_diff(cv_list, info_cluster.critical_values)
+        self.assertTrue(total_diff<1e-5)
+
+        self.assertEqual(p_list, info_cluster.partition_num_list)
+
+def get_total_diff(L1, L2):
+    total_diff = 0
+    for i in range(len(L1)):
+        total_diff += np.abs(L1[i] - L2[i])
+    return total_diff        
 if __name__ == '__main__':
     unittest.main()

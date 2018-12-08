@@ -20,13 +20,13 @@ from sklearn.utils import _joblib
 from sklearn.utils import check_random_state, Bunch
 
 GLASS = RemoteFileMetadata(
-    filename='movement_libras.data',
+    filename='glass.data',
     url='https://archive.ics.uci.edu/ml/machine-learning-databases/glass/glass.data',
     checksum=('dd67373f4baf2807345df02cbfef2093'
               'd342e61ad0d82a4fb79af43ef8ce449d'))
 
 
-def fetch_uci_libra(data_home=None, shuffle=False, random_state=0,
+def fetch_uci_glass(data_home=None, shuffle=False, random_state=0,
                          download_if_missing=True):
     """Load the UCI glass data-set from AT&T (classification).
     Download it if necessary.

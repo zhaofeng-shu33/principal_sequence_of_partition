@@ -56,7 +56,7 @@ def plot_FourPart():
     global color_list, marker_list, MAX_CAT
     i = -1
     while(i < 0): # check category requirement, regenerate the points if necessary
-        g = graph_cluster.FourPart(25, 0.6)
+        g = info_cluster.FourPart(25, 0.6)
         g.run()    
         # divide into >=4 parts        
         i = check_cat(4, g.partition_num_list)
@@ -68,7 +68,7 @@ def plot_ThreeCircle():
     while(i < 0): # check category requirement, regenerate the points if necessary
         gamma_2 = 1
         ratio = 2000
-        g = graph_cluster.ThreeCircle([60,100,140], ratio*gamma_2, gamma_2)
+        g = info_cluster.ThreeCircle([60,100,140], ratio*gamma_2, gamma_2)
         g.run()    
         # divide into >=4 parts        
         i = check_cat(2, g.partition_num_list)
@@ -76,5 +76,5 @@ def plot_ThreeCircle():
 
     
 if __name__ == '__main__':
-    #plot_FourPart()
-    plot_ThreeCircle()
+    plot_FourPart()
+    #plot_ThreeCircle()

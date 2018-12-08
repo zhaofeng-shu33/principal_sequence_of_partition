@@ -33,7 +33,7 @@ def fetch_uci_libras(data_home=None, shuffle=False, random_state=0,
     =================   =====================
     Classes                                15
     Samples total                         360
-    Dimensionality                       91
+    Dimensionality                       90
     Features                            real
     =================   =====================    
     Parameters

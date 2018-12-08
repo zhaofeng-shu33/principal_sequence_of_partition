@@ -83,27 +83,33 @@ class ThreeCircle:
     def run(self):
         g = InfoCluster(affinity = 'precomputed')
         g.fit(self.affinity_matrix)
-        self.partition_num_list = to_py_list(g.get_partitions())
+        self.partition_num_list = g.partition_num_list
+        self.critical_values = g.critical_values    
+        self.get_category = g.get_category         
         self.g = g
     
 class FourPart:
-    def __init__(self, np, _gamma=1):
+    def __init__(self, _np, _gamma=1):
         '''
         np is the number of points at each part
         '''
         #  (0, 0.1) to (0, 0.2)
+        self._gamma = _gamma
         pos_list = []
         part_center = [[3,3],[3,-3],[-3,-3],[-3,3]]
         for i in range(4): # radius: 0.1*i
-            for j in range(np):
+            for j in range(_np):
                 x = part_center[i][0] + random.gauss(0,1) # standard normal distribution disturbance
                 y = part_center[i][1] + random.gauss(0,1)                
                 pos_list.append([x, y])
         self.pos_list = np.asarray(pos_list)
+        
     def run(self):
-        g = InfoCluster(gamma = _gamma)
+        g = InfoCluster(gamma = self._gamma)
         g.fit(self.pos_list)
-        self.partition_num_list = to_py_list(g.get_partitions())
+        self.partition_num_list = g.partition_num_list
+        self.critical_values = g.critical_values
+        self.get_category = g.get_category        
         self.g = g
 def to_py_list(L):
     '''

@@ -7,9 +7,11 @@ from sklearn import datasets
 from sklearn import preprocessing
 from sklearn.model_selection import cross_validate
 from uci_glass import fetch_uci_glass
+from uci_libras import fetch_uci_libras
 import numpy as np
 import random
 NUM_OF_CLUSTER = [3, 4, 5, 6]
+NUM_OF_CLUSTER_LIBRAS = [13, 14, 15, 16]
 def construct_sim_matrix(num_of_points, pos_sim_list):
     '''
     each element of pos_sim_list is a tuple of the form `(pos_x, pos_y, sim_value)`
@@ -117,6 +119,11 @@ def Glass():
     feature, ground_truth = fetch_uci_glass()
     feature = preprocessing.scale(feature)
     return compute_adjusted_rand_score(feature, ground_truth)
+
+def Libras():
+    feature, ground_truth = fetch_uci_libras()
+    feature = preprocessing.scale(feature)
+    return compute_adjusted_rand_score(feature, ground_truth)
     
 def compute():
     dic = {}
@@ -124,6 +131,7 @@ def compute():
     dic['Circle'] = Circle()
     dic['Iris'] = Iris()
     dic['Glass'] = Glass()
+    dic['Libras'] = Libras()
     return dic
     
 if __name__ == '__main__':
