@@ -3,7 +3,7 @@
     plot artificial dataset
 '''
 from matplotlib import pyplot as plt
-import graph_cluster
+import info_cluster
 
 color_list = ['#3FF711', 'r', 'g', 'm','y','k','c','#00FF00']
 marker_list = ['o', 'v', 's', '*', '+', 'x', 'D', '1']
