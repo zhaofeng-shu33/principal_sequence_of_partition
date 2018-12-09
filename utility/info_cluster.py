@@ -4,6 +4,7 @@ import cmath
 import numpy as np
 import psp # [package] principal sequence of partition
 from sklearn.metrics.pairwise import pairwise_kernels
+from sklearn.neighbors import kneighbors_graph
 class InfoCluster:
     '''Info clustering is a kind of hierarchical clustering method.
     It uses top down approach to build the hierarchical tree.
@@ -14,10 +15,14 @@ class InfoCluster:
         Kernel coefficient for rbf kernels.
     affinity : string, default 'rbf'
         may be one of 'precomputed', 'rbf'.        
+    n_neighbors : integer
+        Number of neighbors to use when constructing the affinity matrix using
+        the nearest neighbors method. Ignored for ``affinity='rbf'``.        
     '''
-    def __init__(self, gamma=1, affinity='rbf'):    
+    def __init__(self, gamma=1, affinity='rbf', n_neighbors=10):    
         self._gamma = gamma;
         self.affinity = affinity
+        self.n_neighbors = n_neighbors
     def fit(self, X):
         '''Construct an affinity graph from X using rbf kernel function,
         then applies info clustering to this affinity graph.
@@ -29,6 +34,9 @@ class InfoCluster:
         n_samples = X.shape[0]
         if(self.affinity == 'precomputed'):
             affinity_matrix = X
+        elif(self.affinity == 'nearest_neighbors'):
+            connectivity = kneighbors_graph(X, n_neighbors=self.n_neighbors,include_self=True)
+            affinity_matrix = 0.5 * (connectivity + connectivity.T)        
         else:
             affinity_matrix = pairwise_kernels(X, metric='rbf', gamma = self._gamma)
             
