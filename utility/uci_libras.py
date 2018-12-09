@@ -10,7 +10,6 @@ from os.path import dirname, exists, join
 from os import makedirs, remove
 
 import numpy as np
-from scipy.io.matlab import loadmat
 
 from sklearn.datasets.base import get_data_home
 from sklearn.datasets.base import _fetch_remote
@@ -34,7 +33,7 @@ def fetch_uci_libras(data_home=None, shuffle=False, random_state=0,
     =================   =====================
     Classes                                15
     Samples total                         360
-    Dimensionality                       91
+    Dimensionality                       90
     Features                            real
     =================   =====================    
     Parameters

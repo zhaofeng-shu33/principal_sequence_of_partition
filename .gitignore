@@ -1,1 +1,4 @@
 build/*
+utility/*.dll
+utility/*.eps
+utility/__pycache__/*
