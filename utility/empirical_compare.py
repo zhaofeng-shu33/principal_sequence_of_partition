@@ -47,7 +47,7 @@ def _generate_three_circle_data():
 
 def _kmeans(feature, ground_truth, n_clusters_list):
     ref_sc = -1
-    optimal_n_c = -1
+    optimal_n_c = 0
     for n_c in n_clusters_list:
         c = cluster.KMeans(n_clusters=n_c)
         scores = cross_validate(c, feature, ground_truth, scoring='adjusted_rand_score', cv=5, return_train_score=False)
@@ -60,10 +60,10 @@ def _kmeans(feature, ground_truth, n_clusters_list):
     return ars_kmeans
 
 def _spectral_clustering(feature, ground_truth, n_clusters_list):
-    ref_sc = 0
-    optimal_n_c = -1
+    ref_sc = -1
+    optimal_n_c = 0
     for n_c in n_clusters_list:
-        c = cluster.SpectralClustering(n_clusters=n_c, affinity="nearest_neighbors") # construct affinity matrix from rbf kernel function
+        c = cluster.SpectralClustering(n_clusters=n_c, affinity="nearest_neighbors", eigen_solver='arpack') # construct affinity matrix from rbf kernel function
         # cannot use cv since spectral clustering does not provide fitting method
         y_pred_sc = c.fit_predict(feature)
         sc = metrics.adjusted_rand_score(ground_truth, y_pred_sc)
@@ -75,7 +75,7 @@ def _spectral_clustering(feature, ground_truth, n_clusters_list):
 def _info_clustering(feature, ground_truth, n_clusters_list):
     # we should fine tuning the min required cluster instead of lambda s.t. I(Z_V)>lambda
     # this is because lambda is variant in difference cases, and grid search is not economic
-    ref_sc = 0
+    ref_sc = -1
     optimal_n_c = 0
     
     g = info_cluster.InfoCluster(gamma = 0.6, affinity = 'nearest_neighbors')
