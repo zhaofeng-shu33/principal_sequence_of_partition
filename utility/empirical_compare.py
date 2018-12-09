@@ -78,7 +78,7 @@ def _info_clustering(feature, ground_truth, n_clusters_list):
     ref_sc = 0
     optimal_n_c = 0
     
-    g = info_cluster.InfoCluster(gamma = 0.6)
+    g = info_cluster.InfoCluster(gamma = 0.6, affinity = 'nearest_neighbors')
     g.fit(feature)
     for n_c in n_clusters_list:
         y_pred_ic = g.get_category(n_c)
