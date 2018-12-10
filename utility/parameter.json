@@ -14,17 +14,17 @@
         }
     },
     "Circle": {
-        "k-means": 5,
+        "k-means": 6,
         "spectral clustering": 4,
         "affinity propagation": [
             -10,
             0.5
         ],
         "info-clustering": {
-            "nc": 8,
+            "nc": 5,
             "affinity": "nearest_neighbors",
-            "n_neighbors": 10,
-            "gamma": 0
+            "n_neighbors": 6,
+            "gamma": 0.06
         }
     },
     "Iris": {
@@ -63,10 +63,10 @@
             0.8
         ],
         "info-clustering": {
-            "nc": 76,
+            "nc": 149,
             "affinity": "rbf",
             "n_neighbors": 0,
-            "gamma": 0.6
+            "gamma": 1
         }
     }
 }

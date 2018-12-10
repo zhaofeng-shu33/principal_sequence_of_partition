@@ -92,7 +92,6 @@ def Circle(parameter_dic):
         
 def Iris(parameter_dic):
     feature, ground_truth = datasets.load_iris(return_X_y = True)
-    feature = preprocessing.scale(feature)
     return compute_adjusted_rand_score(feature, ground_truth, parameter_dic)    
 
 def Glass(parameter_dic):

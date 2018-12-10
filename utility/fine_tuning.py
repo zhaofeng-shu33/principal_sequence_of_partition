@@ -173,7 +173,6 @@ def Circle(method, config):
         
 def Iris(method, config):
     feature, ground_truth = datasets.load_iris(return_X_y = True)
-    feature = preprocessing.scale(feature)
     return fine_tuning(feature, ground_truth, method, config)    
 
 def Glass(method, config):

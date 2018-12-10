@@ -21,10 +21,10 @@
       "damping_factor_list": [ 0.5, 0.8 ]
     },
     "info-clustering": {
-      "n_clusters_list": [ 3, 4, 5, 6 ],
-      "n_neighbors_list": [ 10 ],
-      "affinity": "nearest_neighbors",
-      "gamma_list": [ 0.6 ]
+      "n_clusters_list": [ 3],
+      "n_neighbors_list": [ 6, 10, 14 ],
+      "affinity": [ "nearest_neighbors", "rbf" ],
+      "gamma_list": [ 0.06, 0.6, 2 ]
     }
   },
   "Iris": {
@@ -63,9 +63,9 @@
       "damping_factor_list": [ 0.5, 0.8 ]
     },
     "info-clustering": {
-      "n_clusters_list": [ 15 ],
-      "affinity": [ "nearest_neighbors", "rbf" ],
-      "gamma_list": [ 0.6, 2, 8 ],
+      "n_clusters_list": [ 10, 15 ],
+      "affinity": ["rbf" ],
+      "gamma_list": [ 1, 2, 5 ],
       "n_neighbors_list":  [6, 10, 14]
     }
   }
