@@ -48,7 +48,7 @@ def _generate_three_circle_data():
             angle = 2*np.pi * random.random()
             pos_list.append([r * np.cos(angle), r * np.sin(angle)])
             ground_truth.append(i)
-    return (np.asarray(pos_list), ground_truth)
+    return (np.asarray(pos_list), np.asarray(ground_truth))
 
 def _kmeans(feature, ground_truth, n_clusters_list):
     ref_sc = -1
@@ -62,7 +62,7 @@ def _kmeans(feature, ground_truth, n_clusters_list):
             ref_sc = sc
     y_pred_kmeans = cluster.KMeans(n_clusters=optimal_n_c).fit_predict(feature)
     ars_kmeans = metrics.adjusted_rand_score(ground_truth, y_pred_kmeans)    
-    logging.info('ari %.3f'% ref_sc)                
+    logging.info('ari %.3f'% ars_kmeans)                
     return optimal_n_c
 
 def _spectral_clustering(feature, ground_truth, n_clusters_list):
@@ -142,6 +142,7 @@ def Gaussian():
 def Circle():
     global NUM_OF_CLUSTER    
     pos_list, ground_truth = _generate_three_circle_data()
+    np.hstack((pos_list, ground_truth.reshape(len(ground_truth),1))).dump('Circle.npx')    
     return fine_tuning(pos_list, ground_truth, NUM_OF_CLUSTER)
         
 def Iris():

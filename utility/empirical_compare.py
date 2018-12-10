@@ -34,18 +34,6 @@ def construct_sim_matrix(num_of_points, pos_sim_list):
         sim_matrix[pos_y, pos_x] = sim_value
     return sim_matrix
 
-def _generate_three_circle_data():
-    pos_list = []
-    num_list = [60,100,140]
-    ground_truth = []
-    for i in range(1,4): # radius: 0.1*i
-        for j in range(num_list[i-1]):
-            r = 0.1*i + 0.01 * (2*random.random()-1)
-            angle = 2*np.pi * random.random()
-            pos_list.append([r * np.cos(angle), r * np.sin(angle)])
-            ground_truth.append(i)
-    return (np.asarray(pos_list), ground_truth)
-
 def _kmeans(feature, ground_truth, n_c):
     y_pred_kmeans = cluster.KMeans(n_clusters=n_c).fit_predict(feature)
     ars_kmeans = metrics.adjusted_rand_score(ground_truth, y_pred_kmeans)    
@@ -97,7 +85,9 @@ def Gaussian(parameter_dic):
     
     
 def Circle(parameter_dic):
-    pos_list, ground_truth = _generate_three_circle_data()
+    data = np.load('Circle.npx')
+    pos_list = data[:,:2]
+    ground_truth = data[:,-1]
     return compute_adjusted_rand_score(pos_list, ground_truth, parameter_dic)
         
 def Iris(parameter_dic):
