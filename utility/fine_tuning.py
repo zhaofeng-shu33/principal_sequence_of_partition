@@ -62,6 +62,7 @@ def _kmeans(feature, ground_truth, n_clusters_list):
             ref_sc = sc
     y_pred_kmeans = cluster.KMeans(n_clusters=optimal_n_c).fit_predict(feature)
     ars_kmeans = metrics.adjusted_rand_score(ground_truth, y_pred_kmeans)    
+    logging.info('ari %.3f'% ref_sc)                
     return optimal_n_c
 
 def _spectral_clustering(feature, ground_truth, n_clusters_list):
@@ -75,6 +76,7 @@ def _spectral_clustering(feature, ground_truth, n_clusters_list):
         if(sc>ref_sc):
             optimal_n_c = n_c
             ref_sc = sc
+    logging.info('ari %.3f'% ref_sc)                        
     return optimal_n_c
 
 def _info_clustering(feature, ground_truth, n_clusters_list):
@@ -91,6 +93,7 @@ def _info_clustering(feature, ground_truth, n_clusters_list):
         if(sc>ref_sc):
             optimal_n_c = n_c
             ref_sc = sc
+    logging.info('ari %.3f'% ref_sc)            
     return optimal_n_c
 def _affinity_propagation(feature, ground_truth, preference_list, damping_factor_list):
     ref_sc = -1
@@ -105,6 +108,7 @@ def _affinity_propagation(feature, ground_truth, preference_list, damping_factor
                 ref_sc = ars_af
                 optimal_preference = p
                 optimal_damping_factor = d
+    logging.info('ari %.3f'% ref_sc)                            
     return (optimal_preference, optimal_damping_factor)
     
 def fine_tuning(feature, ground_truth, n_clusters_list):
@@ -131,6 +135,7 @@ def fine_tuning(feature, ground_truth, n_clusters_list):
 def Gaussian():
     global NUM_OF_CLUSTER
     pos_list, ground_truth = datasets.make_blobs(n_samples = 100, centers=[[3,3],[-3,-3],[3,-3],[-3,3]], cluster_std=1)
+    np.hstack((pos_list, ground_truth.reshape(len(ground_truth),1))).dump('Gaussian.npx')
     return fine_tuning(pos_list, ground_truth, NUM_OF_CLUSTER)
     
     
@@ -161,7 +166,7 @@ def compute(dataset):
     global PARAMETER_FILE_NAME
     dic = json.loads(open(PARAMETER_FILE_NAME).read())
     if(dic.get(dataset)):
-        return
+        return dic
     logging.info('tuning for dataset ' + dataset)
     exec('dic["%s"] = %s()' % (dataset, dataset)) 
     return dic

@@ -90,7 +90,9 @@ def compute_adjusted_rand_score(feature, ground_truth, parameter_dic):
     return {'k-means':ars_kmeans, 'spectral clustering':ars_sc, 'affinity propagation': ars_af, 'info-clustering': ars_ic}
     
 def Gaussian(parameter_dic):
-    pos_list, ground_truth = datasets.make_blobs(n_samples = 100, centers=[[3,3],[-3,-3],[3,-3],[-3,3]], cluster_std=1)
+    data = np.load('Gaussian.npx')
+    pos_list = data[:,:2]
+    ground_truth = data[:,-1]
     return compute_adjusted_rand_score(pos_list, ground_truth, parameter_dic)
     
     
