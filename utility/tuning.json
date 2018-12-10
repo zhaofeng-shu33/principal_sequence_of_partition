@@ -33,9 +33,10 @@
       "damping_factor_list": [ 0.5, 0.8 ]
     },
     "info-clustering": {
-      "n_clusters_list": [3],
-      "affinity": "rbf",
-      "gamma_list":  [0.6, 0.06]
+      "n_clusters_list": [ 3 ],
+      "affinity": [ "nearest_neighbors", "rbf"],
+      "n_neighbors_list": [8, 10, 12],
+      "gamma_list": [0.6, 2, 8]
     }
   },
   "Glass": {
@@ -46,9 +47,10 @@
       "damping_factor_list": [ 0.5, 0.8 ]
     },
     "info-clustering": {
-      "n_clusters_list": [ 3, 4, 5, 6 ],
-      "affinity": "nearest_neighbors",
-      "gamma_list": [ 0.6 ]
+      "n_clusters_list": [6],
+      "affinity": [ "nearest_neighbors", "rbf" ],
+      "gamma_list": [0.6, 2, 8],
+      "n_neighbors_list":  [6, 10, 14]
     }
   },
   "Libras": {
@@ -61,8 +63,8 @@
     "info-clustering": {
       "n_clusters_list": [ 13, 14, 15, 16 ],
       "affinity": "nearest_neighbors",
-      "gamma_list": [ 0.6 ]
-
+      "gamma_list": [ 0.6 ],
+      "n_neighbors_list":  [10]
     }
   }
 }

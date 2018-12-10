@@ -26,16 +26,6 @@ TUNING_CONFIGURE_NAME = 'tuning.json'
 PARAMETER_FILE_NAME = 'parameter.json'
 logging.basicConfig(filename='fine_tuning.log', level=logging.INFO, format='%(asctime)s %(message)s')
 
-def construct_sim_matrix(num_of_points, pos_sim_list):
-    '''
-    each element of pos_sim_list is a tuple of the form `(pos_x, pos_y, sim_value)`
-    '''
-    sim_matrix = np.zeros([num_of_points, num_of_points])
-    for pos_x, pos_y, sim_value in pos_sim_list:
-        sim_matrix[pos_x, pos_y] = sim_value
-        sim_matrix[pos_y, pos_x] = sim_value
-    return sim_matrix
-
 def _generate_three_circle_data():
     pos_list = []
     num_list = [60,100,140]
@@ -81,18 +71,36 @@ def _info_clustering(feature, ground_truth, config):
     # we should fine tuning the min required cluster instead of lambda s.t. I(Z_V)>lambda
     # this is because lambda is variant in difference cases, and grid search is not economic
     ref_sc = -1
-    optimal_n_c = 0
-    for _gamma in config['gamma_list']:
-        g = info_cluster.InfoCluster(gamma = _gamma, affinity = config['affinity'])
-        g.fit(feature)
-        for n_c in config['n_clusters_list']:
-            y_pred_ic = g.get_category(n_c)
-            sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
-            if(sc>ref_sc):
-                optimal_n_c = n_c
-                ref_sc = sc
-        logging.info('ari %.3f, gamma = %f, affinity = %s'% (ref_sc, _gamma, config['affinity']))            
-    return optimal_n_c
+    optimal_parameter = {'nc':0,'affinity':'rbf','n_neighbors':0,'gamma':0}
+    if(config['affinity'].count('rbf')>0):
+        for _gamma in config['gamma_list']:
+            g = info_cluster.InfoCluster(gamma = _gamma, affinity = 'rbf')
+            g.fit(feature)
+            for n_c in config['n_clusters_list']:
+                y_pred_ic = g.get_category(n_c)
+                sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
+                if(sc>ref_sc):
+                    optimal_parameter['affinity'] = 'rbf'
+                    optimal_parameter['gamma'] = _gamma
+                    optimal_parameter['nc'] = g.get_num_cat(n_c)
+                    ref_sc = sc
+            logging.info('nc = %d, ari = %.3f, gamma = %f, affinity = rbf'% (optimal_n_c, sc, _gamma))            
+    if(config['affinity'].count('nearest_neighbors')>0):
+        for _n_neighbors in config['n_neighbors_list']:
+            g = info_cluster.InfoCluster(affinity = 'nearest_neighbors', n_neighbors=_n_neighbors)
+            g.fit(feature)
+            for n_c in config['n_clusters_list']:
+                y_pred_ic = g.get_category(n_c)
+                sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
+                if(sc>ref_sc):
+                    optimal_parameter['affinity'] = 'nearest_neighbors'
+                    optimal_parameter['n_neighbors'] = _n_neighbors
+                    optimal_parameter['nc'] = g.get_num_cat(n_c)
+                    ref_sc = sc
+            logging.info('nc = %d, ari = %.3f, n_neighbors = %d, affinity = nearest_neighbors'% (optimal_n_c, sc, _n_neighbors))            
+            
+    return optimal_parameter
+    
 def _affinity_propagation(feature, ground_truth, config):
     ref_sc = -1
     optimal_preference = 0
@@ -195,7 +203,7 @@ def compute(dataset, method):
 
 def make_json(dic):
     global PARAMETER_FILE_NAME
-    open(PARAMETER_FILE_NAME,'w').write(json.dumps(dic))
+    open(PARAMETER_FILE_NAME,'w').write(json.dumps(dic, indent=4))
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -5,6 +5,7 @@ import numpy as np
 import psp # [package] principal sequence of partition
 from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.neighbors import kneighbors_graph
+
 class InfoCluster:
     '''Info clustering is a kind of hierarchical clustering method.
     It uses top down approach to build the hierarchical tree.
@@ -52,7 +53,14 @@ class InfoCluster:
         self.partition_num_list = to_py_list(self.g.get_partitions())    
     def get_category(self, i):
         return to_py_list(self.g.get_category(i))        
-        
+    def get_num_cat(self, min_num):
+        '''
+        return the index of partition whose first element is no smaller than min_num,
+        '''
+        for i in self.partition_num_list:
+            if(i>=min_num):
+                return i
+        return -1        
 class ThreeCircle:
     def __init__(self, np_list, gamma_1=1, gamma_2=1):
         '''
