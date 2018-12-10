@@ -64,8 +64,8 @@
     },
     "info-clustering": {
       "n_clusters_list": [ 10, 15 ],
-      "affinity": ["rbf" ],
-      "gamma_list": [ 1, 2, 5 ],
+      "affinity": ["rbf", "nearest_neighbors"],
+      "gamma_list": [ 1 ],
       "n_neighbors_list":  [6, 10, 14]
     }
   }

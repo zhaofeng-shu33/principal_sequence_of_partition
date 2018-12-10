@@ -119,7 +119,7 @@ def make_table(dic):
     for i in table:
         for _, v in dic.items():
             i.append('%.2f'%v.get(i[0]))
-    _headers = ['']
+    _headers = ['adjusted rand index']
     _headers.extend(list(dic.keys()))
     latex_table_string = tabulate(table, headers = _headers, tablefmt = 'latex_raw')
     open(LATEX_TABLE_NAME,'w').write(latex_table_string)
