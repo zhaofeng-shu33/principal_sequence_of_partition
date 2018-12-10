@@ -46,8 +46,8 @@ def _spectral_clustering(feature, ground_truth, n_c):
     sc = metrics.adjusted_rand_score(ground_truth, y_pred_sc)
     return sc
 
-def _info_clustering(feature, ground_truth, n_c):
-    g = info_cluster.InfoCluster(gamma = 0.6, affinity = 'nearest_neighbors')
+def _info_clustering(feature, ground_truth, parameter):
+    g = info_cluster.InfoCluster(gamma = parameter['gamma'], affinity = parameter['affinity'], n_neighbors = parameter['n_neighbors'])
     g.fit(feature)
     y_pred_ic = g.get_category(n_c)
     sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)

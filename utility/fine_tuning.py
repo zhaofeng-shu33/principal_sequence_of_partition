@@ -84,7 +84,7 @@ def _info_clustering(feature, ground_truth, config):
                     optimal_parameter['gamma'] = _gamma
                     optimal_parameter['nc'] = g.get_num_cat(n_c)
                     ref_sc = sc
-            logging.info('nc = %d, ari = %.3f, gamma = %f, affinity = rbf'% (optimal_n_c, sc, _gamma))            
+            logging.info('nc = %d, ari = %.3f, gamma = %f, affinity = rbf'% (optimal_parameter['nc'], sc, _gamma))            
     if(config['affinity'].count('nearest_neighbors')>0):
         for _n_neighbors in config['n_neighbors_list']:
             g = info_cluster.InfoCluster(affinity = 'nearest_neighbors', n_neighbors=_n_neighbors)
@@ -97,7 +97,7 @@ def _info_clustering(feature, ground_truth, config):
                     optimal_parameter['n_neighbors'] = _n_neighbors
                     optimal_parameter['nc'] = g.get_num_cat(n_c)
                     ref_sc = sc
-            logging.info('nc = %d, ari = %.3f, n_neighbors = %d, affinity = nearest_neighbors'% (optimal_n_c, sc, _n_neighbors))            
+            logging.info('nc = %d, ari = %.3f, n_neighbors = %d, affinity = nearest_neighbors'% (optimal_parameter['nc'], sc, _n_neighbors))            
             
     return optimal_parameter
     
