@@ -190,8 +190,6 @@ def compute(dataset, method):
     global PARAMETER_FILE_NAME, TUNING_CONFIGURE_NAME, logging
     dic = json.loads(open(PARAMETER_FILE_NAME).read())
     tuning_dic = json.loads(open(TUNING_CONFIGURE_NAME).read())
-    if(method == 'all' and dic.get(dataset)):
-        return dic
     logging.info('tuning for dataset ' + dataset)
     config = tuning_dic["%s"%dataset]
     if(method == 'all'):
