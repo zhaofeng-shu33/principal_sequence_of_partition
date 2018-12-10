@@ -1,0 +1,68 @@
+{
+  "Gaussian": {
+    "k-means": { "n_clusters_list": [ 3, 4, 5, 6 ] },
+    "spectral clustering": { "n_clusters_list": [ 3, 4, 5, 6 ] },
+    "affinity propagation": {
+      "preference_list": [ -10, -50, -120, -200 ],
+      "damping_factor_list": [ 0.5, 0.8 ]
+    },
+    "info-clustering": {
+      "n_clusters_list": [ 3, 4, 5, 6 ],
+      "affinity": "nearest_neighbors",
+      "gamma_list": [0.6]
+    }
+  },
+  "Circle": {
+    "k-means": { "n_clusters_list": [ 3, 4, 5, 6 ] },
+    "spectral clustering": { "n_clusters_list": [ 3, 4, 5, 6 ] },
+    "affinity propagation": {
+      "preference_list": [ -10, -50, -120, -200 ],
+      "damping_factor_list": [ 0.5, 0.8 ]
+    },
+    "info-clustering": {
+      "n_clusters_list": [ 3, 4, 5, 6 ],
+      "affinity": "nearest_neighbors",
+      "gamma_list": [0.6]
+    }
+  },
+  "Iris": {
+    "k-means": { "n_clusters_list": [ 3, 4, 5, 6 ] },
+    "spectral clustering": { "n_clusters_list": [ 3, 4, 5, 6 ] },
+    "affinity propagation": {
+      "preference_list": [ -10, -50, -120, -200 ],
+      "damping_factor_list": [ 0.5, 0.8 ]
+    },
+    "info-clustering": {
+      "n_clusters_list": [3],
+      "affinity": "rbf",
+      "gamma_list":  [0.6, 0.06]
+    }
+  },
+  "Glass": {
+    "k-means": { "n_clusters_list": [ 3, 4, 5, 6 ] },
+    "spectral clustering": { "n_clusters_list": [ 3, 4, 5, 6 ] },
+    "affinity propagation": {
+      "preference_list": [ -10, -50, -120, -200 ],
+      "damping_factor_list": [ 0.5, 0.8 ]
+    },
+    "info-clustering": {
+      "n_clusters_list": [ 3, 4, 5, 6 ],
+      "affinity": "nearest_neighbors",
+      "gamma_list": [ 0.6 ]
+    }
+  },
+  "Libras": {
+    "k-means": { "n_clusters_list": [ 13, 14, 15, 16 ] },
+    "spectral clustering": { "n_clusters_list": [ 13, 14, 15, 16 ] },
+    "affinity propagation": {
+      "preference_list": [ -10, -50, -120, -200 ],
+      "damping_factor_list": [ 0.5, 0.8 ]
+    },
+    "info-clustering": {
+      "n_clusters_list": [ 13, 14, 15, 16 ],
+      "affinity": "nearest_neighbors",
+      "gamma_list": [ 0.6 ]
+
+    }
+  }
+}

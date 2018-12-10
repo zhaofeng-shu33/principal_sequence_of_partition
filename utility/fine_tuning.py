@@ -6,6 +6,7 @@ import random
 import json
 import logging
 import argparse
+import os
 import pdb
 # third party module
 import sklearn
@@ -21,10 +22,7 @@ from uci_glass import fetch_uci_glass
 from uci_libras import fetch_uci_libras
 
 # module level global variables go here
-NUM_OF_CLUSTER = [3, 4, 5, 6]
-NUM_OF_CLUSTER_LIBRAS = [13, 14, 15, 16]
-PREFERENCE_LIST = [-10, -50, -120, -200]
-DAMPING_FACTOR_LIST = [0.5, 0.8]
+TUNING_CONFIGURE_NAME = 'tuning.json'
 PARAMETER_FILE_NAME = 'parameter.json'
 logging.basicConfig(filename='fine_tuning.log', level=logging.INFO, format='%(asctime)s %(message)s')
 
@@ -50,10 +48,10 @@ def _generate_three_circle_data():
             ground_truth.append(i)
     return (np.asarray(pos_list), np.asarray(ground_truth))
 
-def _kmeans(feature, ground_truth, n_clusters_list):
+def _kmeans(feature, ground_truth, config):
     ref_sc = -1
     optimal_n_c = 0
-    for n_c in n_clusters_list:
+    for n_c in config['n_clusters_list']:
         c = cluster.KMeans(n_clusters=n_c)
         scores = cross_validate(c, feature, ground_truth, scoring='adjusted_rand_score', cv=5, return_train_score=False)
         sc = scores['test_score'].mean()
@@ -65,10 +63,10 @@ def _kmeans(feature, ground_truth, n_clusters_list):
     logging.info('ari %.3f'% ars_kmeans)                
     return optimal_n_c
 
-def _spectral_clustering(feature, ground_truth, n_clusters_list):
+def _spectral_clustering(feature, ground_truth, config):
     ref_sc = -1
     optimal_n_c = 0
-    for n_c in n_clusters_list:
+    for n_c in config['n_clusters_list']:
         c = cluster.SpectralClustering(n_clusters=n_c, affinity="nearest_neighbors", eigen_solver='arpack') # construct affinity matrix from rbf kernel function
         # cannot use cv since spectral clustering does not provide fitting method
         y_pred_sc = c.fit_predict(feature)
@@ -79,28 +77,28 @@ def _spectral_clustering(feature, ground_truth, n_clusters_list):
     logging.info('ari %.3f'% ref_sc)                        
     return optimal_n_c
 
-def _info_clustering(feature, ground_truth, n_clusters_list):
+def _info_clustering(feature, ground_truth, config):
     # we should fine tuning the min required cluster instead of lambda s.t. I(Z_V)>lambda
     # this is because lambda is variant in difference cases, and grid search is not economic
     ref_sc = -1
     optimal_n_c = 0
-    
-    g = info_cluster.InfoCluster(gamma = 0.6, affinity = 'nearest_neighbors')
-    g.fit(feature)
-    for n_c in n_clusters_list:
-        y_pred_ic = g.get_category(n_c)
-        sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
-        if(sc>ref_sc):
-            optimal_n_c = n_c
-            ref_sc = sc
-    logging.info('ari %.3f'% ref_sc)            
+    for _gamma in config['gamma_list']:
+        g = info_cluster.InfoCluster(gamma = _gamma, affinity = config['affinity'])
+        g.fit(feature)
+        for n_c in config['n_clusters_list']:
+            y_pred_ic = g.get_category(n_c)
+            sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
+            if(sc>ref_sc):
+                optimal_n_c = n_c
+                ref_sc = sc
+        logging.info('ari %.3f, gamma = %f, affinity = %s'% (ref_sc, _gamma, config['affinity']))            
     return optimal_n_c
-def _affinity_propagation(feature, ground_truth, preference_list, damping_factor_list):
+def _affinity_propagation(feature, ground_truth, config):
     ref_sc = -1
     optimal_preference = 0
-    optimal_damping_factor = -1        
-    for p in preference_list:
-        for d in damping_factor_list:
+    optimal_damping_factor = -1 
+    for p in config['preference_list']:
+        for d in config['damping_factor_list']:
             af = cluster.AffinityPropagation(preference=p, damping=d).fit(feature)
             y_pred_af = af.labels_
             ars_af = metrics.adjusted_rand_score(ground_truth, y_pred_af)
@@ -111,65 +109,88 @@ def _affinity_propagation(feature, ground_truth, preference_list, damping_factor
     logging.info('ari %.3f'% ref_sc)                            
     return (optimal_preference, optimal_damping_factor)
     
-def fine_tuning(feature, ground_truth, n_clusters_list):
-    global PREFERENCE_LIST, DAMPING_FACTOR_LIST;
-    logging.info('Start tuning for kmeans')
-    kmeans_nc = _kmeans(feature, ground_truth, n_clusters_list)
-    logging.info('optimal number of cluster is %d'% kmeans_nc)
-    
-    logging.info('Start tuning for spectral clustering')
-    sc_nc = _spectral_clustering(feature, ground_truth, n_clusters_list)
-    logging.info('optimal number of cluster is %d' % sc_nc)
-    
-    # there are two hyperparameters (preference and damping)in AP algorithm.
-    logging.info('Start tuning for affinity propagation')    
-    af_parameter = _affinity_propagation(feature, ground_truth, PREFERENCE_LIST, DAMPING_FACTOR_LIST)
-    logging.info('optimal preference is {0}, optimal damping factor is {1}'.format(af_parameter[0], af_parameter[1]))
+def fine_tuning(feature, ground_truth, method, config):
+    global logging
+    dic = {}
+    if(method == 'all' or method == 'k-means'):
+        logging.info('Start tuning for kmeans')
+        parameter = _kmeans(feature, ground_truth, config['k-means'])
+        dic['k-means'] = parameter
+        logging.info('optimal number of cluster is %d'% parameter)
 
-    logging.info('Start tuning for info-clustering')        
-    ic_nc = _info_clustering(feature, ground_truth, n_clusters_list)
-    logging.info('optimal number of cluster is {0}'.format(ic_nc))        
+    if(method == 'all' or method == 'spectral clustering'):        
+        logging.info('Start tuning for spectral clustering')
+        parameter = _spectral_clustering(feature, ground_truth, config['spectral clustering'])
+        dic['spectral clustering'] = parameter        
+        logging.info('optimal number of cluster is %d' % parameter)
+
+    if(method == 'all' or method == 'affinity propagation'):                
+        # there are two hyperparameters (preference and damping)in AP algorithm.
+        logging.info('Start tuning for affinity propagation')    
+        parameter = _affinity_propagation(feature, ground_truth, config['affinity propagation'])
+        dic['affinity propagation'] = parameter                
+        logging.info('optimal preference is {0}, optimal damping factor is {1}'.format(parameter[0], parameter[1]))
     
-    return {'k-means':kmeans_nc, 'spectral clustering':sc_nc, 'affinity propagation': af_parameter, 'info-clustering': ic_nc}
-    
-def Gaussian():
-    global NUM_OF_CLUSTER
-    pos_list, ground_truth = datasets.make_blobs(n_samples = 100, centers=[[3,3],[-3,-3],[3,-3],[-3,3]], cluster_std=1)
-    np.hstack((pos_list, ground_truth.reshape(len(ground_truth),1))).dump('Gaussian.npx')
-    return fine_tuning(pos_list, ground_truth, NUM_OF_CLUSTER)
-    
-    
-def Circle():
-    global NUM_OF_CLUSTER    
-    pos_list, ground_truth = _generate_three_circle_data()
-    np.hstack((pos_list, ground_truth.reshape(len(ground_truth),1))).dump('Circle.npx')    
-    return fine_tuning(pos_list, ground_truth, NUM_OF_CLUSTER)
+    if(method == 'all' or method == 'info-clustering'):        
+        logging.info('Start tuning for info-clustering')        
+        parameter = _info_clustering(feature, ground_truth, config['info-clustering'])
+        dic['info-clustering'] = parameter                
+        logging.info('optimal number of cluster is {0}'.format(parameter))        
         
-def Iris():
-    global NUM_OF_CLUSTER
+    if(method == 'all'):
+        return dic
+    else:
+        return parameter
+        
+def Gaussian(method, config):
+    if(os.path.exists('Gaussian.npx')):
+        data = np.load('Gaussian.npx')
+        pos_list = data[:,:2]
+        ground_truth = data[:,-1]   
+    else:      
+        pos_list, ground_truth = datasets.make_blobs(n_samples = 100, centers=[[3,3],[-3,-3],[3,-3],[-3,3]], cluster_std=1)
+        np.hstack((pos_list, ground_truth.reshape(len(ground_truth),1))).dump('Gaussian.npx')
+    return fine_tuning(pos_list, ground_truth, method, config)
+    
+    
+def Circle(method, config):
+    if(os.path.exists('Circle.npx')):
+        data = np.load('Circle.npx')
+        pos_list = data[:,:2]
+        ground_truth = data[:,-1]   
+    else:
+        pos_list, ground_truth = _generate_three_circle_data()
+        np.hstack((pos_list, ground_truth.reshape(len(ground_truth),1))).dump('Circle.npx')    
+    return fine_tuning(pos_list, ground_truth, method, config)
+        
+def Iris(method, config):
     feature, ground_truth = datasets.load_iris(return_X_y = True)
     feature = preprocessing.scale(feature)
-    return fine_tuning(feature, ground_truth, NUM_OF_CLUSTER)    
+    return fine_tuning(feature, ground_truth, method, config)    
 
-def Glass():
-    global NUM_OF_CLUSTER
+def Glass(method, config):
     feature, ground_truth = fetch_uci_glass()
     feature = preprocessing.scale(feature)
-    return fine_tuning(feature, ground_truth, NUM_OF_CLUSTER)
+    return fine_tuning(feature, ground_truth, method, config)
 
-def Libras():
-    global NUM_OF_CLUSTER_LIBRAS
+def Libras(method, config):
     feature, ground_truth = fetch_uci_libras()
     feature = preprocessing.scale(feature)
-    return fine_tuning(feature, ground_truth, NUM_OF_CLUSTER_LIBRAS)
+    return fine_tuning(feature, ground_truth, method, config)
     
-def compute(dataset):
-    global PARAMETER_FILE_NAME
+def compute(dataset, method):
+    global PARAMETER_FILE_NAME, TUNING_CONFIGURE_NAME, logging
     dic = json.loads(open(PARAMETER_FILE_NAME).read())
-    if(dic.get(dataset)):
+    tuning_dic = json.loads(open(TUNING_CONFIGURE_NAME).read())
+    if(method == 'all' and dic.get(dataset)):
         return dic
     logging.info('tuning for dataset ' + dataset)
-    exec('dic["%s"] = %s()' % (dataset, dataset)) 
+    config = tuning_dic["%s"%dataset]
+    if(method == 'all'):
+        exec('dic["{0}"] = {0}("{1}",{2})'.format(dataset, method, config)) 
+    else:
+        exec('dic["{0}"]["{1}"] = {0}("{1}",{2})' .format(dataset, method, config)) 
+    
     return dic
 
 def make_json(dic):
@@ -179,5 +200,6 @@ def make_json(dic):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('dataset', help='name of the dataset to fine tuning', choices=['Gaussian', 'Circle', 'Iris', 'Glass', 'Libras'])
+    parser.add_argument('--method', help='clustering method to fine tuning', default='all', choices=['all', 'k-means', 'spectral clustering', 'affinity propagation', 'info-clustering'])
     args = parser.parse_args()    
-    make_json(compute(args.dataset))
+    make_json(compute(args.dataset, args.method))
