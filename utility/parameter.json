@@ -1,1 +1,43 @@
-{"Gaussian": {"k-means": 4, "spectral clustering": 4, "affinity propagation": [-50, 0.5], "info-clustering": 4}, "Circle": {"k-means": 4, "spectral clustering": 3, "affinity propagation": [-10, 0.5], "info-clustering": 3}, "Iris": {"k-means": 3, "spectral clustering": 3, "affinity propagation": [-50, 0.8], "info-clustering": 3}, "Glass": {"k-means": 4, "spectral clustering": 5, "affinity propagation": [-50, 0.8], "info-clustering": 42}}
+{
+    "Gaussian": {
+        "k-means": 4,
+        "spectral clustering": 4,
+        "affinity propagation": [
+            -50,
+            0.5
+        ],
+        "info-clustering": 4
+    },
+    "Circle": {
+        "k-means": 4,
+        "spectral clustering": 3,
+        "affinity propagation": [
+            -10,
+            0.5
+        ],
+        "info-clustering": 3
+    },
+    "Iris": {
+        "k-means": 3,
+        "spectral clustering": 3,
+        "affinity propagation": [
+            -50,
+            0.8
+        ],
+        "info-clustering": 3
+    },
+    "Glass": {
+        "k-means": 4,
+        "spectral clustering": 5,
+        "affinity propagation": [
+            -50,
+            0.8
+        ],
+        "info-clustering": {
+            "nc": 42,
+            "affinity": "nearest_neighbors",
+            "n_neighbors": 14,
+            "gamma": 8
+        }
+    }
+}
