@@ -49,7 +49,7 @@ def _spectral_clustering(feature, ground_truth, n_c):
 def _info_clustering(feature, ground_truth, parameter):
     g = info_cluster.InfoCluster(gamma = parameter['gamma'], affinity = parameter['affinity'], n_neighbors = parameter['n_neighbors'])
     g.fit(feature)
-    y_pred_ic = g.get_category(n_c)
+    y_pred_ic = g.get_category(parameter['nc'])
     sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
     return sc
 
@@ -92,7 +92,6 @@ def Circle(parameter_dic):
         
 def Iris(parameter_dic):
     feature, ground_truth = datasets.load_iris(return_X_y = True)
-    feature = preprocessing.scale(feature)
     return compute_adjusted_rand_score(feature, ground_truth, parameter_dic)    
 
 def Glass(parameter_dic):
@@ -120,7 +119,7 @@ def make_table(dic):
     for i in table:
         for _, v in dic.items():
             i.append('%.2f'%v.get(i[0]))
-    _headers = ['']
+    _headers = ['adjusted rand index']
     _headers.extend(list(dic.keys()))
     latex_table_string = tabulate(table, headers = _headers, tablefmt = 'latex_raw')
     open(LATEX_TABLE_NAME,'w').write(latex_table_string)

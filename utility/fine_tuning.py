@@ -173,7 +173,6 @@ def Circle(method, config):
         
 def Iris(method, config):
     feature, ground_truth = datasets.load_iris(return_X_y = True)
-    feature = preprocessing.scale(feature)
     return fine_tuning(feature, ground_truth, method, config)    
 
 def Glass(method, config):
@@ -190,8 +189,6 @@ def compute(dataset, method):
     global PARAMETER_FILE_NAME, TUNING_CONFIGURE_NAME, logging
     dic = json.loads(open(PARAMETER_FILE_NAME).read())
     tuning_dic = json.loads(open(TUNING_CONFIGURE_NAME).read())
-    if(method == 'all' and dic.get(dataset)):
-        return dic
     logging.info('tuning for dataset ' + dataset)
     config = tuning_dic["%s"%dataset]
     if(method == 'all'):
