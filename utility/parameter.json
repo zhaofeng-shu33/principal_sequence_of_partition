@@ -1,0 +1,72 @@
+{
+    "Gaussian": {
+        "k-means": 4,
+        "spectral clustering": 4,
+        "affinity propagation": [
+            -50,
+            0.5
+        ],
+        "info-clustering": {
+            "nc": 4,
+            "affinity": "nearest_neighbors",
+            "n_neighbors": 10,
+            "gamma": 0
+        }
+    },
+    "Circle": {
+        "k-means": 6,
+        "spectral clustering": 4,
+        "affinity propagation": [
+            -10,
+            0.5
+        ],
+        "info-clustering": {
+            "nc": 5,
+            "affinity": "nearest_neighbors",
+            "n_neighbors": 6,
+            "gamma": 0.06
+        }
+    },
+    "Iris": {
+        "k-means": 3,
+        "spectral clustering": 3,
+        "affinity propagation": [
+            -50,
+            0.8
+        ],
+        "info-clustering": {
+            "nc": 3,
+            "affinity": "rbf",
+            "n_neighbors": 0,
+            "gamma": 2
+        }
+    },
+    "Glass": {
+        "k-means": 5,
+        "spectral clustering": 5,
+        "affinity propagation": [
+            -50,
+            0.8
+        ],
+        "info-clustering": {
+            "nc": 42,
+            "affinity": "nearest_neighbors",
+            "n_neighbors": 14,
+            "gamma": 8
+        }
+    },
+    "Libras": {
+        "k-means": 13,
+        "spectral clustering": 13,
+        "affinity propagation": [
+            -120,
+            0.8
+        ],
+        "info-clustering": {
+            "nc": 149,
+            "affinity": "rbf",
+            "n_neighbors": 0,
+            "gamma": 1
+        }
+    }
+}
