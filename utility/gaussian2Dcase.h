@@ -6,6 +6,7 @@
 #include "core/graph.h"
 #include "core/oracles/graph_cut.h"
 #include "core/dt.h"
+#include "core/graph/info_cluster.h"
 namespace std {
     ostream& operator<<(ostream& os, const vector<int>& category) {
         os << '[';
@@ -26,17 +27,16 @@ namespace std {
         return os;
     }
 }
+
 namespace demo {
-    template <typename ValueType>
-    class Gaussian2DGraph {
+    class Gaussian2DGraph : public submodular::InfoCluster {
     public:
-        using value_type = ValueType;
-        using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, value_type>>;
-        Gaussian2DGraph(int np, value_type gamma = 1, value_type a[][2] = NULL) :
+        using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, double>>;
+        Gaussian2DGraph(int np, double gamma = 1, double a[][2] = NULL) :
             distribution(0, 1),
-            _gamma(gamma),
-            num_points(np)
+            _gamma(gamma)
         {
+            this->num_points = np;
             if(a == NULL){
                 // generator num_points 2D points ~ N(0,1) located at different positions
                 unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -71,91 +71,24 @@ namespace demo {
                 }
             sg = submodular::make_dgraph(num_points, edge_list_float_1);
         }
-        void run(bool bruteForce = false) {
-            submodular::DirectedGraphCutOracle<ValueType>* dgc = new submodular::DirectedGraphCutOracle<ValueType>(sg);
-            submodular::PSP<ValueType> psp_class(dgc);
-            psp_class.run(bruteForce);
-            gamma_list = psp_class.Get_critical_values();
-            psp_list = psp_class.Get_psp();
-            delete dgc;
-        }
-        std::vector<value_type>& get_gamma_list() {
-            return gamma_list;
-        }
-        std::vector<value_type> get_critical_values() {
-            std::vector<value_type> critical_value_list;
-            for (int i = 0; i < psp_list.size(); i++) {
-                if (psp_list[i].size() > 0) {
-                    critical_value_list.push_back(gamma_list[i]);
-                }
-            }
-            critical_value_list.pop_back(); // the last value is invalid
-            return critical_value_list;
-        }
-        std::vector<int> get_partitions() {
-            std::vector<int> partitions;
-            for (int i = 0; i < psp_list.size(); i++) {
-                if (psp_list[i].size() > 0) {
-                    partitions.push_back(psp_list[i].size());
-                }
-            }
-            return partitions;
-        }
-
-        std::vector<std::vector<submodular::Set>>& get_psp_list() {
-            return psp_list;
-        }
-        //! get the smallest partition whose size >= k
-        std::vector<submodular::Set>& get_smallest_partition(int k) {
-            for (std::vector<submodular::Set>& i : psp_list) {
-                if (i.size() >= k)
-                    return i;
-            }
-        }
-        //! get the smallest partition whose size >= k, label each data point with an integer
-        std::vector<int> get_category(int k) {            
-            for (std::vector<submodular::Set>& i : psp_list) {
-                if (i.size() >= k){
-                    return to_category(i);
-                }
-            }
-            return std::vector<int>();
-        }
-        std::vector<value_type>& get_x_pos_list() {
+        std::vector<double>& get_x_pos_list() {
             return x_pos;
         }
-        std::vector<value_type>& get_y_pos_list() {
+        std::vector<double>& get_y_pos_list() {
             return y_pos;
         }
-
     private:
         // {src, dst, capacity}
-        int num_points;
         std::default_random_engine generator;
-        std::normal_distribution<value_type> distribution;
-        submodular::SimpleGraph<ValueType> sg;
-        std::vector<value_type> x_pos;
-        std::vector<value_type> y_pos;
-        std::vector<value_type> gamma_list;
-        std::vector<std::vector<submodular::Set>> psp_list;
+        std::normal_distribution<double> distribution;
+        std::vector<double> x_pos;
+        std::vector<double> y_pos;
         EdgeListFloat edge_list_float_1;
-        value_type _gamma;
+        double _gamma;
         int data_1[4][2] = { {3,3},{3,-3},{-3,-3},{-3,3} };
         //! use Gaussian similarity function $exp(-||p_1 - p_2||^2/2) $
-        value_type compute_similarity(value_type x_1, value_type y_1, value_type x_2, value_type y_2) {
+        double compute_similarity(double x_1, double y_1, double x_2, double y_2) {
             return exp(-1.0 * _gamma* pow(x_1 - x_2, 2) - _gamma * pow(y_1 - y_2, 2));
-        }
-        //! form conversion
-        std::vector<int> to_category(std::vector<submodular::Set>& partition) {
-            std::vector<int> cat(num_points, 0);
-            int t = 0;
-            for (submodular::Set& j : partition) {
-                for (int i : j.GetMembers()) {
-                    cat[i] = t;
-                }
-                t++;
-            }
-            return cat;
         }
     };
 
