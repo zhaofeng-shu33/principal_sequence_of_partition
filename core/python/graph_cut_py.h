@@ -26,7 +26,14 @@ namespace submodular {
             sg = pg.sg;
             num_points = pg.num_points;
         }
-
+        //! get the partition which has at least pn clusters
+        std::vector<int> get_labels(int pn) {
+            submodular::DirectedGraphCutOracle<double>* dgc = new submodular::DirectedGraphCutOracle<double>(sg);
+            submodular::PSP<double> psp_class(dgc);
+            std::vector<Set> p = psp_class.run(pn);
+            delete dgc;
+            return to_category(p);
+        }
         void run(bool bruteForce = false) {
             submodular::DirectedGraphCutOracle<double>* dgc = new submodular::DirectedGraphCutOracle<double>(sg);
             submodular::PSP<double> psp_class(dgc);
@@ -49,13 +56,13 @@ namespace submodular {
             return critical_value_list;
         }
         std::vector<int> get_partitions() {
-            std::vector<int> partations;
+            std::vector<int> partitions;
             for (int i = 0; i < psp_list.size(); i++) {
                 if (psp_list[i].size() > 0) {
-                    partations.push_back(psp_list[i].size());
+                    partitions.push_back(psp_list[i].size());
                 }
             }
-            return partations;
+            return partitions;
         }
 
         std::vector<std::vector<submodular::Set>>& get_psp_list() {
@@ -86,10 +93,10 @@ namespace submodular {
         int num_points;
         std::vector<std::vector<submodular::Set>> psp_list;
         //! form conversion
-        std::vector<int> to_category(std::vector<submodular::Set>& partation) {
+        std::vector<int> to_category(std::vector<submodular::Set>& partition) {
             std::vector<int> cat(num_points, 0);
             int t = 0;
-            for (submodular::Set& j : partation) {
+            for (submodular::Set& j : partition) {
                 for (int i : j.GetMembers()) {
                     cat[i] = t;
                 }

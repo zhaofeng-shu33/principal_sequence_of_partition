@@ -36,7 +36,7 @@ else()
     set(DYNAMIC_LIB_SUFFIX so)
 endif()
 
-if(USE_BOOST_OPTION)
+if(USE_BOOST_OPTION OR USE_PYTHON)
     find_package(Boost REQUIRED program_options)
     if(WIN32)
     target_link_libraries(main debug ${Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG})    

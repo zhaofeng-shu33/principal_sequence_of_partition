@@ -56,6 +56,23 @@ class TestPyGraph(unittest.TestCase):
 
         self.assertEqual(p_list, info_cluster.partition_num_list)
 
+    def test_12point(self):
+        _gamma = 0.6
+        num_points = 12
+        g = psp.Gaussian2DGraph(num_points, _gamma)
+        pos_list = construct_pos_list(g.get_x_pos_list(), g.get_y_pos_list())
+        # get the >=4 clusters solution using two method
+        # Method 1
+        g.run(False)
+        cat_1_list = to_py_list(g.get_category(4))
+        # Method 2
+        info_cluster = InfoCluster(gamma=_gamma)
+        cat_2_list = info_cluster.get_category(4, pos_list)
+        
+        # assert
+        total_diff = get_total_diff(cat_1_list, cat_2_list)
+        self.assertTrue(total_diff<1e-5)
+        
 def get_total_diff(L1, L2):
     total_diff = 0
     for i in range(len(L1)):

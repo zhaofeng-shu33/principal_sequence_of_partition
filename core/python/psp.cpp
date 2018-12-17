@@ -30,6 +30,7 @@ BOOST_PYTHON_MODULE(psp)
 
     class_<submodular::PyGraph>("PyGraph", init<int,list>())
         .def("run", &submodular::PyGraph::run)
+        .def("get_labels", &submodular::PyGraph::get_labels)
         .def("get_critical_values", &submodular::PyGraph::get_critical_values)
         .def("get_partitions", &submodular::PyGraph::get_partitions)
         .def("get_category", &submodular::PyGraph::get_category);

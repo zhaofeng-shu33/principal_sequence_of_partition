@@ -93,13 +93,13 @@ namespace demo {
             return critical_value_list;
         }
         std::vector<int> get_partitions() {
-            std::vector<int> partations;
+            std::vector<int> partitions;
             for (int i = 0; i < psp_list.size(); i++) {
                 if (psp_list[i].size() > 0) {
-                    partations.push_back(psp_list[i].size());
+                    partitions.push_back(psp_list[i].size());
                 }
             }
-            return partations;
+            return partitions;
         }
 
         std::vector<std::vector<submodular::Set>>& get_psp_list() {
@@ -146,10 +146,10 @@ namespace demo {
             return exp(-1.0 * _gamma* pow(x_1 - x_2, 2) - _gamma * pow(y_1 - y_2, 2));
         }
         //! form conversion
-        std::vector<int> to_category(std::vector<submodular::Set>& partation) {
+        std::vector<int> to_category(std::vector<submodular::Set>& partition) {
             std::vector<int> cat(num_points, 0);
             int t = 0;
-            for (submodular::Set& j : partation) {
+            for (submodular::Set& j : partition) {
                 for (int i : j.GetMembers()) {
                     cat[i] = t;
                 }

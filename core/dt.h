@@ -152,8 +152,8 @@ namespace submodular {
             critical_values.resize(NodeSize);
             psp.resize(NodeSize);
         }
-        //! evaluate and find the finest partation with $\abs{\P} > \texttt{partation_num}$
-        std::vector<Set> split(std::vector<Set> Q, std::vector<Set> P, int partation_num)
+        //! evaluate and find the finest partition with $\abs{\P} > \texttt{partition_num}$
+        std::vector<Set> split(std::vector<Set> Q, std::vector<Set> P, int partition_num)
         {
             if (Q.size() == P.size()) {
                 throw std::logic_error("Q and P have the same size");
@@ -168,14 +168,14 @@ namespace submodular {
                 return P;
             }
             else {
-                if (P_apostrophe.size() == partation_num) {
+                if (P_apostrophe.size() == partition_num) {
                     return P_apostrophe;
                 }
-                else if (P_apostrophe.size() < partation_num) {
-                    return split(P_apostrophe, P, partation_num);
+                else if (P_apostrophe.size() < partition_num) {
+                    return split(P_apostrophe, P, partition_num);
                 }
                 else {
-                    return split(Q, P_apostrophe, partation_num);
+                    return split(Q, P_apostrophe, partition_num);
                 }
             }
         }
@@ -212,7 +212,7 @@ namespace submodular {
                 }
             }
         }
-        std::vector<Set> run(int partation_num) {
+        std::vector<Set> run(int partition_num) {
             Set V = Set::MakeDense(NodeSize);
             Set Empt;
             std::vector<Set> Q, P;
@@ -222,7 +222,7 @@ namespace submodular {
                 EmptyExceptOne.AddElement(i);
                 P.push_back(EmptyExceptOne);
             }
-            return split(Q, P, partation_num);
+            return split(Q, P, partition_num);
         }
         void run(bool bruteForce = false) {
             Set V = Set::MakeDense(NodeSize);
