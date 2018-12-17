@@ -124,6 +124,30 @@ namespace submodular {
         // partition list is {{{0, 1, 2}}, {{0, 1}, {2}}, {{0}, {1}, {2}}}  
         // gamma list is {1, 2}
     }
+    TEST(PSP, SplitFind) {
+        HyperGraphicalModel<double>* hgm = new HyperGraphicalModel<double>();
+        PSP<double> psp_class(hgm);
+        std::vector<Set> p2 = psp_class.run(2);
+
+        EXPECT_EQ(p2.size(), 2);
+        EXPECT_EQ(p2[0], Set::FromIndices(3, { 0, 1 }));
+        EXPECT_EQ(p2[1], Set::FromIndices(3, { 2 }));
+
+        HyperGraphicalModel2<double>* hgm2 = new HyperGraphicalModel2<double>();
+        PSP<double> psp_class2(hgm2);
+        std::vector<Set> p4 = psp_class2.run(4);
+
+        EXPECT_EQ(p4.size(), 5);
+        EXPECT_EQ(p4[0], Set::FromIndices(6, { 0, 1 }));
+        EXPECT_EQ(p4[1], Set::FromIndices(6, { 2 }));
+        EXPECT_EQ(p4[2], Set::FromIndices(6, { 3 }));
+        EXPECT_EQ(p4[3], Set::FromIndices(6, { 4 }));
+        EXPECT_EQ(p4[4], Set::FromIndices(6, { 5 }));
+
+        delete hgm;
+        delete hgm2;
+        // p2 = {{0, 1}, {2}}
+    }
     TEST(DilworthTruncation, HyperGraphicalModel2) {
         HyperGraphicalModel2<double> hgm2;
         DilworthTruncation<double> dt(&hgm2, 1.5);
@@ -206,8 +230,8 @@ namespace submodular {
         EXPECT_EQ(psp_list[5][5], Set::FromIndices(6, { 5 }));
 
         delete hgm;
-        // partition list is {{{0, 1, 2}}, {{0, 1}, {2}}, {{0}, {1}, {2}}}  
-        // gamma list is {1, 2}
+        // partition list is {{0, 1, 2, 3, 4, 5}}, {{{0, 1, 2}, {3, 4}, {5}}, {{0, 1}, {2}, {3}, {4}, {5}}, {{0}, {1}, {2}, {3}, {4}, {5}}}  
+        // gamma list is {0, 1, 2}
     }
 
 }
