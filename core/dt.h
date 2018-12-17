@@ -62,17 +62,14 @@ namespace submodular {
             std::vector<value_type> xl;
             value_type alpha_l = 0;
             SFMAlgorithm<ValueType>* solver2;
-#ifdef _DEBUG
-            BruteForce<value_type>* solver1 = new BruteForce<value_type>;
-#endif
             if(bruteForce)
-                solver2 = new BruteForce<value_type>;
+                solver2 = new BruteForce<ValueType>;
             else{
 #if USE_LEMON
                 solver2 = new MF<value_type>;
 #else
 #pragma message("No lemon lib used, only BruteForce algorithm provided.")
-                solver2 = new BruteForce<value_type>;
+                solver2 = new BruteForce<ValueType>;
 #endif
             }
             for (int i = 0; i < NodeSize; i++) {
