@@ -2,7 +2,6 @@
 /**
 *   Example from Literature "Minimum Average Cost Clustering"
 **/
-#include "core/oracles/iwata_test_function.h"
 #include "core/algorithms/brute_force.h"
 #if USE_LEMON
 #include "core/algorithms/sfm_mf.h"
