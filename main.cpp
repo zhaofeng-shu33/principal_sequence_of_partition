@@ -4,7 +4,7 @@
 */
 #include "config.h"
 
-#ifdef USE_BOOST
+#if USE_BOOST
 #include <boost/program_options.hpp>
 #endif
 #include "utility/gaussian2Dcase.h"
@@ -16,6 +16,7 @@ void check_size(int size) {
 }
 //! To be finished
 int main(int argc, const char *argv[]){
+#if USE_BOOST
     boost::program_options::options_description desc;
     desc.add_options()
         ("help,h", "Show this help screen")
@@ -28,6 +29,9 @@ int main(int argc, const char *argv[]){
         return 0;
     }
     demo::Gaussian2DGraph<double>* g2g = new demo::Gaussian2DGraph<double>(vm["size"].as<int>(),0.5);
+#else
+    demo::Gaussian2DGraph<double>* g2g = new demo::Gaussian2DGraph<double>(12);
+#endif
     g2g->run();
     std::vector<submodular::Set> p = g2g->get_smallest_partition(4);
     std::cout << p;

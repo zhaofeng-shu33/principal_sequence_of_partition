@@ -4,7 +4,9 @@
 #include "core/dt.h"
 #include "core/oracles/graph_cut.h"
 #include "core/set_utils.h"
-#include "core/algorithms/sfm_fw.h"
+#if USE_EIGEN3
+    #include "core/algorithms/sfm_fw.h"
+#endif
 #include "utility/gaussian2Dcase.h"
 namespace demo {
 

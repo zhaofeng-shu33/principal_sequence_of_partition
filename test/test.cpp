@@ -31,4 +31,6 @@
 #include "test_gaussian.h"
 
 // maxflow test in dt case
+#if USE_LEMON
 #include "algorithms/test_sfm_mf.h"
+#endif

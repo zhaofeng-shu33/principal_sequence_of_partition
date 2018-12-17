@@ -4,7 +4,9 @@
 **/
 #include "core/oracles/iwata_test_function.h"
 #include "core/algorithms/brute_force.h"
+#if USE_LEMON
 #include "core/algorithms/sfm_mf.h"
+#endif
 #include "core/oracles/modular.h"
 namespace submodular {
     template <typename ValueType>
@@ -67,7 +69,12 @@ namespace submodular {
             if(bruteForce)
                 solver2 = new BruteForce<value_type>;
             else{
+#if USE_LEMON
                 solver2 = new MF<value_type>;
+#else
+#pragma message("No lemon lib used, only BruteForce algorithm provided.")
+                solver2 = new BruteForce<value_type>;
+#endif
             }
             for (int i = 0; i < NodeSize; i++) {
                 if(bruteForce){
