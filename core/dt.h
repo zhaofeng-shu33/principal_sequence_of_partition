@@ -82,7 +82,12 @@ namespace submodular {
                     solver2->Minimize(F1);
                 }
                 else {
+#if USE_LEMON                    
                     solver2->Minimize(submodular_function, xl, lambda_);
+#else
+                    SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
+                    solver2->Minimize(F1);
+#endif
                 }
                 alpha_l = solver2->GetMinimumValue();
 #ifdef _DEBUG
@@ -180,7 +185,7 @@ namespace submodular {
                     std::cout << P.size() << " at " << P << " = " << p_value << std::endl;
                     std::cout << "h: " << h_apostrophe << std::endl;
                     std::cout << "min_value: " << min_value << std::endl;
-                    exit(0);
+                    exit(-1);
                 }
             }
         }
