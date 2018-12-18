@@ -32,6 +32,7 @@ public:
   using value_type = typename ValueTraits<ValueType>::value_type;
 
   SFMAlgorithm(): done_sfm_(false) {}
+  virtual ~SFMAlgorithm(){}
   //explicit SFMAlgorithm(const SFMReporter& reporter): reporter_(reporter), done_sfm_(false) {}
   //explicit SFMAlgorithm(SFMReporter&& reporter): reporter(std::move(reporter)), done_sfm(false) {}
   void SetReporter(const SFMReporter& reporter) { reporter_ = reporter; }
@@ -44,7 +45,7 @@ public:
   virtual void Minimize(SubmodularOracle<ValueType>& F) = 0;
   virtual void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl, value_type lambda_) {}
   virtual std::string GetName() = 0;
-
+  
   value_type GetMinimumValue();
   Set GetMinimizer();
   SFMReporter GetReporter();

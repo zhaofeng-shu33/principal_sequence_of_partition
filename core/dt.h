@@ -2,9 +2,10 @@
 /**
 *   Example from Literature "Minimum Average Cost Clustering"
 **/
-#include "core/oracles/iwata_test_function.h"
 #include "core/algorithms/brute_force.h"
+#if USE_LEMON
 #include "core/algorithms/sfm_mf.h"
+#endif
 #include "core/oracles/modular.h"
 namespace submodular {
     template <typename ValueType>
@@ -61,13 +62,15 @@ namespace submodular {
             std::vector<value_type> xl;
             value_type alpha_l = 0;
             SFMAlgorithm<ValueType>* solver2;
-#ifdef _DEBUG
-            BruteForce<value_type>* solver1 = new BruteForce<value_type>;
-#endif
             if(bruteForce)
-                solver2 = new BruteForce<value_type>;
+                solver2 = new BruteForce<ValueType>;
             else{
+#if USE_LEMON
                 solver2 = new MF<value_type>;
+#else
+#pragma message("No lemon lib used, only BruteForce algorithm provided.")
+                solver2 = new BruteForce<ValueType>;
+#endif
             }
             for (int i = 0; i < NodeSize; i++) {
                 if(bruteForce){
@@ -75,7 +78,12 @@ namespace submodular {
                     solver2->Minimize(F1);
                 }
                 else {
+#if USE_LEMON                    
                     solver2->Minimize(submodular_function, xl, lambda_);
+#else
+                    SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
+                    solver2->Minimize(F1);
+#endif
                 }
                 alpha_l = solver2->GetMinimumValue();
 #ifdef _DEBUG
@@ -91,7 +99,7 @@ namespace submodular {
                         std::cout << a << ',';
                     }
                     std::cout << std::endl;
-                    exit(0);
+                    exit(-1);
                 }
 #endif
                 Set Tl = solver2->GetMinimizer().Extend(1);
@@ -120,7 +128,7 @@ namespace submodular {
                 std::cout << "min_value_check error: " << std::endl;
                 std::cout << min_value << std::endl;
                 std::cout << min_value_check << std::endl;
-                exit(0);
+                exit(-1);
             }
             delete solver2;
         }
@@ -143,6 +151,33 @@ namespace submodular {
             NodeSize = submodular_function->GetN();
             critical_values.resize(NodeSize);
             psp.resize(NodeSize);
+        }
+        //! evaluate and find the finest partition with $\abs{\P} > \texttt{partition_num}$
+        std::vector<Set> split(std::vector<Set>& Q, std::vector<Set>& P, int partition_num, bool bruteForce = false)
+        {
+            if (Q.size() == P.size()) {
+                throw std::logic_error("Q and P have the same size");
+            }
+            value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.size() - Q.size());
+            value_type h_apostrophe = (P.size() * evaluate(Q) - Q.size() * evaluate(P)) / (P.size() - Q.size());
+            DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
+            dt.Run(bruteForce);
+            value_type min_value = dt.Get_min_value();
+            std::vector<Set> P_apostrophe = dt.Get_min_partition();
+            if (min_value>h_apostrophe - 1e-4) {
+                return P;
+            }
+            else {
+                if (P_apostrophe.size() == partition_num) {
+                    return P_apostrophe;
+                }
+                else if (P_apostrophe.size() < partition_num) {
+                    return split(P_apostrophe, P, partition_num, bruteForce);
+                }
+                else {
+                    return split(Q, P_apostrophe, partition_num, bruteForce);
+                }
+            }
         }
         //! |Q| < |P|
         void split(std::vector<Set>& Q, std::vector<Set>& P, bool bruteForce = false) {
@@ -173,9 +208,21 @@ namespace submodular {
                     std::cout << P.size() << " at " << P << " = " << p_value << std::endl;
                     std::cout << "h: " << h_apostrophe << std::endl;
                     std::cout << "min_value: " << min_value << std::endl;
-                    exit(0);
+                    exit(-1);
                 }
             }
+        }
+        std::vector<Set> run(int partition_num, bool bruteForce = false) {
+            Set V = Set::MakeDense(NodeSize);
+            Set Empt;
+            std::vector<Set> Q, P;
+            Q.push_back(V);
+            for (int i = 0; i < NodeSize; i++) {
+                Set EmptyExceptOne(NodeSize);
+                EmptyExceptOne.AddElement(i);
+                P.push_back(EmptyExceptOne);
+            }
+            return split(Q, P, partition_num, bruteForce);
         }
         void run(bool bruteForce = false) {
             Set V = Set::MakeDense(NodeSize);

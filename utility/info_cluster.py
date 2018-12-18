@@ -23,7 +23,7 @@ class InfoCluster:
     def __init__(self, gamma=1, affinity='rbf', n_neighbors=10):    
         self._gamma = gamma;
         self.affinity = affinity
-        self.n_neighbors = n_neighbors
+        self.n_neighbors = n_neighbors     
     def fit(self, X):
         '''Construct an affinity graph from X using rbf kernel function,
         then applies info clustering to this affinity graph.
@@ -32,6 +32,42 @@ class InfoCluster:
         X : array-like, shape (n_samples, n_features)
            
         '''
+        self._init_g(X)
+        self.g.run(False)
+        
+        self.critical_values = to_py_list(self.g.get_critical_values())
+        self.partition_num_list = to_py_list(self.g.get_partitions())    
+    def get_category(self, i, X=None):
+        '''get the clustering labels with the number of clusters no smaller than i
+        Parameters
+        ----------
+        i : int, number of cluster threshold
+        X : array-like, shape (n_samples, n_features). if provided, recompute the result targeted only at the specified `i`.
+            
+        Returns
+        --------
+        list, with each element of the list denoting the label of the cluster.
+        '''
+        if(X is not None):
+            self._init_g(X)
+            return to_py_list(self.g.get_labels(i))
+        else:
+            try:
+                self.g
+            except AttributeError:
+                raise AttributeError('no data provided and category cannot be got')
+            return to_py_list(self.g.get_category(i))        
+            
+    def get_num_cat(self, min_num):
+        '''
+        return the index of partition whose first element is no smaller than min_num,
+        '''
+        for i in self.partition_num_list:
+            if(i>=min_num):
+                return i
+        return -1       
+        
+    def _init_g(self, X):
         n_samples = X.shape[0]
         if(self.affinity == 'precomputed'):
             affinity_matrix = X
@@ -46,21 +82,7 @@ class InfoCluster:
             for s_j in range(s_i+1, n_samples):
                 sim_list.append((s_i, s_j, affinity_matrix[s_i, s_j]))       
 
-        self.g = psp.PyGraph(n_samples, sim_list)
-        self.g.run(False)
-        
-        self.critical_values = to_py_list(self.g.get_critical_values())
-        self.partition_num_list = to_py_list(self.g.get_partitions())    
-    def get_category(self, i):
-        return to_py_list(self.g.get_category(i))        
-    def get_num_cat(self, min_num):
-        '''
-        return the index of partition whose first element is no smaller than min_num,
-        '''
-        for i in self.partition_num_list:
-            if(i>=min_num):
-                return i
-        return -1        
+        self.g = psp.PyGraph(n_samples, sim_list)    
 class ThreeCircle:
     def __init__(self, np_list, gamma_1=1, gamma_2=1):
         '''

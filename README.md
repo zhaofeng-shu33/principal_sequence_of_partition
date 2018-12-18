@@ -4,13 +4,19 @@
 This repo contains code to compute the principal sequence of partition for Dilworth truncation function.
 
 # How to build
-`main.cpp` is the user-implemented part.
+`main.cpp` is the user-implemented part. Run `cmake` will generate build recipe for building this cpp file.
 
 # CMake with GTest
-Testing is enabled by default, which requires gtest library. To disable it, run `cmake` with `-DENABLE_TESTING=OFF`
+Testing is disabled by default, which requires gtest library. To enable it, run `cmake` with `-DENABLE_TESTING=ON`
+
+# Lemon library
+Use brute force search to solve submodualr function minimization(SFM) problem. For set with more than 10 elements, it is impractical. We use graph maximal flow(MF) to solve the special SFM problem. MF requires [lemon](https://lemon.cs.elte.hu/trac/lemon) library, which is disabled by default. To enable it, run `cmake` with `-DUSE_LEMON=ON`. 
+
+# boost library
+This project uses boost library in two places. Firstly, the `main.cpp` uses *boost-option* to parse command-line arguments. But this feature is optional. To use it, run `cmake` with `-DUSE_BOOST_OPTION=ON`. Secondly, *boost-python* is used to make the procedure callable from Python.
 
 # Python binding
-Disabled by default. The binding requires boost-python library. To enable it, run `cmake` with `-DENABLE_PYTHON=ON`
+Disabled by default. The binding requires boost-python library. To enable it, run `cmake` with `-DUSE_PYTHON=ON`
 
 ## Demo code
 ![](example.png)

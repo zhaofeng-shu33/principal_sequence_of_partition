@@ -1,72 +1,177 @@
 {
-  "Gaussian": {
-    "k-means": { "n_clusters_list": [ 3, 4, 5, 6 ] },
-    "spectral clustering": { "n_clusters_list": [ 3, 4, 5, 6 ] },
-    "affinity propagation": {
-      "preference_list": [ -10, -50, -120, -200 ],
-      "damping_factor_list": [ 0.5, 0.8 ]
+    "Gaussian": {
+        "k-means": {
+            "nc": [
+                4
+            ]
+        },
+        "spectral_clustering": {
+            "nc": [
+                4
+            ]
+        },
+        "affinity_propagation": {
+            "preference": [
+                -50
+            ],
+            "damping_factor": [
+                0.5
+            ]
+        },
+        "info-clustering": {
+            "nc": [
+                4
+            ],
+            "affinity": [
+                "nearest_neighbors",
+                "rbf"
+            ],
+            "n_neighbors": [
+                10
+            ],
+            "gamma": [
+                0.6
+            ]
+        }
     },
-    "info-clustering": {
-      "n_clusters_list": [3],
-      "n_neighbors_list": [6, 10, 14 ],
-      "affinity": "nearest_neighbors",
-      "gamma_list": [ 0.6 ]
-    }
-  },
-  "Circle": {
-    "k-means": { "n_clusters_list": [ 3, 4, 5, 6 ] },
-    "spectral clustering": { "n_clusters_list": [ 3, 4, 5, 6 ] },
-    "affinity propagation": {
-      "preference_list": [ -10, -50, -120, -200 ],
-      "damping_factor_list": [ 0.5, 0.8 ]
+    "Circle": {
+        "k-means": {
+            "nc": [
+                3
+            ]
+        },
+        "spectral_clustering": {
+            "nc": [
+                3
+            ]
+        },
+        "affinity_propagation": {
+            "preference": [
+                -50
+            ],
+            "damping_factor": [
+                0.5
+            ]
+        },
+        "info-clustering": {
+            "nc": [
+                3
+            ],
+            "affinity": [
+                "nearest_neighbors",
+                "rbf"
+            ],
+            "n_neighbors": [
+                10
+            ],
+            "gamma": [
+                0.06
+            ]
+        }
     },
-    "info-clustering": {
-      "n_clusters_list": [ 3],
-      "n_neighbors_list": [ 6, 10, 14 ],
-      "affinity": [ "nearest_neighbors", "rbf" ],
-      "gamma_list": [ 0.06, 0.6, 2 ]
-    }
-  },
-  "Iris": {
-    "k-means": { "n_clusters_list": [ 3, 4, 5, 6 ] },
-    "spectral clustering": { "n_clusters_list": [ 3, 4, 5, 6 ] },
-    "affinity propagation": {
-      "preference_list": [ -10, -50, -120, -200 ],
-      "damping_factor_list": [ 0.5, 0.8 ]
+    "Iris": {
+        "k-means": {
+            "nc": [
+                3
+            ]
+        },
+        "spectral_clustering": {
+            "nc": [
+                3
+            ]
+        },
+        "affinity_propagation": {
+            "preference": [
+                -50
+            ],
+            "damping_factor": [
+                0.8
+            ]
+        },
+        "info-clustering": {
+            "nc": [
+                3
+            ],
+            "affinity": [
+                "nearest_neighbors",
+                "rbf"
+            ],
+            "n_neighbors": [
+                10
+            ],
+            "gamma": [
+                2
+            ]
+        }
     },
-    "info-clustering": {
-      "n_clusters_list": [ 3 ],
-      "affinity": [ "nearest_neighbors", "rbf"],
-      "n_neighbors_list": [8, 10, 12],
-      "gamma_list": [0.6, 2, 8]
-    }
-  },
-  "Glass": {
-    "k-means": { "n_clusters_list": [ 3, 4, 5, 6 ] },
-    "spectral clustering": { "n_clusters_list": [ 3, 4, 5, 6 ] },
-    "affinity propagation": {
-      "preference_list": [ -10, -50, -120, -200 ],
-      "damping_factor_list": [ 0.5, 0.8 ]
+    "Glass": {
+        "k-means": {
+            "nc": [
+                6
+            ]
+        },
+        "spectral_clustering": {
+            "nc": [
+                6
+            ]
+        },
+        "affinity_propagation": {
+            "preference": [
+                -50
+            ],
+            "damping_factor": [
+                0.8
+            ]
+        },
+        "info-clustering": {
+            "nc": [
+                6
+            ],
+            "affinity": [
+                "nearest_neighbors",
+                "rbf"
+            ],
+            "n_neighbors": [
+                12
+            ],
+            "gamma": [
+                2
+            ]
+        }
     },
-    "info-clustering": {
-      "n_clusters_list": [6],
-      "affinity": [ "nearest_neighbors", "rbf" ],
-      "gamma_list": [0.6, 2, 8],
-      "n_neighbors_list":  [6, 10, 14]
+    "Libras": {
+        "k-means": {
+            "nc": [
+                15
+            ]
+        },
+        "spectral_clustering": {
+            "nc": [
+                15
+            ]
+        },
+        "affinity_propagation": {
+            "preference": [
+                -100
+            ],
+            "damping_factor": [
+                0.8
+            ]
+        },
+        "info-clustering": {
+            "nc": [
+                15
+            ],
+            "affinity": [
+                "nearest_neighbors",
+                "rbf"
+            ],
+            "n_neighbors": [
+                10
+            ],
+            "gamma": [
+                1
+            ]
+        }
     }
-  },
-  "Libras": {
-    "k-means": { "n_clusters_list": [ 13, 14, 15, 16 ] },
-    "spectral clustering": { "n_clusters_list": [ 13, 14, 15, 16 ] },
-    "affinity propagation": {
-      "preference_list": [ -10, -50, -120, -200 ],
-      "damping_factor_list": [ 0.5, 0.8 ]
-    },
-    "info-clustering": {
-      "n_clusters_list": [ 10, 15 ],
-      "affinity": ["rbf", "nearest_neighbors"],
-      "gamma_list": [ 1 ],
-      "n_neighbors_list":  [6, 10, 14]
-    }
-  }
 }

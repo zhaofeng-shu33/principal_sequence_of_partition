@@ -4,13 +4,15 @@
 #include "core/dt.h"
 #include "core/oracles/graph_cut.h"
 #include "core/set_utils.h"
-#include "core/algorithms/sfm_fw.h"
+#if USE_EIGEN3
+    #include "core/algorithms/sfm_fw.h"
+#endif
 #include "utility/gaussian2Dcase.h"
 namespace demo {
 
 TEST(Gaussian2D, GivenPoint) {
     double a[4][2] = { {3,3},{3,-3},{-3,3},{-3,-3} };
-    Gaussian2DGraph<double> g2g(4, 1.0, a);
+    Gaussian2DGraph g2g(4, 1.0, a);
     std::vector<double> x_pos = g2g.get_x_pos_list();
     std::vector<double> y_pos = g2g.get_y_pos_list();
     EXPECT_EQ(x_pos.size(), 4);
@@ -47,7 +49,7 @@ TEST(Gaussian2D, GivenPoint8) {
                        {-3.9, 2.4},
                        {-3.1, 2.6}
                      };
-    Gaussian2DGraph<double> g2g(8, 1.0, a);
+    Gaussian2DGraph g2g(8, 1.0, a);
     g2g.run(true);
     std::vector<double> gamma_list = g2g.get_gamma_list();
     std::vector<std::vector<submodular::Set>> psp_list = g2g.get_psp_list();

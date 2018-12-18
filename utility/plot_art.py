@@ -3,8 +3,8 @@
     plot artificial dataset
 '''
 from matplotlib import pyplot as plt
+import numpy as np
 import info_cluster
-
 color_list = ['#3FF711', 'r', 'g', 'm','y','k','c','#00FF00']
 marker_list = ['o', 'v', 's', '*', '+', 'x', 'D', '1']
 MAX_CAT = len(color_list)
@@ -21,7 +21,19 @@ def check_cat(min_num, partition):
         return -2
     else:    
         return i
-
+def plot_cluster(pos_list, cat, cat_num):
+    global color_list, marker_list
+    p = np.asarray(pos_list)
+    for i in range(cat_num):
+        xx=[]
+        yy=[]
+        for j in range(len(cat)):
+            if(cat[j]==i):
+                xx.append(p[j,0])
+                yy.append(p[j,1])
+        plt.scatter(xx, yy, c=color_list[i], marker=marker_list[i])    
+    return plt
+    
 def plot_inner(index, grach_cluster_object, fileName):  
     '''
     Parameters
@@ -40,14 +52,7 @@ def plot_inner(index, grach_cluster_object, fileName):
         ax = plt.subplot(1,3,index+1)          
         cat = grach_cluster_object.get_category(cat_num)
         print('num of cat:', cat_num)
-        for i in range(cat_num):
-            xx=[]
-            yy=[]
-            for j in range(len(cat)):
-                if(cat[j]==i):
-                    xx.append(grach_cluster_object.pos_list[j][0])
-                    yy.append(grach_cluster_object.pos_list[j][1])
-            plt.scatter(xx,yy, c=color_list[i], marker = marker_list[i])
+        plot_cluster(grach_cluster_object.pos_list, cat, cat_num)
         ax.set_title('$\lambda = %.2f$' % lambda_list[index])
     plt.savefig(fileName)
     plt.show()
