@@ -17,7 +17,7 @@ from sklearn import datasets
 from sklearn import preprocessing
 from sklearn.model_selection import cross_validate
 import numpy as np
-import oss2
+
 # user provided module
 import info_cluster
 import schema
@@ -25,21 +25,9 @@ from uci_glass import fetch_uci_glass
 from uci_libras import fetch_uci_libras
 
 # module level global variables go here
-logging.basicConfig(filename='fine_tuning.log', level=logging.INFO, format='%(asctime)s %(message)s')
+logging.basicConfig(filename=os.path.join(schema.BUILD_DIR, schema.FINE_TUNING_LOGGING_FILE), level=logging.INFO, format='%(asctime)s %(message)s')
 
-def get_parameter_file():
-    '''return parameter json string    
-    '''
-    parameter_file_path = os.path.join(schema.BUILD_DIR, schema.PARAMETER_FILE)
-    json_str = ''
-    if not(os.path.exists(parameter_file_path)):
-        with open(parameter_file_path, 'w') as f:
-            json_str = '{}'
-            f.write(json_str)            
-    else:
-        with open(parameter_file_path, 'r') as f:
-            json_str = f.read()
-    return json_str
+
     
 def _generate_three_circle_data():
     pos_list = []
@@ -96,7 +84,7 @@ def _info_clustering(feature, ground_truth, config):
                 if(sc>ref_sc):
                     optimal_parameter['affinity'] = 'rbf'
                     optimal_parameter['gamma'] = _gamma
-                    optimal_parameter['nc'] = g.get_num_cat(n_c)
+                    optimal_parameter['nc'] = max(y_pred_ic) + 1
                     ref_sc = sc
             logging.info('nc = %d, ari = %.3f, gamma = %f, affinity = rbf'% (optimal_parameter['nc'], sc, _gamma))            
     if(config['affinity'].count('nearest_neighbors')>0):
@@ -108,7 +96,7 @@ def _info_clustering(feature, ground_truth, config):
                 if(sc>ref_sc):
                     optimal_parameter['affinity'] = 'nearest_neighbors'
                     optimal_parameter['n_neighbors'] = _n_neighbors
-                    optimal_parameter['nc'] = g.get_num_cat(n_c)
+                    optimal_parameter['nc'] = max(y_pred_ic) + 1
                     ref_sc = sc
             logging.info('nc = %d, ari = %.3f, n_neighbors = %d, affinity = nearest_neighbors'% (optimal_parameter['nc'], sc, _n_neighbors))            
             
@@ -177,8 +165,8 @@ def Libras(method, config):
     
 def compute(dataset, method):
     global logging
-    dic = json.loads(get_parameter_file())
-    tuning_dic = json.loads(schema.get_tuning_file())
+    dic = json.loads(schema.get_file(schema.PARAMETER_FILE))
+    tuning_dic = json.loads(schema.get_file(schema.TUNING_FILE))
     logging.info('tuning for dataset ' + dataset)
     config = tuning_dic["%s"%dataset]
     method_list = []
@@ -192,20 +180,6 @@ def compute(dataset, method):
         exec('dic["{0}"]["{1}"] = {0}("{1}",{2})' .format(dataset, _method, config[_method])) 
     
     return dic
-def upload_to_my_oss(json_str, file_name):
-    access_key_id = os.getenv('AccessKeyId')
-    access_key_secret = os.getenv('AccessKeySecret')
-    if(access_key_secret is not None):
-        auth = oss2.Auth(access_key_id, access_key_secret)
-        bucket = oss2.Bucket(auth, 'http://oss-cn-shenzhen.aliyuncs.com', 'programmierung')
-        research_base = 'research/info-clustering/code/utility/'
-        bucket.put_object(research_base + schema.PARAMETER_FILE, json_str)
-
-def set_parameter_file(dic):
-    parameter_file_path = os.path.join(schema.BUILD_DIR, schema.PARAMETER_FILE)
-    json_str = json.dumps(dic, indent=4)
-    open(parameter_file_path, 'w').write(json_str)
-    upload_to_my_oss(json_str, schema.PARAMETER_FILE)
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -215,4 +189,6 @@ if __name__ == '__main__':
     parser.add_argument('dataset', help='name of the dataset to fine tuning', choices=dataset_choices)
     parser.add_argument('--method', help='clustering method to fine tuning', default='all', choices=method_chocies)
     args = parser.parse_args()    
-    set_parameter_file(compute(args.dataset, args.method))
+    dic = compute(args.dataset, args.method)
+    json_str = json.dumps(dic, indent=4)
+    schema.set_file(schema.PARAMETER_FILE, json_str)

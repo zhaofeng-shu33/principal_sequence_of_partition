@@ -3,6 +3,7 @@
 # built-in module
 import random
 import json
+import os
 import logging
 # third party module
 import sklearn
@@ -18,29 +19,19 @@ from tabulate import tabulate
 import info_cluster
 from uci_glass import fetch_uci_glass
 from uci_libras import fetch_uci_libras
-
+import schema
 # module level global variables go here
-LATEX_TABLE_NAME = 'compare.tex'
-PARAMETER_FILE_NAME = 'parameter.json'
-logging.basicConfig(filename='empirical_compare.log', level=logging.INFO, format='%(asctime)s %(message)s')
 
-def construct_sim_matrix(num_of_points, pos_sim_list):
-    '''
-    each element of pos_sim_list is a tuple of the form `(pos_x, pos_y, sim_value)`
-    '''
-    sim_matrix = np.zeros([num_of_points, num_of_points])
-    for pos_x, pos_y, sim_value in pos_sim_list:
-        sim_matrix[pos_x, pos_y] = sim_value
-        sim_matrix[pos_y, pos_x] = sim_value
-    return sim_matrix
+logging.basicConfig(filename=os.path.join(schema.BUILD_DIR, schema.EMPIRICAL_LOGGING_FILE), level=logging.INFO, format='%(asctime)s %(message)s')
 
-def _kmeans(feature, ground_truth, n_c):
-    y_pred_kmeans = cluster.KMeans(n_clusters=n_c).fit_predict(feature)
+
+def _k_means(feature, ground_truth, n_c):
+    y_pred_kmeans = cluster.KMeans(n_clusters=n_c['nc']).fit_predict(feature)
     ars_kmeans = metrics.adjusted_rand_score(ground_truth, y_pred_kmeans)    
     return ars_kmeans
 
 def _spectral_clustering(feature, ground_truth, n_c):
-    c = cluster.SpectralClustering(n_clusters=n_c, affinity="nearest_neighbors", eigen_solver='arpack') # construct affinity matrix from rbf kernel function
+    c = cluster.SpectralClustering(n_clusters=n_c['nc'], affinity="nearest_neighbors", eigen_solver='arpack') # construct affinity matrix from rbf kernel function
     # cannot use cv since spectral clustering does not provide fitting method
     y_pred_sc = c.fit_predict(feature)
     sc = metrics.adjusted_rand_score(ground_truth, y_pred_sc)
@@ -48,34 +39,27 @@ def _spectral_clustering(feature, ground_truth, n_c):
 
 def _info_clustering(feature, ground_truth, parameter):
     g = info_cluster.InfoCluster(gamma = parameter['gamma'], affinity = parameter['affinity'], n_neighbors = parameter['n_neighbors'])
-    g.fit(feature)
-    y_pred_ic = g.get_category(parameter['nc'])
+    y_pred_ic = g.get_category(parameter['nc'], feature)
     sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
     return sc
 
 def _affinity_propagation(feature, ground_truth, p_d):
-    p, d = p_d
+    p = p_d['preference']
+    d = p_d['damping_factor']
     af = cluster.AffinityPropagation(preference=p, damping=d).fit(feature)
     y_pred_af = af.labels_
     ars_af = metrics.adjusted_rand_score(ground_truth, y_pred_af)
     return ars_af
     
 def compute_adjusted_rand_score(feature, ground_truth, parameter_dic):
-    
-    ars_kmeans = _kmeans(feature, ground_truth, parameter_dic['k-means'])
-    logging.info('kmeans ari is %.3f' % ars_kmeans)
-    
-    ars_sc = _spectral_clustering(feature, ground_truth, parameter_dic['spectral clustering'])
-    logging.info('spectral clustering ari is %.3f' % ars_sc)
-    
-    # there are hyperparameters (preference and damping)in AP algorithm, but we don't fine tune it.
-    ars_af = _affinity_propagation(feature, ground_truth, parameter_dic['affinity propagation'])
-    logging.info('affinity propagation ari is %.3f' % ars_af)
-    
-    ars_ic = _info_clustering(feature, ground_truth, parameter_dic['info-clustering'])
-    logging.info('info clustering ari is %.3f' % ars_ic)
-    
-    return {'k-means':ars_kmeans, 'spectral clustering':ars_sc, 'affinity propagation': ars_af, 'info-clustering': ars_ic}
+    dic = {}    
+    for method, parameter in parameter_dic.items():
+        _method = method.replace('-','_')
+        exec('ari = _{0}(feature, ground_truth, parameter)'.format(_method))
+        _ari = locals()['ari']
+        dic[method] = _ari
+        logging.info('%s ari is %.3f' % (method, _ari))    
+    return dic
     
 def Gaussian(parameter_dic):
     data = np.load('Gaussian.npx')
@@ -105,8 +89,8 @@ def Libras(parameter_dic):
     return compute_adjusted_rand_score(feature, ground_truth, parameter_dic)
     
 def compute():
-    global PARAMETER_FILE_NAME
-    p_dic = json.loads(open(PARAMETER_FILE_NAME).read())
+    json_str = schema.get_file(schema.PARAMETER_FILE)
+    p_dic = json.loads(json_str)
     dic = {}
     for key in p_dic:
         logging.info('Start computing for dataset %s'%key)
@@ -114,15 +98,14 @@ def compute():
     return dic
 
 def make_table(dic):
-    global LATEX_TABLE_NAME
-    table = [['k-means'],['spectral clustering'],['affinity propagation'],['info-clustering']]
+    table = [[i] for i in schema.METHOD_SCHEMA]
     for i in table:
         for _, v in dic.items():
             i.append('%.2f'%v.get(i[0]))
     _headers = ['adjusted rand index']
     _headers.extend(list(dic.keys()))
     latex_table_string = tabulate(table, headers = _headers, tablefmt = 'latex_raw')
-    open(LATEX_TABLE_NAME,'w').write(latex_table_string)
+    open(schema.LATEX_TABLE_NAME,'w').write(latex_table_string)
     
 if __name__ == '__main__':
     make_table(compute())
