@@ -13,15 +13,19 @@ namespace submodular {
         }
         //! get the partition which has at least pn clusters
         std::vector<int> get_labels(int pn) {
-            submodular::DirectedGraphCutOracle<double>* dgc = new submodular::DirectedGraphCutOracle<double>(sg);
-            submodular::PSP<double> psp_class(dgc);
-            std::vector<Set> p = psp_class.run(pn);
-            delete dgc;
+            std::vector<Set> p = get_partition(pn);
             return to_category(p);
         }
+        std::vector<Set> get_partition(int pn) {
+            DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
+            PSP<double> psp_class(dgc);
+            std::vector<Set> p = psp_class.run(pn);
+            delete dgc;
+            return p;
+        }
         void run(bool bruteForce = false) {
-            submodular::DirectedGraphCutOracle<double>* dgc = new submodular::DirectedGraphCutOracle<double>(sg);
-            submodular::PSP<double> psp_class(dgc);
+            DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
+            PSP<double> psp_class(dgc);
             psp_class.run(bruteForce);
             gamma_list = psp_class.Get_critical_values();
             psp_list = psp_class.Get_psp();
@@ -50,19 +54,19 @@ namespace submodular {
             return partitions;
         }
 
-        std::vector<std::vector<submodular::Set>>& get_psp_list() {
+        std::vector<std::vector<Set>>& get_psp_list() {
             return psp_list;
         }
         //! get the smallest partition whose size >= k
-        std::vector<submodular::Set>& get_smallest_partition(int k) {
-            for (std::vector<submodular::Set>& i : psp_list) {
+        std::vector<Set>& get_smallest_partition(int k) {
+            for (std::vector<Set>& i : psp_list) {
                 if (i.size() >= k)
                     return i;
             }
         }
         //! get the smallest partition whose size >= k, label each data point with an integer
         std::vector<int> get_category(int k) {
-            for (std::vector<submodular::Set>& i : psp_list) {
+            for (std::vector<Set>& i : psp_list) {
                 if (i.size() >= k) {
                     return to_category(i);
                 }
@@ -70,17 +74,17 @@ namespace submodular {
             return std::vector<int>();
         }
     protected:
-        submodular::SimpleGraph<double> sg;
+        SimpleGraph<double> sg;
         int num_points;
     private:
         std::vector<double> gamma_list;
         
-        std::vector<std::vector<submodular::Set>> psp_list;
+        std::vector<std::vector<Set>> psp_list;
         //! form conversion
-        std::vector<int> to_category(std::vector<submodular::Set>& partition) {
+        std::vector<int> to_category(std::vector<Set>& partition) {
             std::vector<int> cat(num_points, 0);
             int t = 0;
-            for (submodular::Set& j : partition) {
+            for (Set& j : partition) {
                 for (int i : j.GetMembers()) {
                     cat[i] = t;
                 }

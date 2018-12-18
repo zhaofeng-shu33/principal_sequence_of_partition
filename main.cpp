@@ -33,8 +33,15 @@ int main(int argc, const char *argv[]){
 #else
     demo::Gaussian2DGraph<double>* g2g = new demo::Gaussian2DGraph<double>(8);
 #endif
-    g2g->run();
-    std::vector<submodular::Set> p = g2g->get_smallest_partition(4);
+    bool run_full = vm["full"].as<bool>();
+    std::vector<submodular::Set> p;
+    if(run_full){
+        g2g->run();
+        p = g2g->get_smallest_partition(4);
+    }
+    else {
+        p = g2g->get_partition(4);
+    }
     std::cout << p;
     delete g2g;
     return 0;

@@ -131,38 +131,6 @@ def _affinity_propagation(feature, ground_truth, config):
     
 def fine_tuning(feature, ground_truth, method, config):
     global logging
-<<<<<<< HEAD
-    dic = {}
-    if(method == 'all' or method == 'k-means'):
-        logging.info('Start tuning for kmeans')
-        parameter = _kmeans(feature, ground_truth, config['k-means'])
-        dic['k-means'] = parameter
-        logging.info('optimal number of cluster is %d'% parameter)
-
-    if(method == 'all' or method == 'spectral clustering'):        
-        logging.info('Start tuning for spectral clustering')
-        parameter = _spectral_clustering(feature, ground_truth, config['spectral clustering'])
-        dic['spectral clustering'] = parameter        
-        logging.info('optimal number of cluster is %d' % parameter)
-
-    if(method == 'all' or method == 'affinity propagation'):                
-        # there are two hyper-parameters (preference and damping)in AP algorithm.
-        logging.info('Start tuning for affinity propagation')    
-        parameter = _affinity_propagation(feature, ground_truth, config['affinity propagation'])
-        dic['affinity propagation'] = parameter                
-        logging.info('optimal preference is {0}, optimal damping factor is {1}'.format(parameter[0], parameter[1]))
-    
-    if(method == 'all' or method == 'info-clustering'):        
-        logging.info('Start tuning for info-clustering')        
-        parameter = _info_clustering(feature, ground_truth, config['info-clustering'])
-        dic['info-clustering'] = parameter                
-        logging.info('optimal number of cluster is {0}'.format(parameter))        
-        
-    if(method == 'all'):
-        return dic
-    else:
-        return parameter
-=======
     logging.info('Start tuning for %s' % method)
     start_time = time.time()
     function_name = '_' + method.replace('-','_')
@@ -170,7 +138,6 @@ def fine_tuning(feature, ground_truth, method, config):
     end_time = time.time()
     logging.info('Finish tuning for %s, total time used = %.2f' % (method,end_time-start_time))
     return locals()['parameter']
->>>>>>> aaae52a7b6bcad9f32eb31125deef3d3ae3f0c59
         
 def Gaussian(method, config):
     if(os.path.exists('Gaussian.npx')):
@@ -224,10 +191,20 @@ def compute(dataset, method):
         exec('dic["{0}"]["{1}"] = {0}("{1}",{2})' .format(dataset, _method, config[_method])) 
     
     return dic
+def upload_to_my_oss(json_str, file_name):
+    access_key_id = os.getenv('AccessKeyId')
+    access_key_secret = os.getenv('AccessKeySecret')
+    if(access_key_secret is not None):
+        auth = oss2.Auth(access_key_id, access_key_secret)
+        bucket = oss2.Bucket(auth, 'http://oss-cn-shenzhen.aliyuncs.com', 'programmierung')
+        research_base = 'research/info-clustering/code/utility/'
+        bucket.put_object(research_base + schema.PARAMETER_FILE, json_str)
 
 def set_parameter_file(dic):
     parameter_file_path = os.path.join(schema.BUILD_DIR, schema.PARAMETER_FILE)
-    open(parameter_file_path, 'w').write(json.dumps(dic, indent=4))
+    json_str = json.dumps(dic, indent=4)
+    open(parameter_file_path, 'w').write(json_str)
+    upload_to_my_oss(json_str, schema.PARAMETER_FILE)
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
