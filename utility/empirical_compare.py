@@ -105,7 +105,7 @@ def make_table(dic):
     _headers = ['adjusted rand index']
     _headers.extend(list(dic.keys()))
     latex_table_string = tabulate(table, headers = _headers, tablefmt = 'latex_raw')
-    open(schema.LATEX_TABLE_NAME,'w').write(latex_table_string)
+    schema.set_file(schema.LATEX_TABLE_NAME, latex_table_string)
     
 if __name__ == '__main__':
     make_table(compute())
