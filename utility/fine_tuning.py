@@ -75,9 +75,8 @@ def _info_clustering(feature, ground_truth, config):
     if(config['affinity'].count('rbf')>0):
         for _gamma in config['gamma_list']:
             g = info_cluster.InfoCluster(gamma = _gamma, affinity = 'rbf')
-            g.fit(feature)
             for n_c in config['n_clusters_list']:
-                y_pred_ic = g.get_category(n_c)
+                y_pred_ic = g.get_category(n_c, feature)
                 sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
                 if(sc>ref_sc):
                     optimal_parameter['affinity'] = 'rbf'
@@ -88,9 +87,8 @@ def _info_clustering(feature, ground_truth, config):
     if(config['affinity'].count('nearest_neighbors')>0):
         for _n_neighbors in config['n_neighbors_list']:
             g = info_cluster.InfoCluster(affinity = 'nearest_neighbors', n_neighbors=_n_neighbors)
-            g.fit(feature)
             for n_c in config['n_clusters_list']:
-                y_pred_ic = g.get_category(n_c)
+                y_pred_ic = g.get_category(n_c, feature)
                 sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
                 if(sc>ref_sc):
                     optimal_parameter['affinity'] = 'nearest_neighbors'
@@ -133,7 +131,7 @@ def fine_tuning(feature, ground_truth, method, config):
         logging.info('optimal number of cluster is %d' % parameter)
 
     if(method == 'all' or method == 'affinity propagation'):                
-        # there are two hyperparameters (preference and damping)in AP algorithm.
+        # there are two hyper-parameters (preference and damping)in AP algorithm.
         logging.info('Start tuning for affinity propagation')    
         parameter = _affinity_propagation(feature, ground_truth, config['affinity propagation'])
         dic['affinity propagation'] = parameter                
