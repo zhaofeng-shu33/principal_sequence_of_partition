@@ -153,7 +153,7 @@ namespace submodular {
             psp.resize(NodeSize);
         }
         //! evaluate and find the finest partition with $\abs{\P} > \texttt{partition_num}$
-        std::vector<Set> split(std::vector<Set> Q, std::vector<Set> P, int partition_num)
+        std::vector<Set> split(std::vector<Set>& Q, std::vector<Set>& P, int partition_num, bool bruteForce = false)
         {
             if (Q.size() == P.size()) {
                 throw std::logic_error("Q and P have the same size");
@@ -161,7 +161,7 @@ namespace submodular {
             value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.size() - Q.size());
             value_type h_apostrophe = (P.size() * evaluate(Q) - Q.size() * evaluate(P)) / (P.size() - Q.size());
             DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
-            dt.Run(false);
+            dt.Run(bruteForce);
             value_type min_value = dt.Get_min_value();
             std::vector<Set> P_apostrophe = dt.Get_min_partition();
             if (min_value>h_apostrophe - 1e-4) {
@@ -172,10 +172,10 @@ namespace submodular {
                     return P_apostrophe;
                 }
                 else if (P_apostrophe.size() < partition_num) {
-                    return split(P_apostrophe, P, partition_num);
+                    return split(P_apostrophe, P, partition_num, bruteForce);
                 }
                 else {
-                    return split(Q, P_apostrophe, partition_num);
+                    return split(Q, P_apostrophe, partition_num, bruteForce);
                 }
             }
         }
@@ -212,7 +212,7 @@ namespace submodular {
                 }
             }
         }
-        std::vector<Set> run(int partition_num) {
+        std::vector<Set> run(int partition_num, bool bruteForce = false) {
             Set V = Set::MakeDense(NodeSize);
             Set Empt;
             std::vector<Set> Q, P;
@@ -222,7 +222,7 @@ namespace submodular {
                 EmptyExceptOne.AddElement(i);
                 P.push_back(EmptyExceptOne);
             }
-            return split(Q, P, partition_num);
+            return split(Q, P, partition_num, bruteForce);
         }
         void run(bool bruteForce = false) {
             Set V = Set::MakeDense(NodeSize);

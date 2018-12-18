@@ -127,15 +127,17 @@ namespace submodular {
     TEST(PSP, SplitFind) {
         HyperGraphicalModel<double>* hgm = new HyperGraphicalModel<double>();
         PSP<double> psp_class(hgm);
-        std::vector<Set> p2 = psp_class.run(2);
+        // for hypergraphical model, only brute force method can be used
+        std::vector<Set> p2 = psp_class.run(2, true);
 
         EXPECT_EQ(p2.size(), 2);
         EXPECT_EQ(p2[0], Set::FromIndices(3, { 0, 1 }));
         EXPECT_EQ(p2[1], Set::FromIndices(3, { 2 }));
+        // p2 = {{0, 1}, {2}}
 
         HyperGraphicalModel2<double>* hgm2 = new HyperGraphicalModel2<double>();
         PSP<double> psp_class2(hgm2);
-        std::vector<Set> p4 = psp_class2.run(4);
+        std::vector<Set> p4 = psp_class2.run(4, true);
 
         EXPECT_EQ(p4.size(), 5);
         EXPECT_EQ(p4[0], Set::FromIndices(6, { 0, 1 }));
@@ -146,7 +148,6 @@ namespace submodular {
 
         delete hgm;
         delete hgm2;
-        // p2 = {{0, 1}, {2}}
     }
     TEST(DilworthTruncation, HyperGraphicalModel2) {
         HyperGraphicalModel2<double> hgm2;
