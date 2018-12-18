@@ -9,7 +9,7 @@
         "info-clustering": {
             "nc": 4,
             "affinity": "nearest_neighbors",
-            "n_neighbors": 10,
+            "n_neighbors": 6,
             "gamma": 0
         }
     },

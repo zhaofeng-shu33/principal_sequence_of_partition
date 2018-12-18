@@ -23,6 +23,7 @@ DATASET_SCHEMA = {
 }
 BUILD_DIR = 'build'
 TUNING_FILE = 'tuning.json'
+PARAMETER_FILE = 'parameter.json'
 def construct_tuning_json():
     '''construct tuning json string
     '''
@@ -41,7 +42,21 @@ def construct_tuning_json():
                         v = default_value
                     dic_dataset_method[parameter] = v
     return json.dumps(dic, indent=4)                
-                    
+    
+def get_tuning_file():
+    '''return tuning json string    
+    '''
+    tuning_file_path = os.path.join(BUILD_DIR, TUNING_FILE)
+    json_str = ''
+    if not(os.path.exists(tuning_file_path)):
+        with open(tuning_file_path, 'w') as f:
+            json_str = construct_tuning_json()
+            f.write(json_str)            
+    else:
+        with open(tuning_file_path, 'r') as f:
+            json_str = f.read()
+    return json_str
+    
 if __name__ == '__main__':
     if not(os.path.exists(BUILD_DIR)):
         os.mkdir(BUILD_DIR)
