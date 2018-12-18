@@ -17,6 +17,7 @@ from sklearn import datasets
 from sklearn import preprocessing
 from sklearn.model_selection import cross_validate
 import numpy as np
+import oss2
 # user provided module
 import info_cluster
 import schema

@@ -99,7 +99,7 @@ namespace submodular {
                         std::cout << a << ',';
                     }
                     std::cout << std::endl;
-                    exit(0);
+                    exit(-1);
                 }
 #endif
                 Set Tl = solver2->GetMinimizer().Extend(1);
@@ -128,7 +128,7 @@ namespace submodular {
                 std::cout << "min_value_check error: " << std::endl;
                 std::cout << min_value << std::endl;
                 std::cout << min_value_check << std::endl;
-                exit(0);
+                exit(-1);
             }
             delete solver2;
         }
