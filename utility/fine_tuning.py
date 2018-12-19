@@ -55,6 +55,21 @@ def _k_means(feature, ground_truth, config):
     ars_kmeans = metrics.adjusted_rand_score(ground_truth, y_pred_kmeans)    
     logging.info('ari %.3f'% ars_kmeans)                
     return {'nc': optimal_n_c}
+def _Agglomerative(feature, ground_truth, config):
+    ref_sc = -1
+    optimal_n_c = 0
+    optimal_linkage = ''
+    for n_c in config['nc']:
+        for _linkage in config['linkage']:
+            c = cluster.AgglomerativeClustering(n_clusters=n_c, linkage = _linkage)
+            y_pred_sc = c.fit_predict(feature)
+            sc = metrics.adjusted_rand_score(ground_truth, y_pred_sc)
+            if(sc>ref_sc):
+                optimal_n_c = n_c
+                ref_sc = sc
+                optimal_linkage = _linkage
+            logging.info('ari %.3f'% sc)                        
+    return {'nc': optimal_n_c, 'linkage':optimal_linkage}
 
 def _spectral_clustering(feature, ground_truth, config):
     ref_sc = -1
