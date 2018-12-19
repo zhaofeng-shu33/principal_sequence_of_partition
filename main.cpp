@@ -30,10 +30,11 @@ int main(int argc, const char *argv[]){
         return 0;
     }
     submodular::InfoCluster* g2g = new demo::Gaussian2DGraph(vm["size"].as<int>(),0.5);
-#else
-    demo::Gaussian2DGraph<double>* g2g = new demo::Gaussian2DGraph<double>(8);
-#endif
     bool run_full = vm["full"].as<bool>();
+#else
+    demo::Gaussian2DGraph* g2g = new demo::Gaussian2DGraph(8);
+    bool run_full = true;
+#endif
     std::vector<submodular::Set> p;
     if(run_full){
         g2g->run();

@@ -3,7 +3,9 @@
 * \author: zhaofeng-shu33
 */
 #include "core/dt.h"
+#if USE_EIGEN3
 #include "test/algorithms/test_sfm_fw.h"
+#endif
 #include "test/test_extreme.h"
 namespace submodular {
     /**
@@ -183,11 +185,13 @@ namespace submodular {
         Set p_2 = solver2.GetMinimizer();
         EXPECT_DOUBLE_EQ(alpha_2, 1.0);
         EXPECT_DOUBLE_EQ(F1.Call(p_2), alpha_2);
-        FWRobust<double> solver1;
+#if USE_EIGEN3        
+	FWRobust<double> solver1;
         solver1.Minimize(F1);
         double alpha_l = solver1.GetMinimumValue();
         EXPECT_DOUBLE_EQ(alpha_l, 1.0);
-        delete hgm;
+#endif
+	delete hgm;
     }
     TEST(PSP, HyperGraphicalModel2) {
         HyperGraphicalModel2<double>* hgm = new HyperGraphicalModel2<double>();
