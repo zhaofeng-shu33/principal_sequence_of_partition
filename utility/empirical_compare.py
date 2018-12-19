@@ -104,6 +104,8 @@ def make_table(dic):
             i.append('%.2f'%v.get(i[0]))
     _headers = ['adjusted rand index']
     _headers.extend(list(dic.keys()))
+    for i in table:
+        i[0] = i[0].replace('_', ' ')
     latex_table_string = tabulate(table, headers = _headers, tablefmt = 'latex_raw')
     schema.set_file(schema.LATEX_TABLE_NAME, latex_table_string)
     

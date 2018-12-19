@@ -13,6 +13,10 @@ METHOD_SCHEMA = {
             'affinity':[ "nearest_neighbors", "rbf" ],
             'n_neighbors':[10],
             'gamma':[0.6]
+        },
+        'Agglomerative': {
+            'linkage':['single'],
+            'nc':[0]
         }
 }
 DATASET_SCHEMA = {
@@ -28,22 +32,29 @@ PARAMETER_FILE = 'parameter.json'
 LATEX_TABLE_NAME = 'compare.tex'
 EMPIRICAL_LOGGING_FILE = 'empirical_compare.log'
 FINE_TUNING_LOGGING_FILE = 'fine_tuning.log'
-def construct_tuning_json():
-    '''construct tuning json string
+             
+def update_tuning_json():
+    '''update tuning json string
     '''
     global METHOD_SCHEMA, DATASET_SCHEMA
-    dic = {}
+    json_str = download_from_my_oss(TUNING_FILE)
+    if(json_str == ''):
+        json_str = '{}'
+    dic = json.loads(json_str)
     for dataset, optimal_nc in DATASET_SCHEMA.items():
-        dic[dataset] = {}
+        if(dic.get(dataset) is None):
+            dic[dataset] = {}
         dic_dataset = dic[dataset]
         for method, parameter_dic in METHOD_SCHEMA.items():
+            if(dic_dataset.get(method) is None):
                 dic_dataset[method] = {}
-                dic_dataset_method = dic_dataset[method]
-                for parameter, default_value in parameter_dic.items():
-                    if(parameter == 'nc'):
-                        v = [optimal_nc]
-                    else:
-                        v = default_value
+            dic_dataset_method = dic_dataset[method]
+            for parameter, default_value in parameter_dic.items():
+                if(parameter == 'nc'):
+                    v = [optimal_nc]
+                else:
+                    v = default_value
+                if(dic_dataset_method.get(parameter) is None):
                     dic_dataset_method[parameter] = v
     return json.dumps(dic, indent=4)                
     
@@ -102,7 +113,7 @@ if __name__ == '__main__':
     if(tuning_file_construct):
         print('construct tuning json files...')
         with open(tuning_file_path, 'w') as f:
-            json_str = construct_tuning_json()
+            json_str = update_tuning_json()
             upload_to_my_oss(json_str, TUNING_FILE)
             f.write(json_str)
         print('tuning files written to %s' % tuning_file_path)

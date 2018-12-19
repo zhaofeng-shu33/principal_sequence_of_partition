@@ -167,17 +167,21 @@ def compute(dataset, method):
     global logging
     dic = json.loads(schema.get_file(schema.PARAMETER_FILE))
     tuning_dic = json.loads(schema.get_file(schema.TUNING_FILE))
-    logging.info('tuning for dataset ' + dataset)
-    config = tuning_dic["%s"%dataset]
-    method_list = []
     if(method == 'all'):
         method_list = [i for i in schema.METHOD_SCHEMA]
     else:
         method_list = [method]
-    if(dic.get(dataset) is None):
-        dic[dataset] = {}        
-    for _method in method_list:
-        exec('dic["{0}"]["{1}"] = {0}("{1}",{2})' .format(dataset, _method, config[_method])) 
+    if(dataset == 'all'):
+        dataset_list = [i for i in schema.DATASET_SCHEMA]
+    else:
+        dataset_list = [dataset]
+    for _dataset in dataset_list:    
+        logging.info('tuning for dataset ' + dataset)        
+        for _method in method_list:
+            if(dic.get(_dataset) is None):
+                dic[_dataset] = {}                
+            config = tuning_dic["%s"%_dataset]
+            exec('dic["{0}"]["{1}"] = {0}("{1}",{2})' .format(_dataset, _method, config[_method])) 
     
     return dic
     
@@ -185,8 +189,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     dataset_choices = [i for i in schema.DATASET_SCHEMA]
     method_chocies = [i for i in schema.METHOD_SCHEMA]
+    dataset_choices.append('all')
     method_chocies.append('all')
-    parser.add_argument('dataset', help='name of the dataset to fine tuning', choices=dataset_choices)
+    parser.add_argument('dataset', help='name of the dataset to fine tuning', default='all', choices=dataset_choices)
     parser.add_argument('--method', help='clustering method to fine tuning', default='all', choices=method_chocies)
     args = parser.parse_args()    
     dic = compute(args.dataset, args.method)
