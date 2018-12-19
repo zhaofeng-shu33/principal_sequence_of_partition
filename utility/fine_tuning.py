@@ -206,7 +206,7 @@ if __name__ == '__main__':
     method_chocies = [i for i in schema.METHOD_SCHEMA]
     dataset_choices.append('all')
     method_chocies.append('all')
-    parser.add_argument('dataset', help='name of the dataset to fine tuning', default='all', choices=dataset_choices)
+    parser.add_argument('--dataset', help='name of the dataset to fine tuning', default='all', choices=dataset_choices)
     parser.add_argument('--method', help='clustering method to fine tuning', default='all', choices=method_chocies)
     args = parser.parse_args()    
     dic = compute(args.dataset, args.method)
