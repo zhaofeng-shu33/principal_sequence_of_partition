@@ -19,11 +19,14 @@ class InfoCluster:
     n_neighbors : integer
         Number of neighbors to use when constructing the affinity matrix using
         the nearest neighbors method. Ignored for ``affinity='rbf'``.        
+    n_clusters : integer
+        suggested minimum number of clusters required, default is None
     '''
-    def __init__(self, gamma=1, affinity='rbf', n_neighbors=10):    
+    def __init__(self, gamma=1, affinity='rbf', n_neighbors=10, n_clusters=None):    
         self._gamma = gamma;
         self.affinity = affinity
         self.n_neighbors = n_neighbors     
+        self.n_clusters = n_clusters
     def fit(self, X):
         '''Construct an affinity graph from X using rbf kernel function,
         then applies info clustering to this affinity graph.
@@ -32,11 +35,15 @@ class InfoCluster:
         X : array-like, shape (n_samples, n_features)
            
         '''
+        if(self.n_clusters is not None):
+            return self.get_category(self.n_clusters, X)
         self._init_g(X)
         self.g.run(False)
         
         self.critical_values = to_py_list(self.g.get_critical_values())
-        self.partition_num_list = to_py_list(self.g.get_partitions())    
+        self.partition_num_list = to_py_list(self.g.get_partitions())  
+    def fit_predict(self, X):
+        return self.fit(X)
     def get_category(self, i, X=None):
         '''get the clustering labels with the number of clusters no smaller than i
         Parameters
@@ -151,6 +158,6 @@ class FourPart:
         self.g = g
 def to_py_list(L):
     '''
-    convert an iterable object (exported from C++ class) to python list        
+    convert an iterable object (exported from C++ class) to numpy 1d array        
     '''
     return [i for i in L]
