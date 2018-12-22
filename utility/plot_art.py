@@ -53,6 +53,8 @@ def plot_inner(index, grach_cluster_object, fileName):
         cat = grach_cluster_object.get_category(cat_num)
         print('num of cat:', cat_num)
         plot_cluster(grach_cluster_object.pos_list, cat, cat_num)
+        if(index>0):
+            plt.yticks(())
         ax.set_title('$\lambda = %.2f$' % lambda_list[index])
     plt.savefig(fileName)
     plt.show()
@@ -81,5 +83,7 @@ def plot_ThreeCircle():
 
     
 if __name__ == '__main__':
+    plt.figure(figsize=(9.2, 3))
+    plt.subplots_adjust(wspace=.05)    
     plot_FourPart()
     #plot_ThreeCircle()
