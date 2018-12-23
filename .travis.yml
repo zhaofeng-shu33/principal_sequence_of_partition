@@ -50,4 +50,4 @@ script:
   - ls
   - test/TestAll
   - python3 -c "import psp;print(psp.__version__)"
-  - python3 utility/graph_cut_py_test.py
+  - python3 ../utility/graph_cut_py_test.py
