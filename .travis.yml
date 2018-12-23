@@ -3,6 +3,8 @@ matrix:
   - os: linux
     dist: xenial
     sudo: required
+    language: python
+    python: "3.6"
     addons:
       apt:
         sources:
@@ -49,5 +51,7 @@ script:
 # used for testing
   - ls
   - test/TestAll
-  - python3 -c "import psp;print(psp.__version__)"
-  - python3 ../utility/graph_cut_py_test.py
+  - python -c "import psp;print(psp.__version__)"
+  - cd ../utility
+  - coverage run graph_cut_py_test.py
+  - codecov
