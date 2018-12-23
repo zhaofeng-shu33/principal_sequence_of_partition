@@ -9,6 +9,7 @@ import argparse
 import os
 import time
 import pdb
+
 # third party module
 import sklearn
 from sklearn import metrics
@@ -142,26 +143,46 @@ def fine_tuning(feature, ground_truth, method, config):
     end_time = time.time()
     logging.info('Finish tuning for %s, total time used = %.2f' % (method,end_time-start_time))
     return locals()['parameter']
-        
+
+def get_npx(fileName):    
+    ''' return npx data is fileName exists,
+    return None otherwise
+    '''
+    file_path = os.path.join(schema.BUILD_DIR, fileName)
+    if(os.path.exists(file_path)):
+        data = np.load(file_path)
+        return data
+    return None
+    
+def set_npx(fileName, data):
+    ''' save npx data to fileName
+    '''
+    file_path = os.path.join(schema.BUILD_DIR, fileName)
+    np.hstack(data).dump(file_path)
+    
 def Gaussian(method, config):
-    if(os.path.exists('Gaussian.npx')):
-        data = np.load('Gaussian.npx')
-        pos_list = data[:,:2]
-        ground_truth = data[:,-1]   
-    else:      
+    GfileName = 'Gaussian.npx'
+    data = get_npx(GfileName)
+    if(data is None):
         pos_list, ground_truth = datasets.make_blobs(n_samples = 100, centers=[[3,3],[-3,-3],[3,-3],[-3,3]], cluster_std=1)
-        np.hstack((pos_list, ground_truth.reshape(len(ground_truth),1))).dump('Gaussian.npx')
+        ground_truth = ground_truth.reshape(len(ground_truth),1)
+        set_npx(GfileName, (pos_list, ground_truth))
+    else:
+        pos_list = data[:,:2]
+        ground_truth = data[:,-1]           
     return fine_tuning(pos_list, ground_truth, method, config)
     
     
 def Circle(method, config):
-    if(os.path.exists('Circle.npx')):
-        data = np.load('Circle.npx')
+    CfileName = 'Circle.npx'
+    data = get_npx(CfileName)
+    if(data is None):
+        pos_list, ground_truth = _generate_three_circle_data()
+        ground_truth = ground_truth.reshape(len(ground_truth),1)
+        set_npx(CfileName, (pos_list, ground_truth))
+    else:
         pos_list = data[:,:2]
         ground_truth = data[:,-1]   
-    else:
-        pos_list, ground_truth = _generate_three_circle_data()
-        np.hstack((pos_list, ground_truth.reshape(len(ground_truth),1))).dump('Circle.npx')    
     return fine_tuning(pos_list, ground_truth, method, config)
         
 def Iris(method, config):
@@ -208,7 +229,10 @@ if __name__ == '__main__':
     method_chocies.append('all')
     parser.add_argument('--dataset', help='name of the dataset to fine tuning', default='all', choices=dataset_choices)
     parser.add_argument('--method', help='clustering method to fine tuning', default='all', choices=method_chocies)
-    args = parser.parse_args()    
+    parser.add_argument('--debug', help='whether to enter debug mode', default=False, type=bool, nargs='?', const=True)
+    args = parser.parse_args()
+    if(args.debug):
+        pdb.set_trace()
     dic = compute(args.dataset, args.method)
     json_str = json.dumps(dic, indent=4)
     schema.set_file(schema.PARAMETER_FILE, json_str)

@@ -2,9 +2,13 @@
 '''
     plot artificial dataset
 '''
+import os
+
 from matplotlib import pyplot as plt
 import numpy as np
+
 import info_cluster
+import schema
 color_list = ['#3FF711', 'r', 'g', 'm','y','k','c','#00FF00']
 marker_list = ['o', 'v', 's', '*', '+', 'x', 'D', '1']
 MAX_CAT = len(color_list)
@@ -56,10 +60,10 @@ def plot_inner(index, grach_cluster_object, fileName):
         if(index>0):
             plt.yticks(())
         ax.set_title('$\lambda = %.2f$' % lambda_list[index])
-    plt.savefig(fileName)
-    plt.show()
+    plt.savefig(os.path.join(schema.BUILD_DIR, fileName))
   
 def plot_FourPart():
+    print('plot_FourPart')
     global color_list, marker_list, MAX_CAT
     i = -1
     while(i < 0): # check category requirement, regenerate the points if necessary
@@ -70,6 +74,7 @@ def plot_FourPart():
     plot_inner(i, g, '4part.eps')
     
 def plot_ThreeCircle():
+    print('plot_ThreeCircle')
     global color_list, marker_list, MAX_CAT
     i = -1
     while(i < 0): # check category requirement, regenerate the points if necessary
@@ -86,4 +91,4 @@ if __name__ == '__main__':
     plt.figure(figsize=(9.2, 3))
     plt.subplots_adjust(wspace=.05)    
     plot_FourPart()
-    #plot_ThreeCircle()
+    plot_ThreeCircle()
