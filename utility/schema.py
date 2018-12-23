@@ -1,38 +1,15 @@
 import json
 import os
+
 import oss2
-METHOD_SCHEMA = {
-        'k-means': {'nc':[0]},
-        'spectral_clustering': {'nc':[0]},
-        'affinity_propagation': {
-            'preference':[-50],
-            'damping_factor':[0.5]
-        },
-        'info-clustering': {
-            'nc':[0],
-            'affinity':[ "nearest_neighbors", "rbf" ],
-            'n_neighbors':[10],
-            'gamma':[0.6]
-        },
-        'Agglomerative': {
-            'linkage':['single'],
-            'nc':[0]
-        }
-}
-DATASET_SCHEMA = {
-  'Gaussian': 4,
-  'Circle': 3,
-  'Iris': 3,
-  'Glass': 6,
-  'Libras': 15
-}
-BUILD_DIR = 'build'
-TUNING_FILE = 'tuning.json'
-PARAMETER_FILE = 'parameter.json'
-LATEX_TABLE_NAME = 'compare.tex'
-EMPIRICAL_LOGGING_FILE = 'empirical_compare.log'
-FINE_TUNING_LOGGING_FILE = 'fine_tuning.log'
-             
+from easydict import EasyDict as edict
+import yaml
+
+with open ('schema.yaml') as f:
+    schema_str = f.read()
+    schema_dic = yaml.load(schema_str)
+    locals().update(edict(schema_dic))       
+    
 def update_tuning_json():
     '''update tuning json string
     '''
