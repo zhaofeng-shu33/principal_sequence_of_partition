@@ -71,7 +71,8 @@ public:
   static Set MakeDense(std::size_t n);
   static Set MakeEmpty(std::size_t n);
   static Set FromIndices(std::size_t n, const std::vector<element_type>& indices);
-
+  //! static method to generate the finest partition {{0}, {1}, ..., {n-1}}
+  static std::vector<Set> MakeFine(std::size_t n);
   bool HasElement(element_type i) const;
   bool operator[] (element_type i) const { return HasElement(i); }
 
@@ -177,7 +178,16 @@ Set Set::FromIndices(std::size_t n, const std::vector<element_type>& indices) {
   }
   return X;
 }
-
+static std::vector<Set> MakeFine(std::size_t n) {
+    Set Empt;
+    std::vector<Set> P;
+    for (int i = 0; i < n; i++) {
+        Set EmptyExceptOne(n);
+        EmptyExceptOne.AddElement(i);
+        P.push_back(EmptyExceptOne);
+    }
+    return P;
+}
 template<class CharT>
 Set::Set(const std::basic_string<CharT>& str)
   : n_(str.size()), bits_(str.size(), 0)

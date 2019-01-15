@@ -38,4 +38,37 @@ public:
             return 2;
     }
 };
+//! 6 random variables, widely used in Chen Chuan's article
+template <typename ValueType>
+class HyperGraphicalModel2 : public SubmodularOracle<ValueType> {
+public:
+    using value_type = typename ValueTraits<ValueType>::value_type;
+    std::string GetName() { return ""; }
+    HyperGraphicalModel2()
+    {
+        this->SetDomain(Set::MakeDense(6));
+    }
+    value_type Call(const Set& X) {
+        auto members = X.GetMembers();
+        bool edges[4] = { 0,0,0,0 };
+        for (const auto i : members) {
+            if (i == 0 || i == 1) {
+                edges[0] = 1;
+                edges[3] = 1;
+            }
+            else if (i == 2) {
+                edges[0] = 1;
+            }
+            else if (i == 3 || i == 4) {
+                edges[1] = 1;
+            }
+            else // i == 5
+                edges[2] = 1;
+        }
+        int sum = 0;
+        for (const auto i : edges)
+            sum += i;
+        return sum;
+    }
+};
 }

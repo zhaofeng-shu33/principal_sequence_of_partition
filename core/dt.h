@@ -236,14 +236,9 @@ namespace submodular {
         }
         void run(bool bruteForce = false) {
             Set V = Set::MakeDense(NodeSize);
-            Set Empt;
             std::vector<Set> Q, P;
             Q.push_back(V);
-            for (int i = 0; i < NodeSize; i++) {
-                Set EmptyExceptOne(NodeSize);
-                EmptyExceptOne.AddElement(i);
-                P.push_back(EmptyExceptOne);
-            }
+            P = Set::MakeFine(NodeSize);
             psp[0] = Q;
             psp[P.size()-1] = P;
             split(Q, P, bruteForce);
