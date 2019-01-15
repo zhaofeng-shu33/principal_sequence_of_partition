@@ -27,15 +27,8 @@ namespace submodular {
 
 using OrderType = std::vector<std::size_t>;
 
-OrderType LinearOrder(std::size_t n) {
-  OrderType order(n);
-  std::iota(order.begin(), order.end(), 0);
-  return order;
-}
-
-OrderType LinearOrder(const Set& X) {
-  return X.GetMembers();
-}
+OrderType LinearOrder(std::size_t n);
+OrderType LinearOrder(const Set& X);
 
 template <typename T>
 OrderType GetDescendingOrder(const std::vector<T>& x) {

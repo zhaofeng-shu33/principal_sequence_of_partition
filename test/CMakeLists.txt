@@ -4,9 +4,10 @@ cmake_minimum_required(VERSION 3.5)
 
 include_directories(${GTEST_INCLUDE_DIR})
 add_executable(TestAll test.cpp)
+target_link_libraries(TestAll ic_static)
 
 add_executable(test_agg test_agglomerative.cpp)
-target_link_libraries(test_agg aic)
+target_link_libraries(test_agg ic_static)
 
 if(UNIX AND "${CMAKE_BUILD_TYPE}" STREQUAL "")
 set(CMAKE_BUILD_TYPE "Release")
