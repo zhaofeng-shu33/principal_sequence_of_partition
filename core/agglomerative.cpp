@@ -22,6 +22,6 @@ namespace submodular {
             union_set = union_set.Union(partition[i]);
         }
         sum += submodular_function->Call(union_set);
-        return 0;
+        return sum;
     }
 }

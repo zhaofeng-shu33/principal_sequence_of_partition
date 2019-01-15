@@ -7,6 +7,8 @@ TEST(Agglomerative, HyperGraphicalModel2) {
     HyperGraphicalModel2<double> hgm2;
     std::vector<Set> finest = Set::MakeFine(6);
     MNBFunction mnb(finest, 0, &hgm2);
+    Set B = Set::FromIndices(6, { 1,2,3,4,5 }); // omit 0
+    EXPECT_EQ(mnb.Call(B), -4);
     FWRobust<double> solver2;
     solver2.Minimize(mnb);
     std::vector<double> x_data = solver2.get_x_data();

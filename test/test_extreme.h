@@ -38,7 +38,7 @@ public:
             return 2;
     }
 };
-//! 6 random variables, widely used in Chen Chuan's article
+//! entropy definition, maximum 6 random variables, widely used in Chen Chuan's article
 template <typename ValueType>
 class HyperGraphicalModel2 : public SubmodularOracle<ValueType> {
 public:
