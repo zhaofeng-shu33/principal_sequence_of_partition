@@ -1,2 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
-add_library(ic_static agglomerative.cpp set_utils.cpp io_utility.cpp linalg.cpp reporter.cpp base.cpp)
+set(ic_lib set_utils.cpp io_utility.cpp linalg.cpp reporter.cpp base.cpp)
+if(USE_EIGEN3)
+list(APPEND ic_lib agglomerative.cpp)
+endif()
+add_library(ic_static ${ic_lib})
+SET_TARGET_PROPERTIES(ic_static PROPERTIES COMPILE_FLAGS "-fPIC")
