@@ -3,8 +3,6 @@ matrix:
   - os: linux
     dist: xenial
     sudo: required
-    language: python
-    python: "3.5"
     addons:
       apt:
         sources:
@@ -46,12 +44,12 @@ before_install:
   - cmake -DENABLE_TESTING=ON -DUSE_PYTHON=ON -DUSE_LEMON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_EIGEN3=ON -DUSE_BOOST_OPTION=ON ../ 
 install:
   - sudo make install
-  - python -c "import easydict" 2>/dev/null || pip install -r ../utility/requirement.txt
+  - python3 -c "import easydict" 2>/dev/null || pip install -r ../utility/requirement.txt
 script:
 # used for testing
   - ls
   - test/TestAll
-  - python -c "import psp;print(psp.__version__)"
+  - python3 -c "import psp;print(psp.__version__)"
   - cd ../utility
   - coverage run graph_cut_py_test.py
   - codecov
