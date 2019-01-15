@@ -44,7 +44,7 @@ public:
   std::string GetName() { return "Fujishige--Wolfe"; }
 
   void SetTol(rational_type tol) { tol_ = tol; }
-
+  base_type get_x_data() const { return x_data_; }
 private:
   rational_type precision_; // = 2 * n_ * epsilon_
   rational_type eps_;

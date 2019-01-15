@@ -178,7 +178,7 @@ Set Set::FromIndices(std::size_t n, const std::vector<element_type>& indices) {
   }
   return X;
 }
-static std::vector<Set> MakeFine(std::size_t n) {
+std::vector<Set> Set::MakeFine(std::size_t n) {
     Set Empt;
     std::vector<Set> P;
     for (int i = 0; i < n; i++) {

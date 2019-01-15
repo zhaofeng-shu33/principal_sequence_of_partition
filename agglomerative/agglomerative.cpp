@@ -7,7 +7,7 @@ namespace submodular {
     {        
         int k = p.size();
         Set domain_set(k);
-        for (int i = start_index; i < k; i++)
+        for (int i = start_index + 1; i < k; i++)
             domain_set.AddElement(i);
         this->SetDomain(domain_set);
     }

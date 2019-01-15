@@ -1,5 +1,5 @@
 #pragma once
-#include "core/algorithms/brute_force.h"
+#include "core/algorithms/sfm_fw.h"
 #include "core/oracles/modular.h"
 namespace submodular {
     class MNBFunction : public SubmodularOracle<double> {
