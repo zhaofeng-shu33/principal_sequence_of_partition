@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 # test for the core module
 
 
-include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${GTEST_INCLUDE_DIR})
 add_executable(TestAll test.cpp)
 if(UNIX AND "${CMAKE_BUILD_TYPE}" STREQUAL "")
