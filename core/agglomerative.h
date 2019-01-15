@@ -12,4 +12,6 @@ namespace submodular {
         std::vector<Set> partition;
         SubmodularOracle<double> *submodular_function;
     };
+    //! get the critical value and its corresponding partation from the last critical partation
+    std::pair<double, std::vector<Set>> agglomerate(std::vector<Set>& p, SubmodularOracle<double>* sf);
 }
