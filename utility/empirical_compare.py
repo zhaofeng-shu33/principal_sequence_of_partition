@@ -51,6 +51,14 @@ def _affinity_propagation(feature, ground_truth, p_d):
     ars_af = metrics.adjusted_rand_score(ground_truth, y_pred_af)
     return ars_af
     
+def _Agglomerative(feature, ground_truth, config):
+    n_c = config['nc']
+    _linkage = config['linkage']
+    c = cluster.AgglomerativeClustering(n_clusters=n_c, linkage = _linkage)
+    y_pred_sc = c.fit_predict(feature)
+    sc = metrics.adjusted_rand_score(ground_truth, y_pred_sc)
+    return sc    
+    
 def compute_adjusted_rand_score(feature, ground_truth, parameter_dic):
     dic = {}    
     for method, parameter in parameter_dic.items():

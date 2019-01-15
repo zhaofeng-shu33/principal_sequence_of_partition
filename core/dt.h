@@ -29,6 +29,16 @@ namespace submodular {
         ModularOracle<ValueType> XL;
         SubmodularOracle<ValueType> *submodular_function;
     };
+    class MNBFunction : public SubmodularOracle<double> {
+    public:
+        std::string GetName() { return "Min Norm Base Function"; }
+        MNBFunction(std::vector<Set>& p, int index, SubmodularOracle<double>* sf);
+        double Call(const Set& X);
+    private:
+        int start_index;
+        std::vector<Set> partition;
+        SubmodularOracle<double> *submodular_function;
+    };
     /**
     *   compute the solution to \min_{P} h_{\gamma}(P)
     */
@@ -226,14 +236,9 @@ namespace submodular {
         }
         void run(bool bruteForce = false) {
             Set V = Set::MakeDense(NodeSize);
-            Set Empt;
             std::vector<Set> Q, P;
             Q.push_back(V);
-            for (int i = 0; i < NodeSize; i++) {
-                Set EmptyExceptOne(NodeSize);
-                EmptyExceptOne.AddElement(i);
-                P.push_back(EmptyExceptOne);
-            }
+            P = Set::MakeFine(NodeSize);
             psp[0] = Q;
             psp[P.size()-1] = P;
             split(Q, P, bruteForce);

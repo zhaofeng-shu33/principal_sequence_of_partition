@@ -2,3 +2,6 @@ numpy
 matplotlib
 scikit-learn
 tabulate
+easydict
+codecov
+
