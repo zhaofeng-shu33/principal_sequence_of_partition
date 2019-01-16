@@ -44,7 +44,7 @@ before_install:
   - cmake -DENABLE_TESTING=ON -DUSE_PYTHON=ON -DUSE_LEMON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_EIGEN3=ON -DUSE_BOOST_OPTION=ON ../ 
 install:
   - sudo make install
-  - python3 -c "import easydict" 2>/dev/null || sudo pip3 install -r ../utility/requirement.txt
+  - python3 -c "import easydict" 2>/dev/null || sudo python3 -m pip install -r ../utility/requirement.txt
 script:
 # used for testing
   - ls
