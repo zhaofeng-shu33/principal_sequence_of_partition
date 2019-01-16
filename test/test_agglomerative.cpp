@@ -25,7 +25,7 @@ TEST(Agglomerative, HyperGraphicalModel2_Bottom) {
 TEST(Agglomerative, HyperGraphicalModel2_Middle) {
     HyperGraphicalModel2<double> hgm2;
     std::vector<Set> finest = Set::MakeFine(6);
-    std::pair<double, std::vector<Set>> result, result_2;
+    std::pair<double, std::vector<Set>> result, result_2, result_3;
     result = agglomerate(finest, &hgm2);
     EXPECT_EQ(result.first, 2);
     std::stringstream ss;
@@ -38,6 +38,14 @@ TEST(Agglomerative, HyperGraphicalModel2_Middle) {
 
     result_2 = agglomerate(result.second, &hgm2);
     EXPECT_EQ(result_2.first, 1);
-    std::cout << result_2.second;
+    ss.str(std::string());
+    ss << result_2.second;
+    EXPECT_EQ(ss.str(), std::string("{{0, 1, 2}{3, 4}{5}}"));
+
+    result_3 = agglomerate(result_2.second, &hgm2);
+    EXPECT_EQ(result_3.first, 0);
+    ss.str(std::string());
+    ss << result_3.second;
+    EXPECT_EQ(ss.str(), std::string("{{0, 1, 2, 3, 4, 5}}"));
 }
 }
