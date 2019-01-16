@@ -7,6 +7,7 @@
 #include "core/algorithms/sfm_mf.h"
 #endif
 #include "core/oracles/modular.h"
+#include "core/agglomerative.h"
 namespace submodular {
     template <typename ValueType>
     class SampleFunctionPartial : public SubmodularOracle<ValueType> {
@@ -29,16 +30,7 @@ namespace submodular {
         ModularOracle<ValueType> XL;
         SubmodularOracle<ValueType> *submodular_function;
     };
-    class MNBFunction : public SubmodularOracle<double> {
-    public:
-        std::string GetName() { return "Min Norm Base Function"; }
-        MNBFunction(std::vector<Set>& p, int index, SubmodularOracle<double>* sf);
-        double Call(const Set& X);
-    private:
-        int start_index;
-        std::vector<Set> partition;
-        SubmodularOracle<double> *submodular_function;
-    };
+ 
     /**
     *   compute the solution to \min_{P} h_{\gamma}(P)
     */
@@ -242,6 +234,19 @@ namespace submodular {
             psp[0] = Q;
             psp[P.size()-1] = P;
             split(Q, P, bruteForce);
+        }
+        void agglomerative_run() {
+            std::vector<Set> P;
+            P = Set::MakeFine(NodeSize);
+            int s = P.size() - 1;
+            psp[s] = P;
+            while (s > 0) {
+                std::pair<double, std::vector<Set>> result;
+                result = agglomerate(psp[s], submodular_function);
+                s = result.second.size() - 1;
+                critical_values[s] = result.first;
+                psp[s] = result.second;
+            }
         }
         std::vector<value_type>& Get_critical_values() {
             return critical_values;
