@@ -6,6 +6,8 @@
 #include "test/test_extreme.h"
 #include "core/io_utility.h"
 #include "core/dt.h"
+#include "test/graph/test_graph_base.h"
+#include "core/oracles/graph_cut.h"
 namespace submodular{
 TEST(Agglomerative, HyperGraphicalModel2_Bottom) {
     HyperGraphicalModel2<double> hgm2;
@@ -94,5 +96,39 @@ TEST(Agglomerative, HyperGraphicalModel2_Top) {
     delete hgm;
     // partition list is {{0, 1, 2, 3, 4, 5}}, {{{0, 1, 2}, {3, 4}, {5}}, {{0, 1}, {2}, {3}, {4}, {5}}, {{0}, {1}, {2}, {3}, {4}, {5}}}  
     // gamma list is {0, 1, 2}
+}
+TEST_F(PINModelTest, Agglomerative) {
+    std::vector<std::tuple<std::size_t, std::size_t, double>> edge;
+    edge.push_back(std::make_tuple(0, 1, 1));
+    edge.push_back(std::make_tuple(0, 2, 5));
+    edge.push_back(std::make_tuple(1, 2, 1));
+    SimpleGraph<double> sg = make_dgraph(3, edge);
+    DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
+
+    PSP<double> psp_class(dgc);
+    psp_class.agglomerative_run();
+    std::vector<double> gamma_list = psp_class.Get_critical_values();
+    std::vector<std::vector<Set>> psp_list = psp_class.Get_psp();
+    EXPECT_EQ(gamma_list.size(), 3);
+    EXPECT_EQ(gamma_list[0], 2);
+    EXPECT_EQ(gamma_list[1], 5);
+
+    EXPECT_EQ(psp_list.size(), 3);
+
+    EXPECT_EQ(psp_list[0].size(), 1);
+    EXPECT_EQ(psp_list[0][0], Set::MakeDense(3));
+
+    EXPECT_EQ(psp_list[1].size(), 2);
+    EXPECT_EQ(psp_list[1][0], Set::FromIndices(3, { 0, 2 }));
+    EXPECT_EQ(psp_list[1][1], Set::FromIndices(3, { 1 }));
+
+    EXPECT_EQ(psp_list[2].size(), 3);
+    EXPECT_EQ(psp_list[2][0], Set::FromIndices(3, { 0 }));
+    EXPECT_EQ(psp_list[2][1], Set::FromIndices(3, { 1 }));
+    EXPECT_EQ(psp_list[2][2], Set::FromIndices(3, { 2 }));
+
+    delete dgc;
+    // partition list is {{{0, 1, 2}}, {{0, 2}, {1}}, {{0}, {1}, {2}}}  
+    // gamma list is {2, 5}       
 }
 }
