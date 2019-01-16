@@ -217,7 +217,7 @@ def compute(dataset, method):
             if(dic.get(_dataset) is None):
                 dic[_dataset] = {}                
             config = tuning_dic["%s"%_dataset]
-            exec('dic["{0}"]["{1}"] = {0}("{1}",{2})' .format(_dataset, _method, config[_method])) 
+            exec('dic["{0}"]["{1}"] = {0}("{1}",{2})'.format(_dataset, _method, config[_method])) 
     
     return dic
     

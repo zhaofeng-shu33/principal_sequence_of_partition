@@ -14,7 +14,7 @@ namespace submodular {
     double MNBFunction::Call(const Set& X) {
         double sum = 0;
         int k = GetNGround();
-        Set union_set = Set::FromIndices(k, { (size_t)start_index });
+        Set union_set = Set::MakeEmpty(partition[0].n_);
         for (int i = start_index; i < k; i++) {
             if (i > start_index && !X.HasElement(i))
                 continue;

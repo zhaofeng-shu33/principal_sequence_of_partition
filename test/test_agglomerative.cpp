@@ -31,6 +31,11 @@ TEST(Agglomerative, HyperGraphicalModel2_Middle) {
     std::stringstream ss;
     ss << result.second;
     EXPECT_EQ(ss.str(), std::string("{{0, 1}{2}{3}{4}{5}}"));
+
+    MNBFunction mnb(result.second, 0, &hgm2);
+    Set B = Set::FromIndices(5, { 1,2,3,4}); // omit 0
+    EXPECT_EQ(mnb.Call(B), -2);
+
     result_2 = agglomerate(result.second, &hgm2);
     EXPECT_EQ(result_2.first, 1);
     std::cout << result_2.second;
