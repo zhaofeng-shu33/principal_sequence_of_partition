@@ -1,7 +1,3 @@
-build/*
-utility/debug/*
-utility/*.dll
-utility/*.npx
+**/build
 utility/*.log
-utility/*.eps
 utility/__pycache__/*

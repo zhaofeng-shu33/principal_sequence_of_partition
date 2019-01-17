@@ -29,7 +29,7 @@ namespace submodular {
         int k = p.size();
         FWRobust<double> solver;
         double gamma_minus = 0;
-        for (int j = 0; j < k; j++) {
+        for (int j = 0; j < k - 1; j++) {
             MNBFunction mnb(p, j, sf);
             solver.Minimize(mnb);
             std::vector<double> x_data = solver.get_x_data();
@@ -43,7 +43,7 @@ namespace submodular {
             if (P_apostrophe_union.Union(p[j]).Cardinality() > P_apostrophe_union.Cardinality()) {
                 Set C_j_candidate = p[j];
                 for (int i = j + 1; i < k; i++) {
-                    if (x_data_list[j][i - (j+1)] <= gamma_minus)
+                    if (x_data_list[j][i - (j+1)] <= gamma_minus + 1e-3)
                         C_j_candidate = C_j_candidate.Union(p[i]);
                 }
                 P_apostrophe.push_back(C_j_candidate);
