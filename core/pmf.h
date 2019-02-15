@@ -1,7 +1,6 @@
 #pragma once
 #include <tuple>
 #include <numeric>
-#include <memory>
 #include <lemon/list_graph.h>
 #include "core/parametric_preflow.h"
 #include "core/set_utils.h"
@@ -19,14 +18,17 @@ public:
         pf(dig, dig_aM, lemon::INVALID, lemon::INVALID){}
     void init();
     void run();
+    std::list<Set> get_set_list() { return set_list; }
+    std::list<double> get_lambda_list() { return lambda_list; }
 private:
     void update_dig(double lambda);
     void slice(Set S, Set T);
-    std::unique_ptr<lemon::ListDigraph> g_ptr;
-    std::unique_ptr<ArcMap> aM;
+    lemon::ListDigraph* g_ptr;
+    ArcMap* aM;
     lemon::ListDigraph dig;
     ArcMap dig_aM;
     std::vector<pair> _y_lambda;
+    std::vector<double> sink_capacity;
     std::list<double> lambda_list;
     std::list<Set> set_list;
     lemon::ListDigraph::Node source_node;

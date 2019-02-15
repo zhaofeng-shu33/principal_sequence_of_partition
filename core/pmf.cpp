@@ -40,7 +40,7 @@ void PMF::init() {
     sink_node = dig.nodeFromId(dig.maxNodeId());
     source_node = dig.addNode();
     tilde_G_size = dig.maxNodeId() + 1;
-    for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; n++) {
+    for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
         if (n == sink_node || n == source_node)
             continue;
         dig.addArc(source_node, n);
@@ -49,6 +49,11 @@ void PMF::init() {
     // reset the source_node and sink_node
     pf.source(source_node);
     pf.target(sink_node);
+    sink_capacity.resize(_y_lambda.size());
+    for (lemon::ListDigraph::InArcIt arc(*g_ptr, g_ptr->nodeFromId(tilde_G_size - 2)); arc != lemon::INVALID; ++arc) {
+        int i = g_ptr->id(g_ptr->source(arc));
+        sink_capacity[i] = aM->operator[](arc);
+    }
     //find S_0 and T_0
     update_dig(0);
     pf.init();
@@ -56,8 +61,8 @@ void PMF::init() {
     pf.startSecondPhase();
     double minimum_value = pf.flowValue();
     Set S_0 = Set::MakeEmpty(tilde_G_size);
-    for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; n++) {
-        if (!pf.minCut(n))
+    for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
+        if (pf.minCut(n))
             S_0.AddElement(dig.id(n));
     }
     Set T_0 = S_0.Complement();
@@ -67,20 +72,22 @@ void PMF::init() {
     set_list.push_back(T_1);
 }
 void PMF::update_dig(double lambda) {
-    for (lemon::ListDigraph::OutArcIt arc(dig, source_node); arc != lemon::INVALID; arc++) {
+    for (lemon::ListDigraph::OutArcIt arc(dig, source_node); arc != lemon::INVALID; ++arc) {
         // get the next node id
         int i = dig.id(dig.target(arc));
         double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
         dig_aM[arc] = std::max<double>(0, -std::min<double>(a_i - 2 * lambda, b_i));
     }
-    for (lemon::ListDigraph::InArcIt arc(dig, sink_node); arc != lemon::INVALID; arc++) {
+    for (lemon::ListDigraph::InArcIt arc(dig, sink_node); arc != lemon::INVALID; ++arc) {
         int i = dig.id(dig.source(arc));
         double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
         // get the arc from the original graph
         lemon::ListDigraph::Arc o_arc = g_ptr->arcFromId(dig.id(arc));
-        dig_aM[arc] = aM->operator[](o_arc) + std::max<double>(0, std::min<double>(a_i - 2 * lambda, b_i));
+        dig_aM[arc] = sink_capacity[i] + std::max<double>(0, std::min<double>(a_i - 2 * lambda, b_i));
     }
 }
+void PMF::slice(Set S, Set T){
+    // compute lambda_2
 }
 int remain(){
     // set elevator and flow maps before running the algorithm.
