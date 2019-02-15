@@ -45,7 +45,7 @@ if(USE_BOOST_OPTION OR USE_PYTHON)
     endif()
 endif()
 if(USE_LEMON)
-target_link_libraries(main ${LEMON_LIBRARY})
+    target_link_libraries(main ${LEMON_LIBRARY})
 endif()
 configure_file (
   "${PROJECT_SOURCE_DIR}/core/config.h.in"
