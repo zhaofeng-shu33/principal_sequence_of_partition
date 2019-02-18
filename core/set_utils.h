@@ -74,6 +74,7 @@ public:
   //! static method to generate the finest partition {{0}, {1}, ..., {n-1}}
   static std::vector<Set> MakeFine(std::size_t n);
   bool HasElement(element_type i) const;
+  bool IsSubSet(const Set& s);
   bool operator[] (element_type i) const { return HasElement(i); }
 
   std::vector<element_type> GetMembers() const;

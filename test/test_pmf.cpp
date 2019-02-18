@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "core/pmf.h"
+namespace submodular{
 TEST(PMF, EquationSolve) {
     std::vector<pair> parameter_list;
     parameter_list.push_back(std::make_pair(2, 0));
@@ -18,7 +19,42 @@ TEST(PMF, EquationSolve) {
     double lambda_6 = compute_lambda(parameter_list, -2); // slope = -4 for lambda > 0
     EXPECT_DOUBLE_EQ(lambda_6, 0.5);
 }
+TEST(PMF, insert_set) {
+    std::vector<pair> y_lambda;
+    lemon::ListDigraph g;
+    lemon::ListDigraph::ArcMap<double> aM(g);
+    PMF pmf(g, aM, y_lambda);
+    Set V1(std::string("0001"));
+    Set V2(std::string("1001"));
+    Set V3(std::string("1101"));
 
+    pmf.insert_set(V3);
+    pmf.insert_set(V1);
+    pmf.insert_set(V2);
+    std::list<Set> set_list = pmf.get_set_list();
+    std::list<Set>::iterator i = set_list.begin();
+    EXPECT_EQ(*i, V3);
+    i++;
+    EXPECT_EQ(*i, V2);
+    i++;
+    EXPECT_EQ(*i, V1);
+}
+TEST(PMF, insert) {
+    std::vector<pair> y_lambda;
+    lemon::ListDigraph g;
+    lemon::ListDigraph::ArcMap<double> aM(g);
+    PMF pmf(g, aM, y_lambda);
+    pmf.insert(4);
+    pmf.insert(6);
+    pmf.insert(5);
+    std::list<double> lambda_list = pmf.get_lambda_list();
+    std::list<double>::iterator i = lambda_list.begin();
+    EXPECT_DOUBLE_EQ(*i, 4);
+    i++;
+    EXPECT_DOUBLE_EQ(*i, 5);
+    i++;
+    EXPECT_DOUBLE_EQ(*i, 6);
+}
 TEST(PMF, PMClass) {
     std::vector<pair> parameter_list;
     parameter_list.push_back(std::make_pair(0, 0));
@@ -43,11 +79,12 @@ TEST(PMF, PMClass) {
     aM[a4] = 5;
     aM[a5] = 1;
     aM[a6] = 1;
-    submodular::PMF pmf(g, aM, parameter_list);
-    pmf.init();
+    PMF pmf(g, aM, parameter_list);
+    pmf.run();
 
-    std::list<submodular::Set> sL = pmf.get_set_list();
-    for (submodular::Set& s : sL) {
+    std::list<Set> sL = pmf.get_set_list();
+    for (Set& s : sL) {
         std::cout << s << std::endl;
     }
+}
 }

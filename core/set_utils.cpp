@@ -59,7 +59,13 @@ Set::Set(std::size_t n, unsigned long val)
 bool Set::HasElement(element_type i) const {
   return static_cast<bool>(bits_[i]);
 }
-
+bool Set::IsSubSet(const Set& s) {
+    for (element_type i : GetMembers()) {
+        if (i >= s.n_ || !s.HasElement(i))
+            return false;
+    }
+    return true;
+}
 Set Set::Copy() const {
   Set X; X.n_ = n_; X.bits_ = bits_;
   return X;

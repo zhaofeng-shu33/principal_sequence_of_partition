@@ -58,7 +58,17 @@ TEST(Set, ConstructorC) {
 
   EXPECT_THROW(new Set(std::string("01020")), std::invalid_argument);
 }
-
+TEST(Set, IsSubSet) {
+    Set A(std::string("0100"));
+    Set B(std::string("00"));
+    EXPECT_TRUE(B.IsSubSet(A));
+    B.AddElement(1);
+    EXPECT_TRUE(B.IsSubSet(A));
+    B.AddElement(0);
+    EXPECT_FALSE(B.IsSubSet(A));
+    A.AddElement(2);
+    EXPECT_FALSE(A.IsSubSet(B));
+}
 TEST(Set, Complement) {
   Set V1(std::string("0101100"));
   Set V2(std::string("1010011"));

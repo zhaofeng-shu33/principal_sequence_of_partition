@@ -32,62 +32,130 @@ double compute_lambda(const std::vector<pair>& parameter_list, const double targ
     }
     return (target_value - sum) / slope + last_tp;
 }
-namespace submodular{
-void PMF::init() {
-    lemon::DigraphCopy<lemon::ListDigraph, lemon::ListDigraph> cg(*g_ptr, dig);
-    cg.arcMap(*aM, dig_aM);
-    cg.run();
-    sink_node = dig.nodeFromId(dig.maxNodeId());
-    source_node = dig.addNode();
-    tilde_G_size = dig.maxNodeId() + 1;
-    for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
-        if (n == sink_node || n == source_node)
-            continue;
-        dig.addArc(source_node, n);
-        dig.addArc(n, sink_node);
+namespace submodular {
+    Set PMF::get_min_cut_source_side() {
+        Set s = Set::MakeEmpty(tilde_G_size);
+        for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
+            if (pf.minCut(n))
+                s.AddElement(dig.id(n));
+        }
+        return s;
     }
-    // reset the source_node and sink_node
-    pf.source(source_node);
-    pf.target(sink_node);
-    sink_capacity.resize(_y_lambda.size());
-    for (lemon::ListDigraph::InArcIt arc(*g_ptr, g_ptr->nodeFromId(tilde_G_size - 2)); arc != lemon::INVALID; ++arc) {
-        int i = g_ptr->id(g_ptr->source(arc));
-        sink_capacity[i] = aM->operator[](arc);
+    void PMF::run() {
+        lemon::DigraphCopy<lemon::ListDigraph, lemon::ListDigraph> cg(*g_ptr, dig);
+        cg.arcMap(*aM, dig_aM);
+        cg.run();
+        sink_node = dig.nodeFromId(dig.maxNodeId());
+        source_node = dig.addNode();
+        tilde_G_size = dig.maxNodeId() + 1;
+        for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
+            if (n == sink_node || n == source_node)
+                continue;
+            dig.addArc(source_node, n);
+            
+        }
+        // reset the source_node and sink_node
+        pf.source(source_node);
+        pf.target(sink_node);
+        sink_capacity.resize(_y_lambda.size());
+        for (lemon::ListDigraph::InArcIt arc(*g_ptr, g_ptr->nodeFromId(tilde_G_size - 2)); arc != lemon::INVALID; ++arc) {
+            int i = g_ptr->id(g_ptr->source(arc));
+            sink_capacity[i] = aM->operator[](arc);
+        }
+        //find S_0 and T_0
+        update_dig(0);
+        pf.init();
+        pf.startFirstPhase();
+        pf.startSecondPhase();
+        double minimum_value = pf.flowValue();
+        Set S_0 = get_min_cut_source_side();
+        Set T_0 = S_0.Complement();
+        Set T_1 = Set::MakeEmpty(tilde_G_size);
+        T_1.AddElement(tilde_G_size - 2);
+        set_list.push_back(T_0);
+        set_list.push_back(T_1);
+        slice(S_0, T_1);
     }
-    //find S_0 and T_0
-    update_dig(0);
-    pf.init();
-    pf.startFirstPhase();
-    pf.startSecondPhase();
-    double minimum_value = pf.flowValue();
-    Set S_0 = Set::MakeEmpty(tilde_G_size);
-    for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
-        if (pf.minCut(n))
-            S_0.AddElement(dig.id(n));
+    void PMF::update_dig(double lambda) {
+        for (lemon::ListDigraph::OutArcIt arc(dig, source_node); arc != lemon::INVALID; ++arc) {
+            // get the next node id
+            int i = dig.id(dig.target(arc));
+            double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
+            dig_aM[arc] = std::max<double>(0, -std::min<double>(a_i - 2 * lambda, b_i));
+        }
+        for (lemon::ListDigraph::InArcIt arc(dig, sink_node); arc != lemon::INVALID; ++arc) {
+            int i = dig.id(dig.source(arc));
+            double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
+            // get the arc from the original graph
+            lemon::ListDigraph::Arc o_arc = g_ptr->arcFromId(dig.id(arc));
+            dig_aM[arc] = sink_capacity[i] + std::max<double>(0, std::min<double>(a_i - 2 * lambda, b_i));
+        }
     }
-    Set T_0 = S_0.Complement();
-    Set T_1 = Set::MakeEmpty(tilde_G_size);
-    T_1.AddElement(tilde_G_size - 2);
-    set_list.push_back(T_0);
-    set_list.push_back(T_1);
-}
-void PMF::update_dig(double lambda) {
-    for (lemon::ListDigraph::OutArcIt arc(dig, source_node); arc != lemon::INVALID; ++arc) {
-        // get the next node id
-        int i = dig.id(dig.target(arc));
-        double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
-        dig_aM[arc] = std::max<double>(0, -std::min<double>(a_i - 2 * lambda, b_i));
+    void PMF::insert(double lambda) {
+        for (std::list<double>::iterator i = lambda_list.begin(); i != lambda_list.end(); i++) {
+            if (*i > lambda) {
+                lambda_list.insert(i, lambda);
+                return;
+            }
+        }
+        lambda_list.insert(lambda_list.end(), lambda);
     }
-    for (lemon::ListDigraph::InArcIt arc(dig, sink_node); arc != lemon::INVALID; ++arc) {
-        int i = dig.id(dig.source(arc));
-        double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
-        // get the arc from the original graph
-        lemon::ListDigraph::Arc o_arc = g_ptr->arcFromId(dig.id(arc));
-        dig_aM[arc] = sink_capacity[i] + std::max<double>(0, std::min<double>(a_i - 2 * lambda, b_i));
+    void PMF::insert_set(Set s) {
+        for (std::list<Set>::iterator i = set_list.begin(); i != set_list.end(); i++) {
+            if (i->IsSubSet(s)) {
+                set_list.insert(i, s);
+                return;
+            }
+        }
+        set_list.insert(set_list.end(), s);
     }
-}
-void PMF::slice(Set S, Set T){
-    // compute lambda_2
+    void PMF::slice(Set& S, Set& T) {
+        // compute lambda_2
+        double lambda_const = compute_lambda_eq_const(S, T);
+        std::vector<pair> y_lambda_filter;
+        for (int i = 0; i < tilde_G_size - 2; i++) {
+            if (S.HasElement(i) || T.HasElement(i))
+                continue;
+            y_lambda_filter.push_back(_y_lambda[i]);
+        }
+        double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const);
+        update_dig(lambda_2);
+        // do not use graph contraction
+        pf.init();
+        pf.startFirstPhase();
+        pf.startSecondPhase();
+        Set S_apostrophe = get_min_cut_source_side();
+        Set T_apostrophe = S_apostrophe.Complement();
+        if(S_apostrophe != S && T_apostrophe != T){
+            Set S_Union = S.Union(S_apostrophe);
+            Set T_Union = T.Union(T_apostrophe);
+            insert_set(T_Union);
+            slice(S, T_Union);
+            slice(S_Union, T);
+        }
+        else {
+            insert(lambda_2);
+        }
+    }
+    double PMF::compute_lambda_eq_const(Set& S, Set& T) {
+        // compute the target value from original graph
+        double target_value = 0;
+        Set T_Complement = T.Complement();
+        Set S_Complement = S.Complement();
+        for (size_t i : T.GetMembers()) {
+            for (lemon::ListDigraph::OutArcIt arc(*g_ptr, g_ptr->nodeFromId(i)); arc != lemon::INVALID; ++arc) {
+                if (T_Complement.HasElement(g_ptr->id(g_ptr->target(arc))))
+                    target_value += aM->operator[](arc);
+            }
+        }
+        for (size_t i : S_Complement.GetMembers()) {
+            for (lemon::ListDigraph::InArcIt arc(*g_ptr, g_ptr->nodeFromId(i)); arc != lemon::INVALID; ++arc) {
+                if (S.HasElement(g_ptr->id(g_ptr->source(arc))))
+                    target_value -= aM->operator[](arc);
+            }
+        }
+        return target_value;
+    }
 }
 int remain(){
     // set elevator and flow maps before running the algorithm.

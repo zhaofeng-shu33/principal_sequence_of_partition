@@ -16,13 +16,16 @@ public:
         _y_lambda(y_lambda),
         dig_aM(dig),
         pf(dig, dig_aM, lemon::INVALID, lemon::INVALID){}
-    void init();
     void run();
+    void insert(double lambda);
+    void insert_set(Set s);
     std::list<Set> get_set_list() { return set_list; }
     std::list<double> get_lambda_list() { return lambda_list; }
-private:
+private:    
     void update_dig(double lambda);
-    void slice(Set S, Set T);
+    void slice(Set& S, Set& T);
+    inline Set get_min_cut_source_side();
+    double compute_lambda_eq_const(Set& S, Set& T);
     lemon::ListDigraph* g_ptr;
     ArcMap* aM;
     lemon::ListDigraph dig;
