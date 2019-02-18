@@ -60,7 +60,7 @@ namespace submodular {
         sink_capacity.resize(_y_lambda.size());
         for (lemon::ListDigraph::InArcIt arc(*g_ptr, g_ptr->nodeFromId(tilde_G_size - 2)); arc != lemon::INVALID; ++arc) {
             int i = g_ptr->id(g_ptr->source(arc));
-            sink_capacity[i] = aM->operator[](arc);
+            sink_capacity[i] = (*aM)[arc];
         }
         //find S_0 and T_0
         update_dig(0);
@@ -127,6 +127,7 @@ namespace submodular {
         Set S_apostrophe = get_min_cut_source_side();
         Set T_apostrophe = S_apostrophe.Complement();
         if(S_apostrophe != S && T_apostrophe != T){
+            // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
             Set S_Union = S.Union(S_apostrophe);
             Set T_Union = T.Union(T_apostrophe);
             insert_set(T_Union);
@@ -145,13 +146,13 @@ namespace submodular {
         for (size_t i : T.GetMembers()) {
             for (lemon::ListDigraph::OutArcIt arc(*g_ptr, g_ptr->nodeFromId(i)); arc != lemon::INVALID; ++arc) {
                 if (T_Complement.HasElement(g_ptr->id(g_ptr->target(arc))))
-                    target_value += aM->operator[](arc);
+                    target_value += (*aM)[arc];
             }
         }
         for (size_t i : S_Complement.GetMembers()) {
             for (lemon::ListDigraph::InArcIt arc(*g_ptr, g_ptr->nodeFromId(i)); arc != lemon::INVALID; ++arc) {
                 if (S.HasElement(g_ptr->id(g_ptr->source(arc))))
-                    target_value -= aM->operator[](arc);
+                    target_value -= (*aM)[arc];
             }
         }
         return target_value;
