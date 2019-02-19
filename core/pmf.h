@@ -39,4 +39,7 @@ private:
     int tilde_G_size;
     lemon::Preflow<lemon::ListDigraph, ArcMap> pf;
 };
+class PDT {
+
+};
 }

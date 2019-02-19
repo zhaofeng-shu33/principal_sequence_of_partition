@@ -93,12 +93,7 @@ public:
 
   Set Union(const Set& X) const;
   Set Intersection(const Set& X) const;
-  Set Extend(int value = 0) const {
-      Set X_new(*this);
-      X_new.n_++;
-      X_new.bits_.push_back(value);
-      return X_new;
-  }
+  Set Extend(int value = 0) const;
   std::size_t n_;
   std::vector<char> bits_;
   friend std::ostream& operator << (std::ostream&, const Set&);

@@ -153,7 +153,12 @@ Set Set::MakeEmpty(std::size_t n) {
   Set X(n);
   return X;
 }
-
+Set Set::Extend(int value = 0) const {
+  Set X_new(*this);
+  X_new.n_++;
+  X_new.bits_.push_back(value);
+  return X_new;
+}
 std::ostream& operator << (std::ostream& stream, const Set& X) {
   auto members = X.GetMembers();
   stream << "{";
