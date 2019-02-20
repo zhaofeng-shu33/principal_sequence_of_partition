@@ -31,7 +31,8 @@ double compute_lambda(const std::vector<pair>& parameter_list, const double targ
     }
     return (target_value - sum) / slope + last_tp;
 }
-namespace submodular {
+namespace parametric {
+    using Set = stl::CSet;
     PMF::PMF(lemon::ListDigraph& g, ArcMap& arcMap, std::size_t j, std::vector<pair>& y_lambda) :
         g_ptr(&g), aM(&arcMap), _j(j),
         _y_lambda(y_lambda),
@@ -176,6 +177,7 @@ namespace submodular {
         }
         return target_value;
     }
+
 }
 int remain(){
     // set elevator and flow maps before running the algorithm.

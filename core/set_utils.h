@@ -75,6 +75,7 @@ public:
   static std::vector<Set> MakeFine(std::size_t n);
   bool HasElement(element_type i) const;
   bool IsSubSet(const Set& s);
+  bool IsEmpty(){return Cardinality()==0;}
   bool operator[] (element_type i) const { return HasElement(i); }
 
   std::vector<element_type> GetMembers() const;

@@ -7,12 +7,12 @@
 #include "core/parametric_preflow.h"
 //#include "core/set_utils.h"
 #include "set/set_stl.h"
-using stl::Set;
 typedef std::pair<double, double> pair;
 double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
-namespace submodular{
+namespace parametric{
 class PMF {
 public:
+    using Set = stl::CSet;
     typedef lemon::ListDigraph::ArcMap<double> ArcMap;
     PMF(lemon::ListDigraph& g, ArcMap& arcMap, std::size_t j, std::vector<pair>& y_lambda);
     void run();
@@ -41,7 +41,20 @@ private:
     lemon::Preflow<lemon::ListDigraph, ArcMap> pf;
     std::size_t _j;
 };
+class Partition {
+public:
+    Partition expand(stl::CSet& A) const {}
+    bool operator== (const Partition& P) const { return p == P.p; }
+private:
+    stl::Set<stl::CSet> p;
+};
 class PDT {
-
+public:
+    typedef lemon::ListDigraph::ArcMap<double> ArcMap;
+    PDT(lemon::ListDigraph& g, ArcMap& arcMap) {}
+    void run() {}
+private:
+    std::vector<pair> _y_lambda;
+    std::list<double> Lambda_list;
 };
 }

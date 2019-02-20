@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "core/pmf.h"
-namespace submodular{
+namespace parametric {
 TEST(PMF, EquationSolve) {
     std::vector<pair> parameter_list;
     parameter_list.push_back(std::make_pair(2, 0));
@@ -20,6 +20,7 @@ TEST(PMF, EquationSolve) {
     EXPECT_DOUBLE_EQ(lambda_6, 0.5);
 }
 TEST(PMF, insert_set) {
+    using Set = stl::CSet;
     std::vector<pair> y_lambda;
     lemon::ListDigraph g;
     lemon::ListDigraph::ArcMap<double> aM(g);
@@ -56,6 +57,7 @@ TEST(PMF, insert) {
     EXPECT_DOUBLE_EQ(*i, 6);
 }
 TEST(PMF, PMClass) {
+    using Set = stl::CSet;
     std::vector<pair> parameter_list;
     parameter_list.push_back(std::make_pair(0, 0));
     parameter_list.push_back(std::make_pair(0, 0));
@@ -96,5 +98,14 @@ TEST(PMF, PMClass) {
     pmf.run();
     for (Set& s : pmf.get_set_list())
         std::cout << s << std::endl;
+}
+TEST(Set, Partition) {
+    std::set<int> a;
+    a.insert(1);
+    a.insert(2);
+    std::set<int> b;
+    b.insert(1);
+    b.insert(2);
+    EXPECT_TRUE(a == b);
 }
 }
