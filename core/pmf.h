@@ -5,7 +5,7 @@
 
 #include <lemon/list_graph.h>
 #include "core/parametric_preflow.h"
-//#include "core/set_utils.h"
+#include <unordered_set>
 #include "set/set_stl.h"
 typedef std::pair<double, double> pair;
 double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
@@ -41,12 +41,22 @@ private:
     lemon::Preflow<lemon::ListDigraph, ArcMap> pf;
     std::size_t _j;
 };
-class Partition {
+class Partition : public stl::Set<stl::CSet> {
 public:
-    Partition expand(stl::CSet& A) const {}
-    bool operator== (const Partition& P) const { return p == P.p; }
-private:
-    stl::Set<stl::CSet> p;
+    Partition expand(stl::CSet& A)  {
+        Partition p;
+        stl::CSet A_extend = A;
+        for (auto it = begin(); it != end(); it++) {
+            if (it->Intersection(A).IsEmpty()) {
+                p.AddElement(*it);
+            }
+            else {
+                A_extend = A_extend.Union(*it);
+            }
+        }
+        p.AddElement(A_extend);
+        return p;
+    }
 };
 class PDT {
 public:
@@ -56,5 +66,6 @@ public:
 private:
     std::vector<pair> _y_lambda;
     std::list<double> Lambda_list;
+    std::list<Partition> partition_list;
 };
 }

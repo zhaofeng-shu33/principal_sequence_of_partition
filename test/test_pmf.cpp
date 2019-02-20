@@ -100,12 +100,15 @@ TEST(PMF, PMClass) {
         std::cout << s << std::endl;
 }
 TEST(Set, Partition) {
-    std::set<int> a;
-    a.insert(1);
-    a.insert(2);
-    std::set<int> b;
-    b.insert(1);
-    b.insert(2);
-    EXPECT_TRUE(a == b);
+    Partition a, b, c;
+    a.AddElement(stl::CSet(std::string("101")));
+    a.AddElement(stl::CSet(std::string("01")));
+    b.AddElement(stl::CSet(std::string("01")));
+    b.AddElement(stl::CSet(std::string("101")));
+    EXPECT_EQ(a, b);
+    c = c.expand(stl::CSet(std::string("1")));
+    c = c.expand(stl::CSet(std::string("01")));
+    c = c.expand(stl::CSet(std::string("101")));
+    EXPECT_EQ(a, c);
 }
 }

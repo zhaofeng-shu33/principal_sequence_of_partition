@@ -51,6 +51,8 @@ script:
 # used for testing
   - ls
   - test/TestAll
+  - test/test_pmf
+  - set/test_set
   - python3 -c "import psp;print(psp.__version__)"
   - cd ../utility
   - coverage run graph_cut_py_test.py
