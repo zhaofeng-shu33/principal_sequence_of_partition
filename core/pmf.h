@@ -14,16 +14,14 @@ namespace submodular{
 class PMF {
 public:
     typedef lemon::ListDigraph::ArcMap<double> ArcMap;
-    PMF(lemon::ListDigraph& g, ArcMap& arcMap, std::vector<pair>& y_lambda):
-        g_ptr(&g), aM(&arcMap),
-        _y_lambda(y_lambda),
-        dig_aM(dig),
-        pf(dig, dig_aM, lemon::INVALID, lemon::INVALID){}
+    PMF(lemon::ListDigraph& g, ArcMap& arcMap, std::size_t j, std::vector<pair>& y_lambda);
     void run();
     void insert(double lambda);
     void insert_set(Set s);
     std::list<Set> get_set_list() { return set_list; }
     std::list<double> get_lambda_list() { return lambda_list; }
+    void reset_j(std::size_t j);
+    void reset_y_lambda(std::vector<pair> parameter_list) { _y_lambda = parameter_list; }
 private:    
     void update_dig(double lambda);
     void slice(Set& S, Set& T);
@@ -41,6 +39,7 @@ private:
     lemon::ListDigraph::Node sink_node;
     int tilde_G_size;
     lemon::Preflow<lemon::ListDigraph, ArcMap> pf;
+    std::size_t _j;
 };
 class PDT {
 

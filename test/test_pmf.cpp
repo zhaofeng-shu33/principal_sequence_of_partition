@@ -23,7 +23,7 @@ TEST(PMF, insert_set) {
     std::vector<pair> y_lambda;
     lemon::ListDigraph g;
     lemon::ListDigraph::ArcMap<double> aM(g);
-    PMF pmf(g, aM, y_lambda);
+    PMF pmf(g, aM, 0, y_lambda);
     Set V1(std::string("0001"));
     Set V2(std::string("1001"));
     Set V3(std::string("1101"));
@@ -43,7 +43,7 @@ TEST(PMF, insert) {
     std::vector<pair> y_lambda;
     lemon::ListDigraph g;
     lemon::ListDigraph::ArcMap<double> aM(g);
-    PMF pmf(g, aM, y_lambda);
+    PMF pmf(g, aM, 0, y_lambda);
     pmf.insert(4);
     pmf.insert(6);
     pmf.insert(5);
@@ -59,7 +59,8 @@ TEST(PMF, PMClass) {
     std::vector<pair> parameter_list;
     parameter_list.push_back(std::make_pair(0, 0));
     parameter_list.push_back(std::make_pair(0, 0));
-    
+    parameter_list.push_back(std::make_pair(0, 0));
+
     lemon::ListDigraph g;
     lemon::ListDigraph::Node n1 = g.addNode();
     lemon::ListDigraph::Node n2 = g.addNode();
@@ -79,12 +80,21 @@ TEST(PMF, PMClass) {
     aM[a4] = 5;
     aM[a5] = 1;
     aM[a6] = 1;
-    PMF pmf(g, aM, parameter_list);
+    PMF pmf(g, aM, 2, parameter_list);
     pmf.run();
 
     std::list<Set> sL = pmf.get_set_list();
-    for (Set& s : sL) {
+    EXPECT_EQ(sL.size(), 3);
+    std::list<Set>::iterator it = sL.begin();
+    EXPECT_EQ(*it, Set(std::string("111"))); // { 0, 1, 2 }
+    it++;
+    EXPECT_EQ(*it, Set(std::string("101"))); // { 0, 2 }
+    it++;
+    EXPECT_EQ(*it, Set(std::string("001"))); // { 2 }
+
+    pmf.reset_j(0);
+    pmf.run();
+    for (Set& s : pmf.get_set_list())
         std::cout << s << std::endl;
-    }
 }
 }
