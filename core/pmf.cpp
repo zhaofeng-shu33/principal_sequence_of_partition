@@ -69,7 +69,7 @@ namespace submodular {
         pf.startSecondPhase();
         double minimum_value = pf.flowValue();
         Set S_0 = get_min_cut_source_side();
-        Set T_0 = S_0.Complement();
+        Set T_0 = S_0.Complement(tilde_G_size);
         Set T_1 = Set::MakeEmpty(tilde_G_size);
         T_1.AddElement(tilde_G_size - 2);
         set_list.push_back(T_0);
@@ -125,7 +125,7 @@ namespace submodular {
         pf.startFirstPhase();
         pf.startSecondPhase();
         Set S_apostrophe = get_min_cut_source_side();
-        Set T_apostrophe = S_apostrophe.Complement();
+        Set T_apostrophe = S_apostrophe.Complement(tilde_G_size);
         if(S_apostrophe != S && T_apostrophe != T){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
             Set S_Union = S.Union(S_apostrophe);
@@ -141,8 +141,8 @@ namespace submodular {
     double PMF::compute_lambda_eq_const(Set& S, Set& T) {
         // compute the target value from original graph
         double target_value = 0;
-        Set T_Complement = T.Complement();
-        Set S_Complement = S.Complement();
+        Set T_Complement = T.Complement(tilde_G_size);
+        Set S_Complement = S.Complement(tilde_G_size);
         for (size_t i : T.GetMembers()) {
             for (lemon::ListDigraph::OutArcIt arc(*g_ptr, g_ptr->nodeFromId(i)); arc != lemon::INVALID; ++arc) {
                 if (T_Complement.HasElement(g_ptr->id(g_ptr->target(arc))))

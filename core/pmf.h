@@ -1,10 +1,13 @@
 #pragma once
 #include <tuple>
 #include <numeric>
+#include <iostream>
+
 #include <lemon/list_graph.h>
 #include "core/parametric_preflow.h"
-#include "core/set_utils.h"
-#include <iostream>
+//#include "core/set_utils.h"
+#include "set/set_stl.h"
+using stl::Set;
 typedef std::pair<double, double> pair;
 double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
 namespace submodular{

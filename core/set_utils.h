@@ -88,6 +88,8 @@ public:
 
   // Returns a new copy of the complement
   Set Complement() const;
+  //! for compatibility
+  Set Complement(std::size_t n) const;
   Set C() const { return Complement(); }
   //Set operator~() const;
 
@@ -98,6 +100,8 @@ public:
   std::vector<char> bits_;
   friend std::ostream& operator << (std::ostream&, const Set&);
 };
+//! Set difference
+Set operator- (const Set& A, const Set& B) ;
 class Partition {
 public:
   Partition() = default;

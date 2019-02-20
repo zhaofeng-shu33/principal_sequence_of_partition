@@ -18,23 +18,6 @@ TEST(Set, ConstructorA) {
   EXPECT_EQ(V[4], 0);
 }
 
-/*
-TEST(Set, ConstructorB) {
-  Set V(5, {2, 4});
-  EXPECT_EQ(V.n_, 5);
-  EXPECT_EQ(V[0], 0);
-  EXPECT_EQ(V[1], 0);
-  EXPECT_EQ(V[2], 1);
-  EXPECT_EQ(V[3], 0);
-  EXPECT_EQ(V[4], 1);
-
-  //EXPECT_THROW(new Set(5, {10}), std::range_error);
-  //NOTE: Set(5, {10}) matches constructor (d), and this test may fail.
-  //In order to avoid such ambiguity, one of these constructors should be deprecated.
-  EXPECT_THROW(new Set(5, std::vector<size_t>{10}), std::range_error);
-}
-*/
-
 TEST(Set, FromIndices) {
   auto V = Set::FromIndices(5, {2, 4});
   EXPECT_EQ(V.n_, 5);
@@ -72,18 +55,18 @@ TEST(Set, IsSubSet) {
 TEST(Set, Complement) {
   Set V1(std::string("0101100"));
   Set V2(std::string("1010011"));
-  /*
-  EXPECT_TRUE(V1 != V2);
-  V1.C();
-  EXPECT_TRUE(V1 == V2);
-  V2.C();
-  EXPECT_TRUE(V1 != V2);
-
-  auto V3 = ~V1;
-  EXPECT_TRUE(V3 == V2);
-  */
   EXPECT_TRUE(V1.Complement() == V2);
   EXPECT_TRUE(V1.Complement().Complement() == V1);
+}
+TEST(Set, Difference) {
+    Set V1(std::string("11011"));
+    Set V2(std::string("10110"));
+    Set V3(std::string("01001"));
+    EXPECT_EQ(V1 - V2, V3);
+    Set V5(std::string("1011"));
+    Set V6(std::string("1011010"));
+    EXPECT_EQ(V1 - V5, V3);
+    EXPECT_EQ(V1 - V6, V3);
 }
 TEST(Set, Map) {
     Set V1(std::string("0101100"));

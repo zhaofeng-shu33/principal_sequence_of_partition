@@ -78,7 +78,9 @@ Set Set::Complement() const{
   }
   return X;
 }
-
+Set Set::Complement(std::size_t n) const {
+    return Complement();
+}
 Set Set::Union(const Set& X) const {
   Set X_new(n_);
   for (std::size_t i = 0; i < n_; ++i) {
@@ -153,7 +155,7 @@ Set Set::MakeEmpty(std::size_t n) {
   Set X(n);
   return X;
 }
-Set Set::Extend(int value = 0) const {
+Set Set::Extend(int value) const {
   Set X_new(*this);
   X_new.n_++;
   X_new.bits_.push_back(value);
@@ -196,17 +198,15 @@ bool operator == (const Set& set_1, const Set& set_2) {
     }
     return true;
 }
-//bool operator == (const Set& lhs, const Set& rhs) {
-//  if (lhs.n_ != rhs.n_) {
-//    return false;
-//  }
-//  for (std::size_t i = 0; i < lhs.n_; ++i) {
-//    if ((bool)lhs.bits_[i] != (bool)rhs.bits_[i]) {
-//      return false;
-//    }
-//  }
-//  return true;
-//}
+Set operator- (const Set& A, const Set& B) {
+    Set C(A);
+    for (element_type i : B.GetMembers()) {
+        if (i < A.n_ && A.HasElement(i)) {
+            C.RemoveElement(i);
+        }
+    }
+    return C;
+}
 
 bool operator != (const Set& lhs, const Set& rhs) {
   return !(lhs == rhs);
