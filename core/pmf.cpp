@@ -177,7 +177,24 @@ namespace parametric {
         }
         return target_value;
     }
+    PDT::PDT(lemon::ListDigraph& g, ArcMap& arcMap): pmf(g, arcMap, 0, _y_lambda){
+        _y_lambda.resize(g.maxNodeId()+1, pair(0,0));
+        partition_list.push_back(Partition());
+        Lambda_list.push_back(INFINITY);
+    }
+    void PDT::run() {
+        for (int j = 0; j < _y_lambda.size(); j++) {
+            pmf.reset_y_lambda(_y_lambda);
+            pmf.reset_j(j);
+            pmf.run();
+            std::list<Set> s_list = pmf.get_set_list();
+            std::list<double> lambda_list = pmf.get_lambda_list();
+            for (int u = 0; u < _y_lambda.size(); u++) {
+                if (u == j);
 
+            }
+        }
+    }
 }
 int remain(){
     // set elevator and flow maps before running the algorithm.

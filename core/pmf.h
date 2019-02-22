@@ -61,11 +61,26 @@ public:
 class PDT {
 public:
     typedef lemon::ListDigraph::ArcMap<double> ArcMap;
-    PDT(lemon::ListDigraph& g, ArcMap& arcMap) {}
-    void run() {}
+    PDT(lemon::ListDigraph& g, ArcMap& arcMap);
+    void run();
 private:
     std::vector<pair> _y_lambda;
+    PMF pmf;
     std::list<double> Lambda_list;
     std::list<Partition> partition_list;
 };
+
+//! compute the graph cut with S as source side
+template<typename DiGraph, typename ValueType = double>
+ValueType compute_cut(const DiGraph& g, const typename DiGraph::template ArcMap<ValueType>& map, stl::CSet& S) {
+    ValueType target_value = 0;
+    stl::CSet S_Complement = S.Complement(g.maxNodeId() + 1);
+    for (size_t i : S_Complement) {
+        for (lemon::ListDigraph::InArcIt arc(g, g.nodeFromId(i)); arc != lemon::INVALID; ++arc) {
+            if (S.HasElement(g.id(g.source(arc))))
+                target_value += map[arc];
+        }
+    }
+    return target_value;
+}
 }

@@ -111,4 +111,26 @@ TEST(Set, Partition) {
     c = c.expand(stl::CSet(std::string("101")));
     EXPECT_EQ(a, c);
 }
+TEST(PMF, ComputeCut) {
+    lemon::ListDigraph g;
+    lemon::ListDigraph::Node n1 = g.addNode();
+    lemon::ListDigraph::Node n2 = g.addNode();
+    lemon::ListDigraph::Node n3 = g.addNode();
+
+    lemon::ListDigraph::Arc a1 = g.addArc(n1, n2);
+    lemon::ListDigraph::Arc a2 = g.addArc(n2, n3);
+    lemon::ListDigraph::Arc a3 = g.addArc(n1, n3);
+
+    lemon::ListDigraph::ArcMap<double> aM(g);
+    aM[a1] = 1;
+    aM[a2] = 2;
+    aM[a3] = 4;
+    stl::CSet s;
+    s.AddElement(0);
+    EXPECT_DOUBLE_EQ(compute_cut(g, aM, s), 5);
+    s.AddElement(1);
+    EXPECT_DOUBLE_EQ(compute_cut(g, aM, s), 6);
+    s.AddElement(2);
+    EXPECT_DOUBLE_EQ(compute_cut(g, aM, s), 0);
+}
 }
