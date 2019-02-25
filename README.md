@@ -2,6 +2,14 @@
 [![Build Status](https://api.travis-ci.com/zhaofeng-shu33/principal_sequence_of_partition.svg?branch=master)](https://travis-ci.com/zhaofeng-shu33/principal_sequence_of_partition/)
 # Introduction
 This repo contains code to compute the principal sequence of partition for Dilworth truncation function.
+Currently, two methods are available:
+
+1. Dilworth truncation based on graph maximal flow
+2. using paramatric maximal flow
+
+Both method relies on Lemon Library to compute maximal flow for graph.
+
+Agglomerative clustering method is implemented but cannot be used in general case because of FWRobust method is cursed with float accuracy.
 
 # How to build
 `main.cpp` is the user-implemented part. Run `cmake` will generate build recipe for building this cpp file.
@@ -34,9 +42,9 @@ The second one is `empirical_compare.py`, which tests the info-clustering algori
 and compare the results with *kmeans*, *affinity propagation* and *spectral clustering*.
 
 # Reference
-1. [2016]Info-Clustering: A Mathematical Theory for Data Clustering
+1. [2016] Info-Clustering: A Mathematical Theory for Data Clustering
 1. [https://github.com/ktrmnm/SFM](https://github.com/ktrmnm/SFM)
-
+1. [2010] A Faster Algorithm for Computing the Principal Sequence of Partitions of a Graph
 # ChangeLog
 * Version 1.1: expose `Gaussian2DGraph` (C++) class, which can be used directly in python.
 * Version 1.2: expose `PyGraph` (C++) class, which is high customizable in python.
