@@ -7,20 +7,39 @@
 double compute_lambda(const std::vector<pair>& parameter_list, const double target_value) {
     // get all breakpoints from parameter_list and sort them from smallest to largest
     std::vector<double> turning_points;
+    int infinity_count = 0;
     for (const pair& p : parameter_list) {
-        turning_points.push_back((p.first - p.second) / 2);
+        if (p.second != INFINITY)
+            turning_points.push_back((p.first - p.second) / 2);
+        else
+            infinity_count++;
+    }
+    if (turning_points.size() == 0) {
+        double intersept = std::accumulate(parameter_list.begin(), parameter_list.end(), -1*target_value,
+            [](double a, pair b) {
+                return (a + b.first);
+            }
+        );
+        return intersept / (2 * parameter_list.size());
     }
     std::sort(turning_points.begin(), turning_points.end());
-    // compute values at breakpoints
-    double sum = std::accumulate(parameter_list.begin(), parameter_list.end(), 0, 
-        [](double a, pair b) {return (a + b.second); }
-    );
-    if (target_value > sum)
-        return -1;
-    double slope = 0;
+    // compute values at the first breakpoint
     double last_tp = turning_points[0];
+    double slope = -infinity_count * 2;
+
+    double sum = 0;
+    for (const pair& p : parameter_list)
+        sum += std::min(p.first - 2 * last_tp, p.second);
+    if (target_value > sum){
+        if (slope == 0)
+            throw std::range_error("no solution");
+        else
+            return target_value / (slope);
+    }
+    
     if (target_value == sum)
         return last_tp;
+    // compute values at the other breakpoints
     for (double& tp : turning_points) {
         sum += slope * (tp - last_tp);
         if (sum <= target_value) {
@@ -168,7 +187,7 @@ namespace parametric {
         _g(&g),
         _arcMap(&arcMap),
         pmf(g, arcMap, 0, _y_lambda){
-        _y_lambda.resize(g.maxNodeId()+1, pair(0,0));
+        _y_lambda.resize(g.maxNodeId()+1, pair(0, INFINITY));
         partition_list.push_back(Partition());
         Lambda_list.push_back(INFINITY);
     }
@@ -183,7 +202,7 @@ namespace parametric {
                 if (u == j) {
                     stl::CSet s;
                     s.AddElement(j);
-                    _y_lambda[j] = pair(compute_cut(*_g, *_arcMap, s), 0);
+                    _y_lambda[j] = pair(compute_cut(*_g, *_arcMap, s), INFINITY);
                 }
                 else {
                     int i = -1;
@@ -216,18 +235,28 @@ namespace parametric {
                     partition_list_apostrophe.push_back(Q);
                     Lambda_list_apostrophe.push_back(std::min(*d_i, *d_k));
                 }
-                if (*d_i <= *d_k) {
+                else {
+                    std::reverse_iterator<std::list<double>::iterator> last_it = Lambda_list_apostrophe.rbegin();
+                    *last_it = std::min(*d_i, *d_k);
+                }
+                if (*d_i < *d_k) {
                     i++;
                     d_i++;
                     p_it++;
                 }
-                if (*d_i >= *d_k) {
+                else if (*d_i >= *d_k) {
                     k++;
                     d_k++;
                     s_it++;
                 }
+                else {
+                    i++;
+                    d_i++;
+                    p_it++;
+                }
             }
-
+            Lambda_list = Lambda_list_apostrophe;
+            partition_list = partition_list_apostrophe;
         }
     }
 }

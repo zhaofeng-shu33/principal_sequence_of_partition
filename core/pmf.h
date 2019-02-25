@@ -21,7 +21,10 @@ public:
     std::list<Set> get_set_list() { return set_list; }
     std::list<double> get_lambda_list() { return lambda_list; }
     void reset_j(std::size_t j);
-    void reset_y_lambda(std::vector<pair> parameter_list) { _y_lambda = parameter_list; }
+    void reset_y_lambda(std::vector<pair> parameter_list) { 
+        _y_lambda = parameter_list; 
+        sink_capacity.resize(_y_lambda.size());
+    }
 private:    
     void update_dig(double lambda);
     void slice(Set& S, Set& T);
@@ -63,6 +66,10 @@ public:
     typedef lemon::ListDigraph::ArcMap<double> ArcMap;
     PDT(lemon::ListDigraph& g, ArcMap& arcMap);
     void run();
+    std::list<double> get_lambda_list(){ return Lambda_list; }
+    std::list<Partition> get_partition_list() {
+        return partition_list;
+    }
 private:
     std::vector<pair> _y_lambda;
     lemon::ListDigraph* _g;
