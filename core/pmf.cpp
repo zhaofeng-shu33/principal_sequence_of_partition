@@ -160,24 +160,14 @@ namespace parametric {
     }
     double PMF::compute_lambda_eq_const(Set& S, Set& T) {
         // compute the target value from original graph
-        double target_value = 0;
-        Set T_Complement = T.Complement(tilde_G_size);
-        Set S_Complement = S.Complement(tilde_G_size);
-        for (size_t i : T.GetMembers()) {
-            for (lemon::ListDigraph::OutArcIt arc(*g_ptr, g_ptr->nodeFromId(i)); arc != lemon::INVALID; ++arc) {
-                if (T_Complement.HasElement(g_ptr->id(g_ptr->target(arc))))
-                    target_value += (*aM)[arc];
-            }
-        }
-        for (size_t i : S_Complement.GetMembers()) {
-            for (lemon::ListDigraph::InArcIt arc(*g_ptr, g_ptr->nodeFromId(i)); arc != lemon::INVALID; ++arc) {
-                if (S.HasElement(g_ptr->id(g_ptr->source(arc))))
-                    target_value -= (*aM)[arc];
-            }
-        }
+        double target_value = compute_cut(*g_ptr, *aM, T);
+        target_value -= compute_cut(*g_ptr, *aM, S);
         return target_value;
     }
-    PDT::PDT(lemon::ListDigraph& g, ArcMap& arcMap): pmf(g, arcMap, 0, _y_lambda){
+    PDT::PDT(lemon::ListDigraph& g, ArcMap& arcMap):
+        _g(&g),
+        _arcMap(&arcMap),
+        pmf(g, arcMap, 0, _y_lambda){
         _y_lambda.resize(g.maxNodeId()+1, pair(0,0));
         partition_list.push_back(Partition());
         Lambda_list.push_back(INFINITY);
@@ -190,7 +180,14 @@ namespace parametric {
             std::list<Set> s_list = pmf.get_set_list();
             std::list<double> lambda_list = pmf.get_lambda_list();
             for (int u = 0; u < _y_lambda.size(); u++) {
-                if (u == j);
+                if (u == j) {
+                    stl::CSet s;
+                    s.AddElement(j);
+                    _y_lambda[j] = pair(compute_cut(*_g, *_arcMap, s), 0);
+                }
+                else {
+
+                }
 
             }
         }

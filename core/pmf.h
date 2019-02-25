@@ -65,6 +65,8 @@ public:
     void run();
 private:
     std::vector<pair> _y_lambda;
+    lemon::ListDigraph* _g;
+    ArcMap* _arcMap;
     PMF pmf;
     std::list<double> Lambda_list;
     std::list<Partition> partition_list;

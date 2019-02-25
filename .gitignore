@@ -1,3 +1,4 @@
 **/build
+utility/debug/*
 utility/*.log
 utility/__pycache__/*
