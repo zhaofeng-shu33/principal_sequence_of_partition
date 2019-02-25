@@ -186,10 +186,48 @@ namespace parametric {
                     _y_lambda[j] = pair(compute_cut(*_g, *_arcMap, s), 0);
                 }
                 else {
-
+                    int i = -1;
+                    std::list<double>::iterator lambda_it = lambda_list.begin();
+                    for (Set& s : s_list) {
+                        if (s.HasElement(u)) {
+                            i++;
+                            lambda_it++;
+                        }
+                    }
+                    if (i != -1) {
+                        lambda_it--;
+                        if (*lambda_it > (_y_lambda[u].first - _y_lambda[u].second) / 2)
+                            _y_lambda[u] = std::make_pair(_y_lambda[u].first, _y_lambda[u].first - 2 * (*lambda_it));
+                    }
                 }
-
             }
+            std::list<Partition> partition_list_apostrophe;
+            std::list<double> Lambda_list_apostrophe;
+            lambda_list.push_back(INFINITY);
+            int i = 0, k = 0;
+            std::list<Partition>::iterator p_it = partition_list.begin();
+            std::list<Set>::iterator s_it = s_list.begin();
+            std::list<double>::iterator d_i = Lambda_list.begin(), d_k = lambda_list.begin();
+            Partition Q;
+            while (i < Lambda_list.size() && k < lambda_list.size()) {
+                Partition Q_apostrophe = p_it->expand(*s_it);
+                if (Q_apostrophe != Q) {
+                    Q = Q_apostrophe;
+                    partition_list_apostrophe.push_back(Q);
+                    Lambda_list_apostrophe.push_back(std::min(*d_i, *d_k));
+                }
+                if (*d_i <= *d_k) {
+                    i++;
+                    d_i++;
+                    p_it++;
+                }
+                if (*d_i >= *d_k) {
+                    k++;
+                    d_k++;
+                    s_it++;
+                }
+            }
+
         }
     }
 }
