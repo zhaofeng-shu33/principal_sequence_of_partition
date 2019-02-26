@@ -184,6 +184,12 @@ namespace parametric {
         target_value -= compute_cut(*g_ptr, *aM, S);
         return target_value;
     }
+    PDT::PDT(const PDT& another_pdt): _y_lambda(another_pdt._y_lambda),
+        _g(another_pdt._g),
+        _arcMap(another_pdt._arcMap),
+        pmf(*_g, *_arcMap, 0, _y_lambda),
+        Lambda_list(another_pdt.Lambda_list),
+        partition_list(another_pdt.partition_list){}
     PDT make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges) {
         lemon::ListDigraph g;
         g.reserveNode(num_nodes);
@@ -191,9 +197,12 @@ namespace parametric {
             g.addNode();
         lemon::ListDigraph::ArcMap<double> aM(g);
         for(std::tuple<std::size_t, std::size_t, double>& edge_tuple : edges){
-            lemon::ListDigraph::Arc a1 = g.addArc(g.nodeFromId(std::get<0>(edge_tuple)), 
-                g.nodeFromId(std::get<1>(edge_tuple)));
+            lemon::ListDigraph::Node s = g.nodeFromId(std::get<0>(edge_tuple));
+            lemon::ListDigraph::Node t = g.nodeFromId(std::get<1>(edge_tuple));
+            lemon::ListDigraph::Arc a1 = g.addArc(s, t);
+            lemon::ListDigraph::Arc a2 = g.addArc(t, s);
             aM[a1] = std::get<2>(edge_tuple);
+            aM[a2] = std::get<2>(edge_tuple);
         }
         PDT pdt(g, aM);
         return pdt;

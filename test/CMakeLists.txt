@@ -12,6 +12,7 @@ target_link_libraries(test_agg ic_static)
 add_executable(test_pmf test_pmf.cpp)
 target_link_libraries(test_pmf pmf)
 target_link_libraries(test_pmf set_stl)
+target_link_libraries(test_pmf ic_static)
 target_link_libraries(test_pmf ${LEMON_LIBRARY})
 
 if(UNIX AND "${CMAKE_BUILD_TYPE}" STREQUAL "")

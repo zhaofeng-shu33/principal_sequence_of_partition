@@ -8,8 +8,22 @@
 #include "core/dt.h"
 #include "core/graph/info_cluster.h"
 #include "core/io_utility.h"
+#include "test/test_utility.h"
 
 namespace demo {
+    class Graph4PointTest : public testing::Test {
+    protected:
+        EdgeListFloat edge_list_float_1;
+        submodular::DirectedGraphCutOracle<double>* dgc;
+        virtual void SetUp() {
+            construct_edge_list_float_4(edge_list_float_1);
+
+            submodular::SimpleGraph<double> sg = submodular::make_dgraph(4, edge_list_float_1);
+
+            dgc = new submodular::DirectedGraphCutOracle<double>(sg);
+
+        }
+    };
     class Gaussian2DGraph : public submodular::InfoCluster {
     public:
         using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, double>>;

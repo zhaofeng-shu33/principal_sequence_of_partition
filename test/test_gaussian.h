@@ -7,9 +7,6 @@
 #if USE_EIGEN3
     #include "core/algorithms/sfm_fw.h"
 #endif
-#if USE_LEMON
-    #include "core/pmf.h" 
-#endif
 #include "utility/gaussian2Dcase.h"
 namespace demo {
 
@@ -68,30 +65,7 @@ TEST(Gaussian2D, GivenPoint8) {
     }
 
 }
-typedef std::vector<std::tuple<std::size_t, std::size_t, double>> EdgeListFloat;
-void construct_edge_list_float_4(EdgeListFloat& edges) {
-    double edge_1_value = 1.0;
-    double edge_d_1_value = 0.5;
-    edges.push_back(std::make_tuple(0, 1, edge_1_value));
-    edges.push_back(std::make_tuple(1, 2, edge_1_value));
-    edges.push_back(std::make_tuple(2, 3, edge_1_value));
-    edges.push_back(std::make_tuple(0, 3, edge_1_value));
-    edges.push_back(std::make_tuple(0, 2, edge_d_1_value));
-    edges.push_back(std::make_tuple(1, 3, edge_d_1_value));
-}
-class Graph4PointTest : public testing::Test {
-protected:
-    EdgeListFloat edge_list_float_1;
-    submodular::DirectedGraphCutOracle<double>* dgc;
-    virtual void SetUp() {
-        construct_edge_list_float_4(edge_list_float_1);
 
-        submodular::SimpleGraph<double> sg = submodular::make_dgraph(4, edge_list_float_1);
-
-        dgc = new submodular::DirectedGraphCutOracle<double>(sg);
-
-    }
-};
 // This test is used to verify that MaxFlow algorithm works
 TEST_F(Graph4PointTest, TwoCase) {
     submodular::PSP<double> psp_class(dgc);
@@ -104,14 +78,6 @@ TEST_F(Graph4PointTest, TwoCase) {
     EXPECT_EQ(psp_list[2].size(), 0);
     EXPECT_EQ(psp_list[3].size(), 4);
 }
-#if USE_LEMON
-TEST_F(Graph4PointTest, TwoCase) {
-    parametric::PDT pdt = parametric::make_pdt(4, edge_list_float_1);
-    pdt.run();
-    std::list<double> lambda_list = pdt.get_lambda_list();
-    std::list<parametric::Partition> partition_list = pdt.get_partition_list();
-}
-#endif
 
 #if USE_EIGEN3
     // This test is used to verify the FWRobust algorithm can return in finite times

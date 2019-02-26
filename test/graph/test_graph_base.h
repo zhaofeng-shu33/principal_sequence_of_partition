@@ -93,7 +93,7 @@ namespace submodular {
 
     class PINModelTest : public testing::Test {
     protected:
-        using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, float>>;
+        using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, double>>;
 
         // {src, dst, capacity}
         std::size_t n_1 = 3;
@@ -107,7 +107,7 @@ namespace submodular {
 
         virtual void SetUp() {
             for (const auto& sdc : data_1) {
-                edge_list_float_1.push_back(std::make_tuple(sdc[0], sdc[1], (float)sdc[2]));
+                edge_list_float_1.push_back(std::make_tuple(sdc[0], sdc[1], (double)sdc[2]));
             }
         }
     };

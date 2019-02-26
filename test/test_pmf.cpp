@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <cmath>
 #include "core/pmf.h"
+#include "utility/gaussian2Dcase.h"
 namespace parametric {
 TEST(PMF, EquationSolve) {
     std::vector<pair> parameter_list;
@@ -173,4 +174,12 @@ TEST(PMF, ComputeCut) {
     s.AddElement(2);
     EXPECT_DOUBLE_EQ(compute_cut(g, aM, s), 0);
 }
+}
+namespace demo {
+    TEST_F(Graph4PointTest, PDT) {
+        parametric::PDT pdt = parametric::make_pdt(4, edge_list_float_1);
+        pdt.run();
+        std::list<double> lambda_list = pdt.get_lambda_list();
+        std::list<parametric::Partition> partition_list = pdt.get_partition_list();
+    }
 }
