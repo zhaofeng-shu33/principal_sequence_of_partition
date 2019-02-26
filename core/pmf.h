@@ -79,7 +79,7 @@ private:
     std::list<double> Lambda_list;
     std::list<Partition> partition_list;
 };
-PDT make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges);
+PDT* make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges);
 
 //! compute the graph cut with S as source side
 template<typename DiGraph, typename ValueType = double>

@@ -70,7 +70,8 @@ namespace parametric {
     }
     void PMF::run() {
         //set sink_capacity
-        if (_j <= g_ptr->maxNodeId()) {
+        int a = g_ptr->maxNodeId();
+        if (a != -1 && _j <= a) {
             for (lemon::ListDigraph::InArcIt arc(*g_ptr, g_ptr->nodeFromId(_j)); arc != lemon::INVALID; ++arc) {
                 int i = g_ptr->id(g_ptr->source(arc));
                 sink_capacity[i] = (*aM)[arc];
@@ -190,7 +191,7 @@ namespace parametric {
         pmf(*_g, *_arcMap, 0, _y_lambda),
         Lambda_list(another_pdt.Lambda_list),
         partition_list(another_pdt.partition_list){}
-    PDT make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges) {
+    PDT* make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges) {
         lemon::ListDigraph g;
         g.reserveNode(num_nodes);
         for(int i = 0; i < num_nodes; i++)
@@ -205,7 +206,7 @@ namespace parametric {
             aM[a2] = std::get<2>(edge_tuple);
         }
         PDT pdt(g, aM);
-        return pdt;
+        return &pdt;
     }
     PDT::PDT(lemon::ListDigraph& g, ArcMap& arcMap):
         _g(&g),
