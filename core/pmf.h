@@ -46,7 +46,7 @@ private:
 };
 class Partition : public stl::Set<stl::CSet> {
 public:
-    Partition expand(stl::CSet& A)  {
+    Partition expand(const stl::CSet& A)  {
         Partition p;
         stl::CSet A_extend = A;
         for (auto it = begin(); it != end(); it++) {
