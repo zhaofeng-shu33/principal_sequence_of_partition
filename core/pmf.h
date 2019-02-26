@@ -65,6 +65,7 @@ class PDT {
 public:
     typedef lemon::ListDigraph::ArcMap<double> ArcMap;
     PDT(lemon::ListDigraph& g, ArcMap& arcMap);
+    PDT(const PDT& another_pdt);
     void run();
     std::list<double> get_lambda_list(){ return Lambda_list; }
     std::list<Partition> get_partition_list() {
@@ -78,6 +79,7 @@ private:
     std::list<double> Lambda_list;
     std::list<Partition> partition_list;
 };
+PDT make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges);
 
 //! compute the graph cut with S as source side
 template<typename DiGraph, typename ValueType = double>

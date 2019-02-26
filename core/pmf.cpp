@@ -183,6 +183,20 @@ namespace parametric {
         target_value -= compute_cut(*g_ptr, *aM, S);
         return target_value;
     }
+    PDT make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges) {
+        lemon::ListDigraph g;
+        g.reserveNode(num_nodes);
+        for(int i = 0; i < num_nodes; i++)
+            g.addNode();
+        lemon::ListDigraph::ArcMap<double> aM(g);
+        for(std::tuple<std::size_t, std::size_t, double>& edge_tuple : edges){
+            lemon::ListDigraph::Arc a1 = g.addArc(g.nodeFromId(std::get<0>(edge_tuple)), 
+                g.nodeFromId(std::get<1>(edge_tuple)));
+            aM[a1] = std::get<2>(edge_tuple);
+        }
+        PDT pdt(g, aM);
+        return pdt;
+    }
     PDT::PDT(lemon::ListDigraph& g, ArcMap& arcMap):
         _g(&g),
         _arcMap(&arcMap),
