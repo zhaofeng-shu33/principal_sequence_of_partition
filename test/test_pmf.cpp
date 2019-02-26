@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <cmath>
 #include "core/pmf.h"
 namespace parametric {
 TEST(PMF, EquationSolve) {
