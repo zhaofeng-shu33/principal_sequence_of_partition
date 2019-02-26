@@ -1,6 +1,7 @@
 #include <tuple>
 #include <numeric>
 #include <lemon/list_graph.h>
+#include <cmath>
 #include <iostream>
 #include "core/pmf.h"
 
