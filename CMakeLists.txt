@@ -108,11 +108,10 @@ if(USE_PYTHON)
         # only install release type
         set(INSTALL_TYPE Release)
         install(FILES ${PROJECT_BINARY_DIR}/${INSTALL_TYPE}/psp.${DYNAMIC_LIB_SUFFIX} DESTINATION ${PYTHON_SIDE_PACKAGES} RENAME psp.pyd)
-        install(FILES ${PROJECT_SOURCE_DIR}/utility/info_cluster.py DESTINATION ${PYTHON_SIDE_PACKAGES})
-
     else()
         install(FILES ${PROJECT_BINARY_DIR}/libpsp.${DYNAMIC_LIB_SUFFIX} DESTINATION ${PYTHON_SIDE_PACKAGES} RENAME psp.${DYNAMIC_LIB_SUFFIX})
     endif()
+    install(FILES ${PROJECT_SOURCE_DIR}/utility/info_cluster.py DESTINATION ${PYTHON_SIDE_PACKAGES})
 endif()
 option(ENABLE_TESTING "Enable testing" OFF)
 add_subdirectory(set)
