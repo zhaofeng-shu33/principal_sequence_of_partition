@@ -178,8 +178,19 @@ TEST(PMF, ComputeCut) {
 namespace demo {
     TEST_F(Graph4PointTest, PDT) {
         parametric::PDT* pdt = parametric::make_pdt(4, edge_list_float_1);
-        // pdt->run();
-        // std::list<double> lambda_list = pdt->get_lambda_list();
-        // std::list<parametric::Partition> partition_list = pdt->get_partition_list();
+        pdt->run();
+        std::list<double> lambda_list = pdt->get_lambda_list();
+        std::list<parametric::Partition> partition_list = pdt->get_partition_list();
+        EXPECT_EQ(lambda_list.size(), 2);
+        std::list<double>::iterator lambda_it = lambda_list.begin();
+        EXPECT_DOUBLE_EQ(*lambda_it, 1 + 2 / 3.0);
+
+        EXPECT_EQ(partition_list.size(), 2);
+        std::list<parametric::Partition>::iterator partition_it = partition_list.begin();
+        
+        EXPECT_EQ(*partition_it, parametric::Partition::makeDense(4));
+        partition_it++;
+        EXPECT_EQ(*partition_it, parametric::Partition::makeFile(4));
+        delete pdt;
     }
 }

@@ -192,21 +192,21 @@ namespace parametric {
         Lambda_list(another_pdt.Lambda_list),
         partition_list(another_pdt.partition_list){}
     PDT* make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges) {
-        lemon::ListDigraph g;
-        g.reserveNode(num_nodes);
+        lemon::ListDigraph* g = new lemon::ListDigraph();
+        g->reserveNode(num_nodes);
         for(int i = 0; i < num_nodes; i++)
-            g.addNode();
-        lemon::ListDigraph::ArcMap<double> aM(g);
+            g->addNode();
+        lemon::ListDigraph::ArcMap<double>* aM = new lemon::ListDigraph::ArcMap<double>(*g);
         for(std::tuple<std::size_t, std::size_t, double>& edge_tuple : edges){
-            lemon::ListDigraph::Node s = g.nodeFromId(std::get<0>(edge_tuple));
-            lemon::ListDigraph::Node t = g.nodeFromId(std::get<1>(edge_tuple));
-            lemon::ListDigraph::Arc a1 = g.addArc(s, t);
-            lemon::ListDigraph::Arc a2 = g.addArc(t, s);
-            aM[a1] = std::get<2>(edge_tuple);
-            aM[a2] = std::get<2>(edge_tuple);
+            lemon::ListDigraph::Node s = g->nodeFromId(std::get<0>(edge_tuple));
+            lemon::ListDigraph::Node t = g->nodeFromId(std::get<1>(edge_tuple));
+            lemon::ListDigraph::Arc a1 = g->addArc(s, t);
+            lemon::ListDigraph::Arc a2 = g->addArc(t, s);
+            (*aM)[a1] = std::get<2>(edge_tuple);
+            (*aM)[a2] = std::get<2>(edge_tuple);
         }
-        PDT pdt(g, aM);
-        return &pdt;
+        PDT* pdt = new PDT(*g, *aM);
+        return pdt;
     }
     PDT::PDT(lemon::ListDigraph& g, ArcMap& arcMap):
         _g(&g),
@@ -283,6 +283,34 @@ namespace parametric {
             Lambda_list = Lambda_list_apostrophe;
             partition_list = partition_list_apostrophe;
         }
+    }
+    Partition Partition::makeFile(int size) {
+        Partition p;
+        for (int i = 0; i < size; i++) {
+            stl::CSet A;
+            A.AddElement(i);
+            p.AddElement(A);
+        }
+        return p;
+    }
+    Partition Partition::makeDense(int size) {
+        Partition p;
+        p.AddElement(stl::CSet::MakeDense(size));
+        return p;
+    }
+    Partition Partition::expand(const stl::CSet& A) {
+        Partition p;
+        stl::CSet A_extend = A;
+        for (auto it = begin(); it != end(); it++) {
+            if (it->Intersection(A).IsEmpty()) {
+                p.AddElement(*it);
+            }
+            else {
+                A_extend = A_extend.Union(*it);
+            }
+        }
+        p.AddElement(A_extend);
+        return p;
     }
 }
 int remain(){
