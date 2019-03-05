@@ -193,4 +193,16 @@ namespace demo {
         EXPECT_EQ(*partition_it, parametric::Partition::makeFile(4));
         delete pdt;
     }
+    TEST(GivenPoint8, PDT) {
+        double a[8][2] = { {3.1, 3.2},
+                           {4.0, 4.0 },
+                           {1.1, -2.2},
+                           {3.9, -2.0},
+                           {-3.9, -2.0},
+                           {-2.2, -3.5},
+                           {-3.9, 2.4},
+                           {-3.1, 2.6}
+        };
+        Gaussian2DGraphBase g2g(8, 1.0, a);
+    }
 }
