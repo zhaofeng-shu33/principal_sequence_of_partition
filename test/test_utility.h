@@ -14,5 +14,4 @@ namespace demo {
         edges.push_back(std::make_tuple(0, 2, edge_d_1_value));
         edges.push_back(std::make_tuple(1, 3, edge_d_1_value));
     }
-
 }
