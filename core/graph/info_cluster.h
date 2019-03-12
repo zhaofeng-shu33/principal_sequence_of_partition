@@ -11,6 +11,10 @@ namespace submodular {
             sg = pg.sg;
             num_points = pg.num_points;
         }
+        InfoCluster(const std::vector<std::tuple<std::size_t, std::size_t, double>>& elt, int np) {
+            num_points = np;
+            sg = submodular::make_dgraph(num_points, elt);
+        }
         //! get the partition which has at least pn clusters
         std::vector<int> get_labels(int pn) {
             std::vector<Set> p = get_partition(pn);

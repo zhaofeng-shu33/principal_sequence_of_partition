@@ -46,7 +46,7 @@ private:
 };
 class Partition : public stl::Set<stl::CSet> {
 public:
-    static Partition makeFile(int size);
+    static Partition makeFine(int size);
     static Partition makeDense(int size);
     Partition(){}
     Partition expand(const stl::CSet& A);

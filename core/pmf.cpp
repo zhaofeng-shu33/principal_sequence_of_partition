@@ -4,7 +4,9 @@
 #include <cmath>
 #include <iostream>
 #include "core/pmf.h"
-
+#if _DEBUG
+#include <cassert>
+#endif
 double compute_lambda(const std::vector<pair>& parameter_list, const double target_value) {
     // get all breakpoints from parameter_list and sort them from smallest to largest
     std::vector<double> turning_points;
@@ -29,16 +31,22 @@ double compute_lambda(const std::vector<pair>& parameter_list, const double targ
     double slope = -infinity_count * 2;
 
     double sum = 0;
-    for (const pair& p : parameter_list)
+    double intersept = 0;
+    for (const pair& p : parameter_list) {
         sum += std::min(p.first - 2 * last_tp, p.second);
-    if (target_value > sum){
+        if (p.second == INFINITY)
+            intersept += p.first;
+        else
+            intersept += p.second;
+    }
+    if (target_value > sum + 1e-10){
         if (slope == 0)
             throw std::range_error("no solution");
         else
-            return target_value / (slope);
+            return (target_value - intersept) / (slope);
     }
     
-    if (target_value == sum)
+    if (target_value >= sum && target_value <= sum + 1e-10)
         return last_tp;
     // compute values at the other breakpoints
     for (double& tp : turning_points) {
@@ -59,6 +67,7 @@ namespace parametric {
         dig_aM(dig),
         pf(dig, dig_aM, lemon::INVALID, lemon::INVALID) {        
         sink_capacity.resize(_y_lambda.size());
+
     }
     Set PMF::get_min_cut_source_side() {
         Set s = Set::MakeEmpty(tilde_G_size);
@@ -80,19 +89,24 @@ namespace parametric {
         else {
             throw std::range_error("invalid j is given");
         }
-        // copy the graph
-        lemon::DigraphCopy<lemon::ListDigraph, lemon::ListDigraph> cg(*g_ptr, dig);
-        cg.arcMap(*aM, dig_aM);
-        cg.run();
 
-        sink_node = dig.nodeFromId(_j);
+        dig.clear();
+        // copy the graph
+        for (int i = 0; i <= g_ptr->maxNodeId(); i++)
+            dig.addNode();
+        for (lemon::ListDigraph::ArcIt a(*g_ptr); a != lemon::INVALID; ++a) {
+            lemon::ListDigraph::Node s = dig.nodeFromId(g_ptr->id(g_ptr->source(a)));
+            lemon::ListDigraph::Node t = dig.nodeFromId(g_ptr->id(g_ptr->target(a)));
+            lemon::ListDigraph::Arc a1 = dig.addArc(s, t);
+            dig_aM[a1] = (*aM)[a];
+        }
         source_node = dig.addNode();
+        sink_node = dig.nodeFromId(_j);        
         tilde_G_size = dig.maxNodeId() + 1;
         for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
             if (n == sink_node || n == source_node)
                 continue;
-            dig.addArc(source_node, n);
-            
+            dig.addArc(source_node, n);            
         }
         // reset the source_node and sink_node
         pf.source(source_node);
@@ -123,13 +137,15 @@ namespace parametric {
             int i = dig.id(dig.target(arc));
             double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
             dig_aM[arc] = std::max<double>(0, -std::min<double>(a_i - 2 * lambda, b_i));
+
         }
         for (lemon::ListDigraph::InArcIt arc(dig, sink_node); arc != lemon::INVALID; ++arc) {
             int i = dig.id(dig.source(arc));
             double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
             // get the arc from the original graph
-            lemon::ListDigraph::Arc o_arc = g_ptr->arcFromId(dig.id(arc));
+            lemon::ListDigraph::Arc o_arc = dig.arcFromId(dig.id(arc));
             dig_aM[arc] = sink_capacity[i] + std::max<double>(0, std::min<double>(a_i - 2 * lambda, b_i));
+
         }
     }
     void PMF::insert(double lambda) {
@@ -165,10 +181,17 @@ namespace parametric {
         pf.init();
         pf.startFirstPhase();
         pf.startSecondPhase();
+        double flowV = pf.flowValue();
         Set S_apostrophe = get_min_cut_source_side();
+        double minCutV = compute_cut(dig, dig_aM, S_apostrophe);
+
         Set T_apostrophe = S_apostrophe.Complement(tilde_G_size);
         if(S_apostrophe != S && T_apostrophe != T){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
+#if _DEBUG
+            assert(S.IsSubSet(S_apostrophe));
+            assert(T.IsSubSet(T_apostrophe));
+#endif
             Set S_Union = S.Union(S_apostrophe);
             Set T_Union = T.Union(T_apostrophe);
             insert_set(T_Union);
@@ -284,7 +307,7 @@ namespace parametric {
             partition_list = partition_list_apostrophe;
         }
     }
-    Partition Partition::makeFile(int size) {
+    Partition Partition::makeFine(int size) {
         Partition p;
         for (int i = 0; i < size; i++) {
             stl::CSet A;

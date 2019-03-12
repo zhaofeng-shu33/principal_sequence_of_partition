@@ -27,6 +27,11 @@ TEST(PMF, EquationSolve) {
     parameter_list[1].second = INFINITY;
     double lambda_9 = compute_lambda(parameter_list, 2);
     EXPECT_DOUBLE_EQ(lambda_9, -0.5);
+    parameter_list[0] = std::make_pair(0.909, INFINITY);
+    parameter_list[1] = std::make_pair(0.99, -0.737);
+    double lambda_10 = compute_lambda(parameter_list, -0.1);
+    EXPECT_DOUBLE_EQ(lambda_10, 0.136);
+
 }
 TEST(PMF, insert_set) {
     using Set = stl::CSet;
@@ -190,8 +195,44 @@ namespace demo {
         
         EXPECT_EQ(*partition_it, parametric::Partition::makeDense(4));
         partition_it++;
-        EXPECT_EQ(*partition_it, parametric::Partition::makeFile(4));
+        EXPECT_EQ(*partition_it, parametric::Partition::makeFine(4));
         delete pdt;
+    }
+    TEST(GivenPoint8, SMALL) {
+        double a[8][2] = { {3.1, 3.2},
+                           {4.0, 4.0 },
+                           {1.1, -2.2},
+                           {3.9, -2.0},
+                           {-3.9, -2.0},
+                           {-2.2, -3.5},
+                           {-3.9, 2.4},
+                           {-3.1, 2.6}
+        };
+        Gaussian2DGraphBase g2g(8, 0.1, a);
+        EdgeListTuple elt = g2g.get_edge_list_tuple();
+        lemon::ListDigraph g;
+        g.reserveNode(8);
+        for (int i = 0; i < 8; i++)
+            g.addNode();
+        lemon::ListDigraph::ArcMap<double> aM(g);
+        for (std::tuple<std::size_t, std::size_t, double>& edge_tuple : elt) {
+            lemon::ListDigraph::Node s = g.nodeFromId(std::get<0>(edge_tuple));
+            lemon::ListDigraph::Node t = g.nodeFromId(std::get<1>(edge_tuple));
+            lemon::ListDigraph::Arc a1 = g.addArc(s, t);
+            lemon::ListDigraph::Arc a2 = g.addArc(t, s);
+            aM[a1] = std::get<2>(edge_tuple);
+            aM[a2] = std::get<2>(edge_tuple);
+        }
+        stl::CSet s(std::string("00001111"));
+        double cut_value = parametric::compute_cut(g, aM, s);
+        std::vector<pair> parameter_list;
+        for(int i = 0; i < 8; i++)
+            parameter_list.push_back(std::make_pair(0, -0.0286));
+        parameter_list[0] = std::make_pair(0.993, -0.737);
+        parameter_list[1] = std::make_pair(0.909, INFINITY);
+
+        parametric::PMF pmf(g, aM, 2, parameter_list);
+        pmf.run();
     }
     TEST(GivenPoint8, PDT) {
         double a[8][2] = { {3.1, 3.2},
@@ -203,6 +244,32 @@ namespace demo {
                            {-3.9, 2.4},
                            {-3.1, 2.6}
         };
-        Gaussian2DGraphBase g2g(8, 1.0, a);
+        Gaussian2DGraphBase g2g(8, 0.1, a);
+        EdgeListTuple elt = g2g.get_edge_list_tuple();
+        parametric::PDT* pdt = parametric::make_pdt(8, elt);
+        pdt->run();
+        std::list<double> lambda_list = pdt->get_lambda_list();
+        std::list<parametric::Partition> partition_list = pdt->get_partition_list();
+
+        submodular::InfoCluster ic(elt, 8);
+        ic.run();
+        std::vector<double> lambda_list_2 = ic.get_gamma_list();
+        std::vector<std::vector<submodular::Set>> partition_list_2 = ic.get_psp_list();
+
+        EXPECT_EQ(lambda_list.size(), lambda_list_2.size());
+        
+        std::list<double>::iterator it = lambda_list.begin();
+        for (int vector_it = 0; vector_it < lambda_list_2.size()-1; vector_it++) {
+            EXPECT_DOUBLE_EQ(*it, lambda_list_2[vector_it]);
+            it++;
+        }
+        for (int i = 0; i < partition_list_2.size(); i++) {
+            if (partition_list_2[i].size() == 0)
+                continue;
+            std::vector<submodular::Set> set = partition_list_2[i];
+            parametric::Partition p;
+            // partition comparision code
+        }
+
     }
 }

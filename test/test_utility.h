@@ -33,11 +33,9 @@ namespace demo {
                 }
             }
             else {
-                for (int j = 0; j < 4; j++) {
-                    for (int i = 0; i < np / 4; i++) {
+                for (int j = 0; j < np; j++) {
                         x_pos.push_back(a[j][0]);
                         y_pos.push_back(a[j][1]);
-                    }
                 }
             }
             for (int i = 0; i < np; i++)
@@ -45,6 +43,7 @@ namespace demo {
                     edge_list_tuple.push_back(std::make_tuple(i, j, compute_similarity(x_pos[i], y_pos[i], x_pos[j], y_pos[j])));
                 }
         }
+        EdgeListTuple get_edge_list_tuple() { return edge_list_tuple; }
     protected:
         EdgeListTuple edge_list_tuple;
         std::vector<double> x_pos;
