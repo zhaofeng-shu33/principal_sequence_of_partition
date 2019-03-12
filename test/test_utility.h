@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 namespace demo {
     typedef std::vector<std::tuple<std::size_t, std::size_t, double>> EdgeListTuple;
-    void construct_edge_list_float_4(EdgeListTuple& edges) {
+    void construct_edge_list_tuple_4(EdgeListTuple& edges) {
         double edge_1_value = 1.0;
         double edge_d_1_value = 0.5;
         edges.push_back(std::make_tuple(0, 1, edge_1_value));
@@ -40,21 +40,13 @@ namespace demo {
                     }
                 }
             }
-#ifdef _DEBUG
-            //dump x_pos, y_pos
-            std::ofstream fout("x_y_pos.txt");
-            for (int j = 0; j < x_pos.size(); j++) {
-                fout << '{' << x_pos[j] << ',' << y_pos[j] << '}' << ',' << std::endl;
-            }
-            fout.close();
-#endif
             for (int i = 0; i < np; i++)
                 for (int j = i + 1; j < np; j++) {
-                    edge_list_float_1.push_back(std::make_tuple(i, j, compute_similarity(x_pos[i], y_pos[i], x_pos[j], y_pos[j])));
+                    edge_list_tuple.push_back(std::make_tuple(i, j, compute_similarity(x_pos[i], y_pos[i], x_pos[j], y_pos[j])));
                 }
         }
     protected:
-        EdgeListTuple edge_list_float_1;
+        EdgeListTuple edge_list_tuple;
         std::vector<double> x_pos;
         std::vector<double> y_pos;
     private:

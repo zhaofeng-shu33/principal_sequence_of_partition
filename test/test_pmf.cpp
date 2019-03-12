@@ -177,7 +177,7 @@ TEST(PMF, ComputeCut) {
 }
 namespace demo {
     TEST_F(Graph4PointTest, PDT) {
-        parametric::PDT* pdt = parametric::make_pdt(4, edge_list_float_1);
+        parametric::PDT* pdt = parametric::make_pdt(4, edge_list_tuple_1);
         pdt->run();
         std::list<double> lambda_list = pdt->get_lambda_list();
         std::list<parametric::Partition> partition_list = pdt->get_partition_list();
