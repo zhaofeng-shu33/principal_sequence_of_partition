@@ -3,8 +3,8 @@
 #include <tuple>
 #include <gtest/gtest.h>
 namespace demo {
-    typedef std::vector<std::tuple<std::size_t, std::size_t, double>> EdgeListFloat;
-    void construct_edge_list_float_4(EdgeListFloat& edges) {
+    typedef std::vector<std::tuple<std::size_t, std::size_t, double>> EdgeListTuple;
+    void construct_edge_list_float_4(EdgeListTuple& edges) {
         double edge_1_value = 1.0;
         double edge_d_1_value = 0.5;
         edges.push_back(std::make_tuple(0, 1, edge_1_value));
@@ -16,7 +16,6 @@ namespace demo {
     }
     class Gaussian2DGraphBase {
     public:
-        using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, double>>;
         Gaussian2DGraphBase(int np, double gamma = 1, double a[][2] = NULL) :
             distribution(0, 1),
             _gamma(gamma)
@@ -55,7 +54,7 @@ namespace demo {
                 }
         }
     protected:
-        EdgeListFloat edge_list_float_1;
+        EdgeListTuple edge_list_float_1;
         std::vector<double> x_pos;
         std::vector<double> y_pos;
     private:

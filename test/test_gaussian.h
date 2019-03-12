@@ -16,12 +16,12 @@ TEST(Gaussian2D, GivenPoint) {
     std::vector<double> x_pos = g2g.get_x_pos_list();
     std::vector<double> y_pos = g2g.get_y_pos_list();
     EXPECT_EQ(x_pos.size(), 4);
-    EXPECT_FLOAT_EQ(x_pos[0], 3);
-    EXPECT_FLOAT_EQ(x_pos[2], -3);
+    EXPECT_DOUBLE_EQ(x_pos[0], 3);
+    EXPECT_DOUBLE_EQ(x_pos[2], -3);
 
     EXPECT_EQ(y_pos.size(), 4);
-    EXPECT_FLOAT_EQ(y_pos[1], -3);
-    EXPECT_FLOAT_EQ(y_pos[2], 3);
+    EXPECT_DOUBLE_EQ(y_pos[1], -3);
+    EXPECT_DOUBLE_EQ(y_pos[2], 3);
     g2g.run();
     std::vector<double> gamma_list = g2g.get_gamma_list();
     std::vector<std::vector<submodular::Set>> psp_list = g2g.get_psp_list();
