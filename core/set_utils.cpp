@@ -47,7 +47,17 @@ std::vector<Set> Set::MakeFine(std::size_t n) {
     return P;
 }
 
-
+std::string Set::GetRepresentation() const {
+    char* a = new char[bits_.size()];
+    int it = 0;
+    for (char b : bits_) {
+        a[it] = b + 48;
+        it++;
+    }
+    std::string representation(a, a+it);
+    delete a;
+    return representation;
+}
 Set::Set(std::size_t n, unsigned long val)
   : n_(n), bits_(n, 0)
 {

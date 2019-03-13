@@ -77,7 +77,7 @@ public:
   bool IsSubSet(const Set& s);
   bool IsEmpty(){return Cardinality()==0;}
   bool operator[] (element_type i) const { return HasElement(i); }
-
+  std::string GetRepresentation() const;
   std::vector<element_type> GetMembers() const;
   std::vector<std::size_t> GetInverseMap() const;
   std::size_t Cardinality() const;

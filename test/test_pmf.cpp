@@ -263,12 +263,18 @@ namespace demo {
             EXPECT_DOUBLE_EQ(*it, lambda_list_2[vector_it]);
             it++;
         }
+        std::list<parametric::Partition>::iterator partition_it = partition_list.begin();
         for (int i = 0; i < partition_list_2.size(); i++) {
             if (partition_list_2[i].size() == 0)
                 continue;
             std::vector<submodular::Set> set = partition_list_2[i];
             parametric::Partition p;
-            // partition comparision code
+            // convert one type to another and compare the two
+            for (submodular::Set& s : set) {
+                p.AddElement(stl::CSet(s.GetRepresentation()));
+            }
+            EXPECT_EQ(p, *partition_it);
+            partition_it++;
         }
 
     }
