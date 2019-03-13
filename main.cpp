@@ -60,7 +60,7 @@ int main(int argc, const char *argv[]){
             p = g2g->get_partition(4);
         }
         std::cout << p;
+        delete g2g;
     }
-    delete g2g;
     return 0;
 }
