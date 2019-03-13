@@ -7,60 +7,61 @@
 #if _DEBUG
 #include <cassert>
 #endif
-double compute_lambda(const std::vector<pair>& parameter_list, const double target_value) {
-    // get all breakpoints from parameter_list and sort them from smallest to largest
-    std::vector<double> turning_points;
-    int infinity_count = 0;
-    for (const pair& p : parameter_list) {
-        if (p.second != INFINITY)
-            turning_points.push_back((p.first - p.second) / 2);
-        else
-            infinity_count++;
-    }
-    if (turning_points.size() == 0) {
-        double intersept = std::accumulate(parameter_list.begin(), parameter_list.end(), -1*target_value,
-            [](double a, pair b) {
-                return (a + b.first);
-            }
-        );
-        return intersept / (2 * parameter_list.size());
-    }
-    std::sort(turning_points.begin(), turning_points.end());
-    // compute values at the first breakpoint
-    double last_tp = turning_points[0];
-    double slope = -infinity_count * 2;
 
-    double sum = 0;
-    double intersept = 0;
-    for (const pair& p : parameter_list) {
-        sum += std::min(p.first - 2 * last_tp, p.second);
-        if (p.second == INFINITY)
-            intersept += p.first;
-        else
-            intersept += p.second;
-    }
-    if (target_value > sum + 1e-10){
-        if (slope == 0)
-            throw std::range_error("no solution");
-        else
-            return (target_value - intersept) / (slope);
-    }
-    
-    if (target_value >= sum && target_value <= sum + 1e-10)
-        return last_tp;
-    // compute values at the other breakpoints
-    for (double& tp : turning_points) {
-        sum += slope * (tp - last_tp);
-        if (sum <= target_value) {
-            return (target_value - sum) / slope + tp;
-        }
-        slope -= 2;
-        last_tp = tp;
-    }
-    return (target_value - sum) / slope + last_tp;
-}
 namespace parametric {
     using Set = stl::CSet;
+    double PMF::compute_lambda(const std::vector<pair>& parameter_list, const double target_value) {
+        // get all breakpoints from parameter_list and sort them from smallest to largest
+        std::vector<double> turning_points;
+        int infinity_count = 0;
+        for (const pair& p : parameter_list) {
+            if (p.second != INFINITY)
+                turning_points.push_back((p.first - p.second) / 2);
+            else
+                infinity_count++;
+        }
+        if (turning_points.size() == 0) {
+            double intersept = std::accumulate(parameter_list.begin(), parameter_list.end(), -1 * target_value,
+                [](double a, pair b) {
+                return (a + b.first);
+            }
+            );
+            return intersept / (2 * parameter_list.size());
+        }
+        std::sort(turning_points.begin(), turning_points.end());
+        // compute values at the first breakpoint
+        double last_tp = turning_points[0];
+        double slope = -infinity_count * 2;
+
+        double sum = 0;
+        double intersept = 0;
+        for (const pair& p : parameter_list) {
+            sum += std::min(p.first - 2 * last_tp, p.second);
+            if (p.second == INFINITY)
+                intersept += p.first;
+            else
+                intersept += p.second;
+        }
+        if ( pf.tolerance().less(sum, target_value)) {
+            if (slope == 0)
+                throw std::range_error("no solution");
+            else
+                return (target_value - intersept) / (slope);
+        }
+
+        if (!pf.tolerance().different(target_value, sum))
+            return last_tp;
+        // compute values at the other breakpoints
+        for (double& tp : turning_points) {
+            sum += slope * (tp - last_tp);
+            if (sum <= target_value) {
+                return (target_value - sum) / slope + tp;
+            }
+            slope -= 2;
+            last_tp = tp;
+        }
+        return (target_value - sum) / slope + last_tp;
+    }
     PMF::PMF(lemon::ListDigraph& g, ArcMap& arcMap, std::size_t j, std::vector<pair>& y_lambda) :
         g_ptr(&g), aM(&arcMap), _j(j),
         _y_lambda(y_lambda),
@@ -117,7 +118,6 @@ namespace parametric {
         pf.init();
         pf.startFirstPhase();
         pf.startSecondPhase();
-        double minimum_value = pf.flowValue();
         Set S_0 = get_min_cut_source_side();
         Set T_0 = S_0.Complement(tilde_G_size);
         Set T_1 = Set::MakeEmpty(tilde_G_size);
@@ -181,9 +181,7 @@ namespace parametric {
         pf.init();
         pf.startFirstPhase();
         pf.startSecondPhase();
-        double flowV = pf.flowValue();
         Set S_apostrophe = get_min_cut_source_side();
-        double minCutV = compute_cut(dig, dig_aM, S_apostrophe);
 
         Set T_apostrophe = S_apostrophe.Complement(tilde_G_size);
         if(S_apostrophe != S && T_apostrophe != T){

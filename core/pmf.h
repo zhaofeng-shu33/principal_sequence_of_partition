@@ -8,7 +8,6 @@
 #include <unordered_set>
 #include "set/set_stl.h"
 typedef std::pair<double, double> pair;
-double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
 namespace parametric{
 class PMF {
 public:
@@ -25,6 +24,7 @@ public:
         _y_lambda = parameter_list; 
         sink_capacity.resize(_y_lambda.size());
     }
+    double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
 private:    
     void update_dig(double lambda);
     void slice(Set& S, Set& T);

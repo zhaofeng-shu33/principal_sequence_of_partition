@@ -7,29 +7,33 @@ TEST(PMF, EquationSolve) {
     std::vector<pair> parameter_list;
     parameter_list.push_back(std::make_pair(2, 0));
     parameter_list.push_back(std::make_pair(0, 0));
-    double lambda_1 = compute_lambda(parameter_list, -1.0);
+    std::vector<pair> y_lambda;
+    lemon::ListDigraph g;
+    lemon::ListDigraph::ArcMap<double> aM(g);
+    PMF pmf(g, aM, 0, y_lambda);
+    double lambda_1 = pmf.compute_lambda(parameter_list, -1.0);
     EXPECT_DOUBLE_EQ(lambda_1, 0.5);
-    double lambda_2 = compute_lambda(parameter_list, -6.0);
+    double lambda_2 = pmf.compute_lambda(parameter_list, -6.0);
     EXPECT_DOUBLE_EQ(lambda_2, 2);
-    EXPECT_THROW(compute_lambda(parameter_list, 1), std::range_error);
-    double lambda_4 = compute_lambda(parameter_list, 0);
+    EXPECT_THROW(pmf.compute_lambda(parameter_list, 1), std::range_error);
+    double lambda_4 = pmf.compute_lambda(parameter_list, 0);
     EXPECT_DOUBLE_EQ(lambda_4, 0);
-    double lambda_5 = compute_lambda(parameter_list, -2);
+    double lambda_5 = pmf.compute_lambda(parameter_list, -2);
     EXPECT_DOUBLE_EQ(lambda_5, 1);
     parameter_list[0].first = 0;
-    double lambda_6 = compute_lambda(parameter_list, -2); // slope = -4 for lambda > 0
+    double lambda_6 = pmf.compute_lambda(parameter_list, -2); // slope = -4 for lambda > 0
     EXPECT_DOUBLE_EQ(lambda_6, 0.5);
     parameter_list[0].second = INFINITY;
-    double lambda_7 = compute_lambda(parameter_list, 2);
+    double lambda_7 = pmf.compute_lambda(parameter_list, 2);
     EXPECT_DOUBLE_EQ(lambda_7, -1);
-    double lambda_8 = compute_lambda(parameter_list, -2);
+    double lambda_8 = pmf.compute_lambda(parameter_list, -2);
     EXPECT_DOUBLE_EQ(lambda_8, 0.5);
     parameter_list[1].second = INFINITY;
-    double lambda_9 = compute_lambda(parameter_list, 2);
+    double lambda_9 = pmf.compute_lambda(parameter_list, 2);
     EXPECT_DOUBLE_EQ(lambda_9, -0.5);
     parameter_list[0] = std::make_pair(0.909, INFINITY);
     parameter_list[1] = std::make_pair(0.99, -0.737);
-    double lambda_10 = compute_lambda(parameter_list, -0.1);
+    double lambda_10 = pmf.compute_lambda(parameter_list, -0.1);
     EXPECT_DOUBLE_EQ(lambda_10, 0.136);
 
 }
@@ -257,10 +261,11 @@ namespace demo {
         std::vector<std::vector<submodular::Set>> partition_list_2 = ic.get_psp_list();
 
         EXPECT_EQ(lambda_list.size(), lambda_list_2.size());
+        lemon::Tolerance<double> Tol;
         
         std::list<double>::iterator it = lambda_list.begin();
         for (int vector_it = 0; vector_it < lambda_list_2.size()-1; vector_it++) {
-            EXPECT_DOUBLE_EQ(*it, lambda_list_2[vector_it]);
+            EXPECT_NEAR(*it, lambda_list_2[vector_it], Tol.epsilon());
             it++;
         }
         std::list<parametric::Partition>::iterator partition_it = partition_list.begin();
