@@ -8,6 +8,7 @@
 #include <boost/program_options.hpp>
 #endif
 #include "utility/gaussian2Dcase.h"
+#include "core/pmf.h"
 void check_size(int size) {
     if (size % 4 != 0) {
         std::cout << "Node size must be multiplier of 4\n";
@@ -43,7 +44,11 @@ int main(int argc, const char *argv[]){
     bool use_pdt = vm["pdt"].as<bool>();
     bool _gamma = vm["gamma"].as<double>();
     if (use_pdt) {
-
+        demo::Gaussian2DPDT* gPDT = new demo::Gaussian2DPDT(size, _gamma);
+        gPDT->run();
+        parametric::Partition p = gPDT->get_smallest_partition(4);
+        std::cout << p;
+        delete gPDT;
     }
     else {
 #if USE_BOOST
