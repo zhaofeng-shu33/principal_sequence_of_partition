@@ -16,8 +16,10 @@ BOOST_PYTHON_MODULE(psp)
     class_<dVector>("dVector").def(vector_indexing_suite<dVector>())
         .def(self_ns::str(self_ns::self));
 
+    class_<dList>("dList").def("__len__", &dList::size)
+        .def("clear", &dList::clear)       
+        .def("__iter__", iterator<std::list<double>>());
 
-        
     class_<iList>("iList").def(vector_indexing_suite<iList>())
         .def(self_ns::str(self_ns::self));
 
