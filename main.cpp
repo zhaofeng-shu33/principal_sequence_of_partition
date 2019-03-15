@@ -42,7 +42,7 @@ int main(int argc, const char *argv[]){
     int size = vm["size"].as<int>();
     bool run_full = vm["full"].as<bool>();
     bool use_pdt = vm["pdt"].as<bool>();
-    bool _gamma = vm["gamma"].as<double>();
+    double _gamma = vm["gamma"].as<double>();
     if (use_pdt) {
         demo::Gaussian2DPDT* gPDT = new demo::Gaussian2DPDT(size, _gamma);
         gPDT->run();

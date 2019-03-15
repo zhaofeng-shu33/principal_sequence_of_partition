@@ -233,11 +233,11 @@ namespace parametric {
         _g(&g),
         _arcMap(&arcMap),
         pmf(g, arcMap, 0, _y_lambda){
-        _y_lambda.resize(g.maxNodeId()+1, pair(0, INFINITY));
         partition_list.push_back(Partition());
         Lambda_list.push_back(INFINITY);
     }
     void PDT::run() {
+        _y_lambda.resize(_g->maxNodeId() + 1, pair(0, INFINITY));
         for (int j = 0; j < _y_lambda.size(); j++) {
             pmf.reset_y_lambda(_y_lambda);
             pmf.reset_j(j);
