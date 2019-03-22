@@ -44,6 +44,30 @@ class InfoCluster:
         self.partition_num_list = to_py_list(self.g.get_partitions())  
     def fit_predict(self, X):
         return self.fit(X)
+
+    def add_node(self, root, node_list, num_index):
+        label_list = self.g.get_labels(num_index)
+        cat_list = []
+        for i in node_list:
+            if(cat_list.find(label_list[i]) < 0):
+                cat_list.append(label_list[i])
+        max_cat = len(cat_list)
+        label_list_list = [[] for i in range(max_cat)]
+        for i in node_list:
+            j = cat_list.find(label_list[i])
+            label_list_list[j].append(i)
+        for node_list_i in label_list_list:
+            node_name = ''.join([str(ii) for ii in node_list_i])
+            root_i = root.add_child(name= node_name)
+            if(len(node_list_i)>1):
+                self.add_node(root_i, node_list_i, num_index+1)
+                
+    def get_hierachical_tree(self, root):
+        num_index = self.get_num_cat(2)
+        max_num = len(self.g.get_category(1))
+        node_list = [ i for i in range(1, max_num+1)]
+        self.add_node(root, node_list, num_index)
+            
     def get_category(self, i, X=None):
         '''get the clustering labels with the number of clusters no smaller than i
         Parameters
