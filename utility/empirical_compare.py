@@ -51,7 +51,7 @@ def _affinity_propagation(feature, ground_truth, p_d):
     ars_af = metrics.adjusted_rand_score(ground_truth, y_pred_af)
     return ars_af
     
-def _Agglomerative(feature, ground_truth, config):
+def _agglomerative(feature, ground_truth, config):
     n_c = config['nc']
     _linkage = config['linkage']
     c = cluster.AgglomerativeClustering(n_clusters=n_c, linkage = _linkage)
@@ -70,14 +70,20 @@ def compute_adjusted_rand_score(feature, ground_truth, parameter_dic):
     return dic
     
 def Gaussian(parameter_dic):
-    data = np.load('Gaussian.npx')
+    data = schema.get_npx('Gaussian.npx')
+    if(data is None):
+        print("You need to generate Gaussian.npx by running 'python fine_tuning.py' first")
+        exit(0)
     pos_list = data[:,:2]
     ground_truth = data[:,-1]
     return compute_adjusted_rand_score(pos_list, ground_truth, parameter_dic)
     
     
 def Circle(parameter_dic):
-    data = np.load('Circle.npx')
+    data = schema.get_npx('Circle.npx')
+    if(data is None):
+        print("You need to generate Circle.npx by running 'python fine_tuning.py' first")
+        exit(0)    
     pos_list = data[:,:2]
     ground_truth = data[:,-1]
     return compute_adjusted_rand_score(pos_list, ground_truth, parameter_dic)

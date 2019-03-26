@@ -56,7 +56,7 @@ def _k_means(feature, ground_truth, config):
     ars_kmeans = metrics.adjusted_rand_score(ground_truth, y_pred_kmeans)    
     logging.info('ari %.3f'% ars_kmeans)                
     return {'nc': optimal_n_c}
-def _Agglomerative(feature, ground_truth, config):
+def _agglomerative(feature, ground_truth, config):
     ref_sc = -1
     optimal_n_c = 0
     optimal_linkage = ''
@@ -144,29 +144,15 @@ def fine_tuning(feature, ground_truth, method, config):
     logging.info('Finish tuning for %s, total time used = %.2f' % (method,end_time-start_time))
     return locals()['parameter']
 
-def get_npx(fileName):    
-    ''' return npx data is fileName exists,
-    return None otherwise
-    '''
-    file_path = os.path.join(schema.BUILD_DIR, fileName)
-    if(os.path.exists(file_path)):
-        data = np.load(file_path)
-        return data
-    return None
-    
-def set_npx(fileName, data):
-    ''' save npx data to fileName
-    '''
-    file_path = os.path.join(schema.BUILD_DIR, fileName)
-    np.hstack(data).dump(file_path)
+
     
 def Gaussian(method, config):
     GfileName = 'Gaussian.npx'
-    data = get_npx(GfileName)
+    data = schema.get_npx(GfileName)
     if(data is None):
         pos_list, ground_truth = datasets.make_blobs(n_samples = 100, centers=[[3,3],[-3,-3],[3,-3],[-3,3]], cluster_std=1)
-        ground_truth = ground_truth.reshape(len(ground_truth),1)
-        set_npx(GfileName, (pos_list, ground_truth))
+        ground_truth_s = ground_truth.reshape(len(ground_truth),1)
+        schema.set_npx(GfileName, (pos_list, ground_truth_s))
     else:
         pos_list = data[:,:2]
         ground_truth = data[:,-1]           
@@ -175,11 +161,11 @@ def Gaussian(method, config):
     
 def Circle(method, config):
     CfileName = 'Circle.npx'
-    data = get_npx(CfileName)
+    data = schema.get_npx(CfileName)
     if(data is None):
         pos_list, ground_truth = _generate_three_circle_data()
-        ground_truth = ground_truth.reshape(len(ground_truth),1)
-        set_npx(CfileName, (pos_list, ground_truth))
+        ground_truth_s = ground_truth.reshape(len(ground_truth),1)
+        schema.set_npx(CfileName, (pos_list, ground_truth_s))
     else:
         pos_list = data[:,:2]
         ground_truth = data[:,-1]   
@@ -201,7 +187,11 @@ def Libras(method, config):
     
 def compute(dataset, method):
     global logging
-    dic = json.loads(schema.get_file(schema.PARAMETER_FILE))
+    parameter_json_str = schema.get_file(schema.PARAMETER_FILE)
+    if(parameter_json_str):
+        dic = json.loads(parameter_json_str)
+    else:
+        dic = {}
     tuning_dic = json.loads(schema.get_file(schema.TUNING_FILE))
     if(method == 'all'):
         method_list = [i for i in schema.METHOD_SCHEMA]

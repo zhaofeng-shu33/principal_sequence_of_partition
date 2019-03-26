@@ -11,7 +11,7 @@ DATASET_SCHEMA:
     Glass: 6
     Libras: 15
 METHOD_SCHEMA:    
-    Agglomerative:
+    agglomerative:
         linkage:
         - single
         nc:
