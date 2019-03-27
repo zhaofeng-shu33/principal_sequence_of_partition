@@ -9,12 +9,15 @@ import cmath
 
 from matplotlib import pyplot as plt
 import numpy as np
+import argparse
 
 from info_cluster import InfoCluster
 import schema
 color_list = ['#3FF711', 'r', 'g', 'm','y','k','c','#00FF00']
 marker_list = ['o', 'v', 's', '*', '+', 'x', 'D', '1']
 MAX_CAT = len(color_list)
+USE_PDT = False
+SHOW_PIC = False
 class ThreeCircle:
     def __init__(self, np_list, gamma_1=1, gamma_2=1):
         '''
@@ -52,7 +55,7 @@ class ThreeCircle:
         
     def run(self):
         g = InfoCluster(affinity = 'precomputed')
-        g.fit(self.affinity_matrix)
+        g.fit(self.affinity_matrix, use_pdt = USE_PDT)
         self.partition_num_list = g.partition_num_list
         self.critical_values = g.critical_values    
         self.get_category = g.get_category         
@@ -76,7 +79,7 @@ class FourPart:
         
     def run(self):
         g = InfoCluster(gamma = self._gamma)
-        g.fit(self.pos_list)
+        g.fit(self.pos_list, use_pdt = USE_PDT)
         self.partition_num_list = g.partition_num_list
         self.critical_values = g.critical_values
         self.get_category = g.get_category        
@@ -129,6 +132,8 @@ def plot_inner(index, grach_cluster_object, fileName):
         if(index>0):
             plt.yticks(())
         ax.set_title('$\lambda = %.2f$' % lambda_list[index])
+    if(SHOW_PIC):
+        plt.show()
     plt.savefig(os.path.join(schema.BUILD_DIR, fileName))
   
 def plot_FourPart():
@@ -157,6 +162,14 @@ def plot_ThreeCircle():
 
     
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()      
+    parser.add_argument('--use_pdt', type=bool, help='use parameteric Dilworth Truncation implementation of info-cluster to draw',
+        default=False, nargs='?', const=True)
+    parser.add_argument('--show_pic', type=bool, help='whether to show the picture while program is running',
+        default=False, nargs='?', const=True)
+    args = parser.parse_args()
+    USE_PDT = args.use_pdt
+    SHOW_PIC = args.show_pic
     plt.figure(figsize=(9.2, 3))
     plt.subplots_adjust(wspace=.05)    
     plot_FourPart()
