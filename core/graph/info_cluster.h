@@ -16,6 +16,7 @@ namespace submodular {
             sg = submodular::make_dgraph(num_points, elt);
         }
         //! get the partition which has at least pn clusters
+        //! rerun the total algorithm, use with caution.
         std::vector<int> get_labels(int pn) {
             std::vector<Set> p = get_partition(pn);
             return to_category(p);

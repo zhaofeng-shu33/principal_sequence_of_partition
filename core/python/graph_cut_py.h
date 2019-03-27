@@ -63,6 +63,7 @@ namespace parametric {
         std::vector<double> get_critical_values() {
             std::vector<double> gLv(Lambda_list.size());
             std::copy(Lambda_list.begin(), Lambda_list.end(), gLv.begin());
+            gLv.pop_back(); // the last value is infinity
             return gLv;
         }
         std::vector<int> get_partitions() {
@@ -72,9 +73,30 @@ namespace parametric {
             }
             return partitions;
         }
+        //! get the smallest partition whose size >= k, label each data point with an integer
+        std::vector<int> get_category(int k) {
+            for (Partition& i : partition_list) {
+                if (i.Cardinality() >= k) {
+                    return to_category(i);
+                }
+            }
+            return std::vector<int>();
+        }
     private:
         lemon::ListDigraph g;
         lemon::ListDigraph::ArcMap<double> arcMap;
         int num_points;
+        //! form conversion
+        std::vector<int> to_category(Partition& partition) {
+            std::vector<int> cat(num_points, 0);
+            int t = 0;
+            for ( const stl::CSet& j : partition) {
+                for (int i : j.GetMembers()) {
+                    cat[i] = t;
+                }
+                t++;
+            }
+            return cat;
+        }
     };
 }
