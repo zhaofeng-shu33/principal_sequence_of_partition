@@ -60,6 +60,18 @@ namespace parametric {
                 arcMap[a1] = ppdt.arcMap[a];
             }
         }
+        std::vector<double> get_critical_values() {
+            std::vector<double> gLv(Lambda_list.size());
+            std::copy(Lambda_list.begin(), Lambda_list.end(), gLv.begin());
+            return gLv;
+        }
+        std::vector<int> get_partitions() {
+            std::vector<int> partitions;
+            for (Partition& p: partition_list) {
+                    partitions.push_back(p.Cardinality());
+            }
+            return partitions;
+        }
     private:
         lemon::ListDigraph g;
         lemon::ListDigraph::ArcMap<double> arcMap;

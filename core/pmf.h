@@ -61,13 +61,14 @@ public:
     std::list<Partition> get_partition_list() {
         return partition_list;
     }
+protected:
+    std::list<double> Lambda_list;
+    std::list<Partition> partition_list;
 private:
     std::vector<pair> _y_lambda;
     lemon::ListDigraph* _g;
     ArcMap* _arcMap;
     PMF pmf;
-    std::list<double> Lambda_list;
-    std::list<Partition> partition_list;
 };
 PDT* make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges);
 

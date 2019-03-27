@@ -39,5 +39,7 @@ BOOST_PYTHON_MODULE(psp)
         .def("get_category", &submodular::PyGraph::get_category);
 
     class_<parametric::PyGraphPDT>("PyGraphPDT", init<int, list>())
-        .def("run", &parametric::PyGraphPDT::run);
+        .def("run", &parametric::PyGraphPDT::run)
+        .def("get_critical_values", &parametric::PyGraphPDT::get_critical_values)
+        .def("get_partitions", &submodular::PyGraph::get_partitions);
 }
