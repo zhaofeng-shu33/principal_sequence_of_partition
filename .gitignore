@@ -1,4 +1,4 @@
 **/build
 utility/debug/*
 utility/*.log
-utility/__pycache__/*
+**/__pycache__
