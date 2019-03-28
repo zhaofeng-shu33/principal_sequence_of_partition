@@ -8,13 +8,18 @@ import os
 from time import time
 
 import numpy as np
+from joblib import Memory
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import adjusted_rand_score
 
 from info_cluster import InfoCluster
 
+memory = Memory('build', verbose=0)
+
+@memory.cache
 def generate_data():
     # Generate waveform data
+    print('generate waveform data')
     n_features = 2000
     t = np.pi * np.linspace(0, 1, n_features)
 
@@ -40,20 +45,11 @@ def generate_data():
     y = np.array(y)    
     return (X, y)
 
-def get_data():
-    if(os.path.exists(os.path.join('build','waveform.npz'))):
-        data = np.load(os.path.join('build', 'waveform.npz'))
-        X = data['X']
-        y = data['y']
-    else:
-        X, y = generate_data()
-        if not(os.path.exists('build')):
-            os.mkdir('build')
-        np.savez(os.path.join('build','waveform.npz'), X=X, y=y)
-    return [X, y]
+
+
     
 if __name__ == '__main__':
-    X, y = get_data()
+    X, y = generate_data()
     # test agglomerative clustering 
     for linkage in ('ward', 'average', 'complete', 'single'):
         if(linkage == 'ward'):
