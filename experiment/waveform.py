@@ -62,4 +62,10 @@ if __name__ == '__main__':
         sc = adjusted_rand_score(ac.labels_, y)
         print("%s :\t%.2fs, \t ari: %.2f" % (linkage, time() - t0, sc))
     # test info-clustering
-    
+    ic = InfoCluster(affinity='laplacian', gamma=0.008)
+    for pdt in (True, False):
+        ic.fit(X, use_pdt = pdt)
+        labels = ic.get_category(3)
+        sc = adjusted_rand_score(labels, y)
+        print("ic with pdt = %d :\t%.2fs, \t ari: %.2f" % (pdt, time() - t0, sc))
+        
