@@ -9,7 +9,12 @@ matrix:
           - ubuntu-toolchain-r-test
         packages:
           - g++-6
-
+          - python3-pip
+          - python3-setuptools
+    cache:
+      - directories:
+        - /usr/src/gtest
+      - pip
   #- os: osx
     
 before_install:
@@ -41,9 +46,15 @@ before_install:
   - cmake -DENABLE_TESTING=ON -DUSE_PYTHON=ON -DUSE_LEMON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_EIGEN3=ON -DUSE_BOOST_OPTION=ON ../ 
 install:
   - sudo make install
-
+  - python3 -c "import easydict" 2>/dev/null || sudo python3 -m pip install -r ../utility/requirement.txt
 script:
 # used for testing
   - ls
   - test/TestAll
+  - test/test_pmf
+  - set/test_set
   - python3 -c "import psp;print(psp.__version__)"
+  - python3 -c "from info_cluster import InfoCluster"
+  - cd ../utility
+  - coverage run graph_cut_py_test.py
+  - codecov

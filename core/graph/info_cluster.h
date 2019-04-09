@@ -11,7 +11,12 @@ namespace submodular {
             sg = pg.sg;
             num_points = pg.num_points;
         }
+        InfoCluster(const std::vector<std::tuple<std::size_t, std::size_t, double>>& elt, int np) {
+            num_points = np;
+            sg = submodular::make_dgraph(num_points, elt);
+        }
         //! get the partition which has at least pn clusters
+        //! rerun the total algorithm, use with caution.
         std::vector<int> get_labels(int pn) {
             std::vector<Set> p = get_partition(pn);
             return to_category(p);
@@ -27,6 +32,14 @@ namespace submodular {
             DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
             PSP<double> psp_class(dgc);
             psp_class.run(bruteForce);
+            gamma_list = psp_class.Get_critical_values();
+            psp_list = psp_class.Get_psp();
+            delete dgc;
+        }
+        void agglomerative_run() {
+            DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
+            PSP<double> psp_class(dgc);
+            psp_class.agglomerative_run();
             gamma_list = psp_class.Get_critical_values();
             psp_list = psp_class.Get_psp();
             delete dgc;

@@ -7,6 +7,7 @@
 #include "core/algorithms/sfm_mf.h"
 #endif
 #include "core/oracles/modular.h"
+#include "core/agglomerative.h"
 namespace submodular {
     template <typename ValueType>
     class SampleFunctionPartial : public SubmodularOracle<ValueType> {
@@ -29,6 +30,7 @@ namespace submodular {
         ModularOracle<ValueType> XL;
         SubmodularOracle<ValueType> *submodular_function;
     };
+ 
     /**
     *   compute the solution to \min_{P} h_{\gamma}(P)
     */
@@ -226,17 +228,25 @@ namespace submodular {
         }
         void run(bool bruteForce = false) {
             Set V = Set::MakeDense(NodeSize);
-            Set Empt;
             std::vector<Set> Q, P;
             Q.push_back(V);
-            for (int i = 0; i < NodeSize; i++) {
-                Set EmptyExceptOne(NodeSize);
-                EmptyExceptOne.AddElement(i);
-                P.push_back(EmptyExceptOne);
-            }
+            P = Set::MakeFine(NodeSize);
             psp[0] = Q;
             psp[P.size()-1] = P;
             split(Q, P, bruteForce);
+        }
+        void agglomerative_run() {
+            std::vector<Set> P;
+            P = Set::MakeFine(NodeSize);
+            int s = P.size() - 1;
+            psp[s] = P;
+            while (s > 0) {
+                std::pair<double, std::vector<Set>> result;
+                result = agglomerate(psp[s], submodular_function);
+                s = result.second.size() - 1;
+                critical_values[s] = result.first;
+                psp[s] = result.second;
+            }
         }
         std::vector<value_type>& Get_critical_values() {
             return critical_values;

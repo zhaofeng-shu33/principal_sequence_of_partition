@@ -1,7 +1,4 @@
-build/*
+**/build
 utility/debug/*
-utility/*.dll
-utility/*.npx
 utility/*.log
-utility/*.eps
-utility/__pycache__/*
+**/__pycache__

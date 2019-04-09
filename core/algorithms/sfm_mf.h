@@ -12,7 +12,7 @@
 #include <core/graph.h>
 #include <core/graph/maxflow.h>
 #include <lemon/list_graph.h>
-#include <lemon/preflow.h>
+#include "core/parametric_preflow.h"
 namespace submodular{
 
 template <typename ValueType>

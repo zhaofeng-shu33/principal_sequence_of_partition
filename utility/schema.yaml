@@ -1,0 +1,39 @@
+BUILD_DIR: 'build'
+TUNING_FILE: 'tuning.json'
+PARAMETER_FILE: 'parameter.json'
+LATEX_TABLE_NAME: 'compare.tex'
+EMPIRICAL_LOGGING_FILE: 'empirical_compare.log'
+FINE_TUNING_LOGGING_FILE: 'fine_tuning.log'
+DATASET_SCHEMA:
+    Gaussian: 4
+    Circle: 3
+    Iris: 3
+    Glass: 6
+    Libras: 15
+METHOD_SCHEMA:    
+    agglomerative:
+        linkage:
+        - single
+        nc:
+        - 0
+    affinity_propagation:
+        damping_factor:
+        - 0.5
+        preference:
+        - -50
+    info-clustering:
+        affinity:
+        - nearest_neighbors
+        - rbf
+        gamma:
+        - 0.6
+        n_neighbors:
+        - 10
+        nc:
+        - 0
+    k-means:
+        nc:
+        - 0
+    spectral_clustering:
+        nc:
+        - 0

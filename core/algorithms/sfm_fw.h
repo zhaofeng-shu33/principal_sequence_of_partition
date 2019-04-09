@@ -44,7 +44,7 @@ public:
   std::string GetName() { return "Fujishige--Wolfe"; }
 
   void SetTol(rational_type tol) { tol_ = tol; }
-
+  base_type get_x_data() const { return x_data_; }
 private:
   rational_type precision_; // = 2 * n_ * epsilon_
   rational_type eps_;
@@ -186,7 +186,7 @@ void FWRobust<ValueType>::Minimize(SubmodularOracle<ValueType>& F) {
     vertex_new = std::move(LinearMinimizerData(F, x_data_, members_, inverse_, &(this->reporter_)));
   }
 
-  auto X = GetX();
+  Set X = GetX();
   auto minimum_value = F.Call(X, &(this->reporter_));
 
   this->reporter_.TimerStop(ReportKind::TOTAL);

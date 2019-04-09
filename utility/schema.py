@@ -1,38 +1,16 @@
 import json
 import os
+
+import numpy as np
 import oss2
-METHOD_SCHEMA = {
-        'k-means': {'nc':[0]},
-        'spectral_clustering': {'nc':[0]},
-        'affinity_propagation': {
-            'preference':[-50],
-            'damping_factor':[0.5]
-        },
-        'info-clustering': {
-            'nc':[0],
-            'affinity':[ "nearest_neighbors", "rbf" ],
-            'n_neighbors':[10],
-            'gamma':[0.6]
-        },
-        'Agglomerative': {
-            'linkage':['single'],
-            'nc':[0]
-        }
-}
-DATASET_SCHEMA = {
-  'Gaussian': 4,
-  'Circle': 3,
-  'Iris': 3,
-  'Glass': 6,
-  'Libras': 15
-}
-BUILD_DIR = 'build'
-TUNING_FILE = 'tuning.json'
-PARAMETER_FILE = 'parameter.json'
-LATEX_TABLE_NAME = 'compare.tex'
-EMPIRICAL_LOGGING_FILE = 'empirical_compare.log'
-FINE_TUNING_LOGGING_FILE = 'fine_tuning.log'
-             
+from easydict import EasyDict as edict
+import yaml
+
+with open ('schema.yaml') as f:
+    schema_str = f.read()
+    schema_dic = yaml.load(schema_str)
+    locals().update(edict(schema_dic))       
+    
 def update_tuning_json():
     '''update tuning json string
     '''
@@ -76,9 +54,29 @@ def download_from_my_oss(file_name):
         auth = oss2.Auth(access_key_id, access_key_secret)
         bucket = oss2.Bucket(auth, 'http://oss-cn-shenzhen.aliyuncs.com', 'programmierung')
         research_base = 'research/info-clustering/code/utility/'
-        file_obj = bucket.get_object(research_base + file_name)
-        return file_obj.read()
+        # test whether the object exists
+        if bucket.object_exists(research_base + file_name):
+            file_obj = bucket.get_object(research_base + file_name)
+            return file_obj.read()
     return ''
+
+def get_npx(fileName):    
+    ''' return npx data is fileName exists,
+    return None otherwise
+    '''
+    global BUILD_DIR    
+    file_path = os.path.join(BUILD_DIR, fileName)
+    if(os.path.exists(file_path)):
+        data = np.load(file_path)
+        return data
+    return None
+    
+def set_npx(fileName, data):
+    ''' save npx data to fileName
+    '''
+    global BUILD_DIR 
+    file_path = os.path.join(BUILD_DIR, fileName)
+    np.hstack(data).dump(file_path)
     
 def get_file(file_name):
     '''return tuning json string    
@@ -88,9 +86,11 @@ def get_file(file_name):
     if(str):
         return str
         
-    file_path = os.path.join(BUILD_DIR, file_name)        
-    with open(file_path, 'r') as f:
-        str = f.read()
+    file_path = os.path.join(BUILD_DIR, file_name)
+    str = ''
+    if(os.path.exists(file_path)):
+        with open(file_path, 'r') as f:
+            str = f.read()
     return str
     
 def set_file(file_name, str):

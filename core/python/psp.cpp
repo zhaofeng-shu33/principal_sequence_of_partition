@@ -5,17 +5,21 @@
 #include "core/python/graph_cut_py.h"
 using namespace boost::python;
 template class std::vector<double>;
-typedef std::vector<double> dList;
+typedef std::vector<double> dVector;
+typedef std::list<double> dList;
 typedef std::vector<int> iList;
 
 
 BOOST_PYTHON_MODULE(psp)
 {
     scope().attr("__version__") = PSP_VERSION_MAJOR;
-    class_<dList>("dList").def(vector_indexing_suite<dList>())
+    class_<dVector>("dVector").def(vector_indexing_suite<dVector>())
         .def(self_ns::str(self_ns::self));
-        
-        
+
+    class_<dList>("dList").def("__len__", &dList::size)
+        .def("clear", &dList::clear)       
+        .def("__iter__", iterator<std::list<double>>());
+
     class_<iList>("iList").def(vector_indexing_suite<iList>())
         .def(self_ns::str(self_ns::self));
 
@@ -33,4 +37,10 @@ BOOST_PYTHON_MODULE(psp)
         .def("get_critical_values", &submodular::PyGraph::get_critical_values)
         .def("get_partitions", &submodular::PyGraph::get_partitions)
         .def("get_category", &submodular::PyGraph::get_category);
+
+    class_<parametric::PyGraphPDT>("PyGraphPDT", init<int, list>())
+        .def("run", &parametric::PyGraphPDT::run)
+        .def("get_critical_values", &parametric::PyGraphPDT::get_critical_values)
+        .def("get_partitions", &parametric::PyGraphPDT::get_partitions)
+        .def("get_category", &parametric::PyGraphPDT::get_category);
 }

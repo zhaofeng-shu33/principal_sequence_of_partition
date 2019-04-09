@@ -90,4 +90,25 @@ namespace submodular {
     constexpr std::size_t MaxflowGraphTest::s_1;
     constexpr std::size_t MaxflowGraphTest::t_1;
     constexpr std::size_t MaxflowGraphTest::data_1[9][3];
+
+    class PINModelTest : public testing::Test {
+    protected:
+        using EdgeListFloat = std::vector<std::tuple<std::size_t, std::size_t, double>>;
+
+        // {src, dst, capacity}
+        std::size_t n_1 = 3;
+        std::size_t data_1[3][3] = {
+        { 0, 1, 1 },
+        { 0, 2, 5 },
+        { 1, 2, 1 },
+        };
+
+        EdgeListFloat edge_list_float_1;
+
+        virtual void SetUp() {
+            for (const auto& sdc : data_1) {
+                edge_list_float_1.push_back(std::make_tuple(sdc[0], sdc[1], (double)sdc[2]));
+            }
+        }
+    };
 }
