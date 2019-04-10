@@ -1,4 +1,5 @@
 **/build
+**/.DS_Store
 utility/debug/*
 utility/*.log
 **/__pycache__
