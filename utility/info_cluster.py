@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.neighbors import kneighbors_graph
+from ete3 import Tree
 
 import psp # [package] principal sequence of partition
 
@@ -31,6 +32,7 @@ class InfoCluster:
         Parameters
         ----------
         X : array-like, shape (n_samples, n_features)
+            if affinity='precomputed', X is affinity matrix(upper triangle)
            
         '''
         if(self.n_clusters is not None and use_pdt == False):
@@ -43,7 +45,7 @@ class InfoCluster:
     def fit_predict(self, X):
         return self.fit(X)
 
-    def add_node(self, root, node_list, num_index):
+    def _add_node(self, root, node_list, num_index):
         label_list = self.get_category(self.partition_num_list[num_index])
         cat_list = []
         for i in node_list:
@@ -61,13 +63,16 @@ class InfoCluster:
             else:
                 root_i = root
             if(len(node_list_i)>1):
-                self.add_node(root_i, node_list_i, num_index+1)
+                self._add_node(root_i, node_list_i, num_index+1)
                 
     def get_hierachical_tree(self, root):
         max_num = self.partition_num_list[-1]
         node_list = [ i for i in range(0, max_num)]
-        self.add_node(root, node_list, 1)
-            
+        self._add_node(root, node_list, 1)
+    def print_hierachical_tree(self):
+        t = Tree()
+        self.get_hierachical_tree(t)
+        print(t)
     def get_category(self, i, X=None):
         '''get the clustering labels with the number of clusters no smaller than i
         Parameters
@@ -99,7 +104,10 @@ class InfoCluster:
         return -1       
         
     def _init_g(self, X, use_pdt = False):
-        n_samples = X.shape[0]
+        if(type(X) == list):
+            n_samples = len(X)
+        else:
+            n_samples = X.shape[0]
         if(self.affinity == 'precomputed'):
             affinity_matrix = X
         elif(self.affinity == 'nearest_neighbors'):
