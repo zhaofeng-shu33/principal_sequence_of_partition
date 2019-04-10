@@ -2,3 +2,4 @@
 utility/debug/*
 utility/*.log
 **/__pycache__
+**/.vs
