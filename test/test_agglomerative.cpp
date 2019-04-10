@@ -148,7 +148,7 @@ TEST(Gaussian2D, Agglomerative) {
     g2g.agglomerative_run();
     std::vector<double> gamma_list = g2g.get_gamma_list();
     std::vector<std::vector<submodular::Set>> psp_list = g2g.get_psp_list();
-    g2g.run(false);
+    g2g.run();
     std::vector<double> gamma_list_2 = g2g.get_gamma_list();
     std::vector<std::vector<submodular::Set>> psp_list_2 = g2g.get_psp_list();
 

@@ -50,10 +50,10 @@ TEST(Gaussian2D, GivenPoint8) {
                        {-3.1, 2.6}
                      };
     Gaussian2DGraph g2g(8, 1.0, a);
-    g2g.run(true);
+    g2g.run_bruteForce();
     std::vector<double> gamma_list = g2g.get_gamma_list();
     std::vector<std::vector<submodular::Set>> psp_list = g2g.get_psp_list();
-    g2g.run(false);
+    g2g.run();
     std::vector<double> gamma_list_2 = g2g.get_gamma_list();
     std::vector<std::vector<submodular::Set>> psp_list_2 = g2g.get_psp_list();
 

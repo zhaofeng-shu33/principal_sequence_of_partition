@@ -37,8 +37,8 @@ class InfoCluster:
         '''
         if(self.n_clusters is not None and use_pdt == False):
             return self.get_category(self.n_clusters, X)
-        self._init_g(X, use_pdt = False)
-        self.g.run(False)
+        self._init_g(X, use_pdt)
+        self.g.run()
         
         self.critical_values = to_py_list(self.g.get_critical_values())
         self.partition_num_list = to_py_list(self.g.get_partitions())  

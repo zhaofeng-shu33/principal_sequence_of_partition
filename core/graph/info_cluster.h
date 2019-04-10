@@ -28,10 +28,18 @@ namespace submodular {
             delete dgc;
             return p;
         }
-        void run(bool bruteForce = false) {
+        void run() {
             DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
             PSP<double> psp_class(dgc);
-            psp_class.run(bruteForce);
+            psp_class.run(false);
+            gamma_list = psp_class.Get_critical_values();
+            psp_list = psp_class.Get_psp();
+            delete dgc;
+        }
+        void run_bruteForce() {
+            DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
+            PSP<double> psp_class(dgc);
+            psp_class.run(true);
             gamma_list = psp_class.Get_critical_values();
             psp_list = psp_class.Get_psp();
             delete dgc;
