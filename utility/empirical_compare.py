@@ -14,6 +14,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import cross_validate
 import numpy as np
 from tabulate import tabulate
+import argparse
 
 # user provided module
 import info_cluster
@@ -102,8 +103,8 @@ def Libras(parameter_dic):
     feature = preprocessing.scale(feature)
     return compute_adjusted_rand_score(feature, ground_truth, parameter_dic)
     
-def compute():
-    json_str = schema.get_file(schema.PARAMETER_FILE)
+def compute(use_cloud):
+    json_str = schema.get_file(schema.PARAMETER_FILE, use_cloud)
     p_dic = json.loads(json_str)
     dic = {}
     for key in p_dic:
@@ -124,4 +125,7 @@ def make_table(dic):
     schema.set_file(schema.LATEX_TABLE_NAME, latex_table_string)
     
 if __name__ == '__main__':
-    make_table(compute())
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--use_cloud', help='whether to use cloud parameter.json', default=False, type=bool, nargs='?', const=True)
+    args = parser.parse_args()
+    make_table(compute(args.use_cloud))
