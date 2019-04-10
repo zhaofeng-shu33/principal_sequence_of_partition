@@ -185,14 +185,14 @@ def Libras(method, config):
     feature = preprocessing.scale(feature)
     return fine_tuning(feature, ground_truth, method, config)
     
-def compute(dataset, method):
+def compute(dataset, method, use_cloud):
     global logging
-    parameter_json_str = schema.get_file(schema.PARAMETER_FILE)
+    parameter_json_str = schema.get_file(schema.PARAMETER_FILE, use_cloud)
     if(parameter_json_str):
         dic = json.loads(parameter_json_str)
     else:
         dic = {}
-    tuning_dic = json.loads(schema.get_file(schema.TUNING_FILE))
+    tuning_dic = json.loads(schema.get_file(schema.TUNING_FILE, use_cloud))
     if(method == 'all'):
         method_list = [i for i in schema.METHOD_SCHEMA]
     else:
@@ -202,7 +202,7 @@ def compute(dataset, method):
     else:
         dataset_list = [dataset]
     for _dataset in dataset_list:    
-        logging.info('tuning for dataset ' + dataset)        
+        logging.info('tuning for dataset ' + _dataset)        
         for _method in method_list:
             if(dic.get(_dataset) is None):
                 dic[_dataset] = {}                
@@ -220,9 +220,10 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', help='name of the dataset to fine tuning', default='all', choices=dataset_choices)
     parser.add_argument('--method', help='clustering method to fine tuning', default='all', choices=method_chocies)
     parser.add_argument('--debug', help='whether to enter debug mode', default=False, type=bool, nargs='?', const=True)
+    parser.add_argument('--use_cloud', help='whether to use cloud parameter.json', default=False, type=bool, nargs='?', const=True)    
     args = parser.parse_args()
     if(args.debug):
         pdb.set_trace()
-    dic = compute(args.dataset, args.method)
+    dic = compute(args.dataset, args.method, args.use_cloud)
     json_str = json.dumps(dic, indent=4)
     schema.set_file(schema.PARAMETER_FILE, json_str)

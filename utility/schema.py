@@ -78,13 +78,14 @@ def set_npx(fileName, data):
     file_path = os.path.join(BUILD_DIR, fileName)
     np.hstack(data).dump(file_path)
     
-def get_file(file_name):
+def get_file(file_name, use_cloud = True):
     '''return tuning json string    
     '''
-    global BUILD_DIR    
-    str = download_from_my_oss(file_name)
-    if(str):
-        return str
+    global BUILD_DIR
+    if(use_cloud):
+        str = download_from_my_oss(file_name)
+        if(str):
+            return str
         
     file_path = os.path.join(BUILD_DIR, file_name)
     str = ''
