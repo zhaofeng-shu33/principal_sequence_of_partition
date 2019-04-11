@@ -9,10 +9,13 @@
 #include "set/set_stl.h"
 typedef std::pair<double, double> pair;
 namespace parametric{
+typedef lemon::ListDigraph::ArcMap<double> ArcMap;
+typedef lemon::Preflow<lemon::ListDigraph, ArcMap>::FlowMap FlowMap;
+typedef const lemon::Preflow<lemon::ListDigraph, ArcMap>::Elevator Elevator;
+class Pack;
 class PMF {
 public:
     using Set = stl::CSet;
-    typedef lemon::ListDigraph::ArcMap<double> ArcMap;
     PMF(lemon::ListDigraph& g, ArcMap& arcMap, std::size_t j, std::vector<pair>& y_lambda);
     void run();
     void insert(double lambda);
@@ -27,7 +30,7 @@ public:
     double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
 private:    
     void update_dig(double lambda);
-    void slice(Set& S, Set& T, const lemon::Preflow<lemon::ListDigraph, ArcMap>::FlowMap& flowMap, bool isLeft);
+    void slice(Set& S, Set& T, Pack& pack, bool isLeft);
     inline Set get_min_cut_source_side(lemon::Preflow<lemon::ListDigraph, ArcMap>& pf);
     double compute_lambda_eq_const(Set& S, Set& T);
     lemon::ListDigraph* g_ptr;
@@ -43,6 +46,22 @@ private:
     int tilde_G_size;
     lemon::Tolerance<double> tolerance;
     std::size_t _j;
+};
+//! collection of flowMap and elevator
+class Pack {
+public:
+    Pack(const FlowMap& fM, const Elevator& ele) :
+        _flow(&fM), _elevator(&ele)
+    {}
+    const FlowMap& flowMap() const {
+        return *_flow;
+    }
+    const Elevator& elevator() const {
+        return *_elevator;
+    }
+private:
+    const FlowMap* _flow;
+    const Elevator* _elevator;
 };
 class Partition : public stl::Set<stl::CSet> {
 public:

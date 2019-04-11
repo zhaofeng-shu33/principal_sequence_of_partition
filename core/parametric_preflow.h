@@ -505,6 +505,30 @@ namespace lemon {
         }
         return true;
     }
+    void copyElevator(const Elevator& elevator) {
+        if (!_level) {
+            _level = Traits::createElevator(_graph, countNodes(_graph));
+            _local_level = true;
+        }
+        std::vector<std::list<Node>> node_list(elevator.maxLevel()); //sorted by level
+        for (NodeIt n(_graph); n != INVALID; ++n) {
+            if (elevator[n] == 0)
+                continue;
+            node_list[elevator[n] - 1].push_back(n);
+        }
+        _level->initStart();
+        _level->initAddItem(_target);
+        for (std::list<Node>& node_list_level : node_list) {
+            _level->initNewLevel();
+            if (node_list_level.empty()) {
+                continue;
+            }
+            for (Node& v : node_list_level) {
+                _level->initAddItem(v);
+            }
+        }
+        _level->initFinish();
+    }
     /// \brief Initializes the internal data structures using the
     /// given flow map.
     ///
@@ -515,82 +539,28 @@ namespace lemon {
     /// outgoing flow.
     /// \return \c false if the given \c flowMap is not a preflow.
     template <typename FlowMap>
-    bool init(const FlowMap& flowMap) {
+    bool init(const FlowMap& flowMap, const Elevator& elevator) {
       createStructures();
       for (ArcIt e(_graph); e != INVALID; ++e) {
         _flow->set(e, flowMap[e]);
       }
       // update _flow connected with sink_node
       for (InArcIt e(_graph, _target); e != INVALID; ++e) {
-          if (flowMap[e] > _capacity[e])
-              _flow->set(e, _capacity[e]);
+          if (flowMap[e] > (*_capacity)[e])
+              _flow->set(e, (*_capacity)[e]);
       }
+
+      bool updateResult = updateExcess();
+      if (updateResult == false)
+          return false;
+
+      // copy the elevator to _level
+      copyElevator(elevator);
+
       // update _flow connected with source_node
       for (OutArcIt e(_graph, _source); e != INVALID; ++e) {
           continue;
       }
-      bool updateResult = updateExcess();
-      if (updateResult == false)
-          return false;
-      typename Digraph::template NodeMap<bool> reached(_graph, false);
-
-      _level->initStart();
-      _level->initAddItem(_target);
-
-      std::vector<Node> queue;
-      reached[_source] = true;
-
-      queue.push_back(_target);
-      reached[_target] = true;
-      while (!queue.empty()) {
-        _level->initNewLevel();
-        std::vector<Node> nqueue;
-        for (int i = 0; i < int(queue.size()); ++i) {
-          Node n = queue[i];
-          for (InArcIt e(_graph, n); e != INVALID; ++e) {
-            Node u = _graph.source(e);
-            if (!reached[u] &&
-                _tolerance.positive((*_capacity)[e] - (*_flow)[e])) {
-              reached[u] = true;
-              _level->initAddItem(u);
-              nqueue.push_back(u);
-            }
-          }
-          for (OutArcIt e(_graph, n); e != INVALID; ++e) {
-            Node v = _graph.target(e);
-            if (!reached[v] && _tolerance.positive((*_flow)[e])) {
-              reached[v] = true;
-              _level->initAddItem(v);
-              nqueue.push_back(v);
-            }
-          }
-        }
-        queue.swap(nqueue);
-      }
-      _level->initFinish();
-
-      for (OutArcIt e(_graph, _source); e != INVALID; ++e) {
-        Value rem = (*_capacity)[e] - (*_flow)[e];
-        if (_tolerance.positive(rem)) {
-          Node u = _graph.target(e);
-          if ((*_level)[u] == _level->maxLevel()) continue;
-          _flow->set(e, (*_capacity)[e]);
-          (*_excess)[u] += rem;
-        }
-      }
-      for (InArcIt e(_graph, _source); e != INVALID; ++e) {
-        Value rem = (*_flow)[e];
-        if (_tolerance.positive(rem)) {
-          Node v = _graph.source(e);
-          if ((*_level)[v] == _level->maxLevel()) continue;
-          _flow->set(e, 0);
-          (*_excess)[v] += rem;
-        }
-      }
-      for (NodeIt n(_graph); n != INVALID; ++n)
-        if(n!=_source && n!=_target && _tolerance.positive((*_excess)[n]))
-          _level->activate(n);
-
       return true;
     }
 

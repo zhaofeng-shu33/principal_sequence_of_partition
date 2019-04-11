@@ -118,6 +118,49 @@ TEST(PMF, PMClass) {
     for (Set& s : pmf.get_set_list())
         std::cout << s << std::endl;
 }
+TEST(PM, COPY_ELEVATOR) {
+    lemon::ListDigraph g;
+    std::vector<lemon::ListDigraph::Node> node_list;
+    int graph_size = 4;
+    g.reserveNode(4);
+    g.reserveArc(5);
+    lemon::ListDigraph::Node source_node = g.addNode();
+    lemon::ListDigraph::Node sink_node = g.addNode();
+    lemon::ListDigraph::Node node_1 = g.addNode();
+    lemon::ListDigraph::Node node_2 = g.addNode();
+    // construct edge cost map
+    typedef lemon::ListDigraph::ArcMap<double> ArcMap;
+    ArcMap edge_cost_map(g);
+    lemon::ListDigraph::Arc arc1 = g.addArc(source_node, node_1);
+    edge_cost_map[arc1] = 2;
+    lemon::ListDigraph::Arc arc2 = g.addArc(node_1, sink_node);
+    edge_cost_map[arc2] = 1;
+    lemon::ListDigraph::Arc arc3 = g.addArc(source_node, node_2);
+    edge_cost_map[arc3] = 4;
+    lemon::ListDigraph::Arc arc4 = g.addArc(node_2, sink_node);
+    edge_cost_map[arc4] = 5;
+    lemon::ListDigraph::Arc arc5 = g.addArc(node_1, node_2);
+    edge_cost_map[arc5] = 3;
+
+    lemon::Preflow<lemon::ListDigraph, ArcMap> pf(g, edge_cost_map, source_node, sink_node);
+    pf.init();
+    lemon::Preflow<lemon::ListDigraph, ArcMap> pf_2(g, edge_cost_map, source_node, sink_node);
+    Elevator* ele_1 = &pf.elevator();
+    pf_2.copyElevator(*ele_1);
+    Elevator* ele_2 = &pf_2.elevator();
+    for (lemon::ListDigraph::NodeIt n(g); n != lemon::INVALID; ++n) {
+        EXPECT_EQ((*ele_1)[n], (*ele_2)[n]);
+    }
+    pf.startFirstPhase();
+    pf.startSecondPhase();
+    lemon::Preflow<lemon::ListDigraph, ArcMap> pf_3(g, edge_cost_map, source_node, sink_node);
+    pf_3.copyElevator(*ele_1);
+    Elevator* ele_3 = &pf_3.elevator();
+    for (lemon::ListDigraph::NodeIt n(g); n != lemon::INVALID; ++n) {
+        EXPECT_EQ((*ele_1)[n], (*ele_3)[n]);
+    }
+
+}
 TEST(PDT, RUN) {
     lemon::ListDigraph g;
     lemon::ListDigraph::Node n1 = g.addNode();

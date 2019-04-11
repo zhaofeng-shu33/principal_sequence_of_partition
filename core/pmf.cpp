@@ -122,7 +122,8 @@ namespace parametric {
         T_1.AddElement(_j);
         set_list.push_back(T_0);
         set_list.push_back(T_1);
-        slice(S_0, T_1, pf.flowMap(), true);
+        Pack pack(pf.flowMap(), pf.elevator());
+        slice(S_0, T_1, pack, true);
     }
     void PMF::reset_j(std::size_t j) { 
         _j = j; 
@@ -164,7 +165,7 @@ namespace parametric {
         }
         set_list.insert(set_list.end(), s);
     }
-    void PMF::slice(Set& S, Set& T, const lemon::Preflow<lemon::ListDigraph, ArcMap>::FlowMap& flowMap, bool isLeft) {
+    void PMF::slice(Set& S, Set& T, Pack& pack, bool isLeft) {
         // compute lambda_2
         double lambda_const = compute_lambda_eq_const(S, T);
         std::vector<pair> y_lambda_filter;
@@ -177,7 +178,8 @@ namespace parametric {
         update_dig(lambda_2);
         // do not use graph contraction
         lemon::Preflow<lemon::ListDigraph, ArcMap> pf_instance(dig, dig_aM, source_node, sink_node);
-        pf_instance.init(flowMap);
+        pf_instance.init();
+        //pf_instance.init(pack.flowMap(), pack.elevator());
         pf_instance.startFirstPhase();
         pf_instance.startSecondPhase();
         Set S_apostrophe = get_min_cut_source_side(pf_instance);
@@ -191,8 +193,9 @@ namespace parametric {
             Set S_Union = S.Union(S_apostrophe);
             Set T_Union = T.Union(T_apostrophe);
             insert_set(T_Union);
-            slice(S, T_Union, pf_instance.flowMap(), false);
-            slice(S_Union, T, pf_instance.flowMap(), true);
+            Pack pack(pf_instance.flowMap(), pf_instance.elevator());
+            slice(S, T_Union, pack, false);
+            slice(S_Union, T, pack, true);
         }
         else {
             insert(lambda_2);
