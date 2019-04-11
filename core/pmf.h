@@ -27,13 +27,13 @@ public:
     double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
 private:    
     void update_dig(double lambda);
-    void slice(Set& S, Set& T);
-    inline Set get_min_cut_source_side();
+    void slice(Set& S, Set& T, const lemon::Preflow<lemon::ListDigraph, ArcMap>::FlowMap& flowMap, bool isLeft);
+    inline Set get_min_cut_source_side(lemon::Preflow<lemon::ListDigraph, ArcMap>& pf);
     double compute_lambda_eq_const(Set& S, Set& T);
     lemon::ListDigraph* g_ptr;
     ArcMap* aM;
-    lemon::ListDigraph dig;
-    ArcMap dig_aM;
+    lemon::ListDigraph dig; //directed graph
+    ArcMap dig_aM; //digrected graph arcMap
     std::vector<pair> _y_lambda;
     std::vector<double> sink_capacity;
     std::list<double> lambda_list;
@@ -41,7 +41,7 @@ private:
     lemon::ListDigraph::Node source_node;
     lemon::ListDigraph::Node sink_node;
     int tilde_G_size;
-    lemon::Preflow<lemon::ListDigraph, ArcMap> pf;
+    lemon::Tolerance<double> tolerance;
     std::size_t _j;
 };
 class Partition : public stl::Set<stl::CSet> {

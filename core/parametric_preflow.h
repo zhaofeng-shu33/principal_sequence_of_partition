@@ -350,7 +350,6 @@ namespace lemon {
       _flow = &map;
       return *this;
     }
-
     /// \brief Sets the source node.
     ///
     /// Sets the source node.
@@ -518,11 +517,18 @@ namespace lemon {
     template <typename FlowMap>
     bool init(const FlowMap& flowMap) {
       createStructures();
-
       for (ArcIt e(_graph); e != INVALID; ++e) {
         _flow->set(e, flowMap[e]);
       }
-
+      // update _flow connected with sink_node
+      for (InArcIt e(_graph, _target); e != INVALID; ++e) {
+          if (flowMap[e] > _capacity[e])
+              _flow->set(e, _capacity[e]);
+      }
+      // update _flow connected with source_node
+      for (OutArcIt e(_graph, _source); e != INVALID; ++e) {
+          continue;
+      }
       bool updateResult = updateExcess();
       if (updateResult == false)
           return false;

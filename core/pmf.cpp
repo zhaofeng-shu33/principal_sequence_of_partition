@@ -42,14 +42,14 @@ namespace parametric {
             else
                 intersept += p.second;
         }
-        if ( pf.tolerance().less(sum, target_value)) {
+        if (tolerance.less(sum, target_value)) {
             if (slope == 0)
                 throw std::range_error("no solution");
             else
                 return (target_value - intersept) / (slope);
         }
 
-        if (!pf.tolerance().different(target_value, sum))
+        if (!tolerance.different(target_value, sum))
             return last_tp;
         // compute values at the other breakpoints
         for (double& tp : turning_points) {
@@ -65,12 +65,12 @@ namespace parametric {
     PMF::PMF(lemon::ListDigraph& g, ArcMap& arcMap, std::size_t j, std::vector<pair>& y_lambda) :
         g_ptr(&g), aM(&arcMap), _j(j),
         _y_lambda(y_lambda),
-        dig_aM(dig),
-        pf(dig, dig_aM, lemon::INVALID, lemon::INVALID) {        
+        dig_aM(dig)
+    {        
         sink_capacity.resize(_y_lambda.size());
 
     }
-    Set PMF::get_min_cut_source_side() {
+    Set PMF::get_min_cut_source_side(lemon::Preflow<lemon::ListDigraph, ArcMap>& pf) {
         Set s = Set::MakeEmpty(tilde_G_size);
         for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
             if (pf.minCut(n))
@@ -110,21 +110,19 @@ namespace parametric {
             dig.addArc(source_node, n);            
         }
         // reset the source_node and sink_node
-        pf.source(source_node);
-        pf.target(sink_node);
-
+        lemon::Preflow<lemon::ListDigraph, ArcMap> pf(dig, dig_aM, source_node, sink_node);
         //find S_0 and T_0
         update_dig(0);
         pf.init();
         pf.startFirstPhase();
         pf.startSecondPhase();
-        Set S_0 = get_min_cut_source_side();
+        Set S_0 = get_min_cut_source_side(pf);
         Set T_0 = S_0.Complement(tilde_G_size);
         Set T_1 = Set::MakeEmpty(tilde_G_size);
         T_1.AddElement(_j);
         set_list.push_back(T_0);
         set_list.push_back(T_1);
-        slice(S_0, T_1);
+        slice(S_0, T_1, pf.flowMap(), true);
     }
     void PMF::reset_j(std::size_t j) { 
         _j = j; 
@@ -166,7 +164,7 @@ namespace parametric {
         }
         set_list.insert(set_list.end(), s);
     }
-    void PMF::slice(Set& S, Set& T) {
+    void PMF::slice(Set& S, Set& T, const lemon::Preflow<lemon::ListDigraph, ArcMap>::FlowMap& flowMap, bool isLeft) {
         // compute lambda_2
         double lambda_const = compute_lambda_eq_const(S, T);
         std::vector<pair> y_lambda_filter;
@@ -178,11 +176,11 @@ namespace parametric {
         double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const);
         update_dig(lambda_2);
         // do not use graph contraction
-        pf.init();
-        pf.startFirstPhase();
-        pf.startSecondPhase();
-        Set S_apostrophe = get_min_cut_source_side();
-
+        lemon::Preflow<lemon::ListDigraph, ArcMap> pf_instance(dig, dig_aM, source_node, sink_node);
+        pf_instance.init(flowMap);
+        pf_instance.startFirstPhase();
+        pf_instance.startSecondPhase();
+        Set S_apostrophe = get_min_cut_source_side(pf_instance);
         Set T_apostrophe = S_apostrophe.Complement(tilde_G_size);
         if(S_apostrophe != S && T_apostrophe != T){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
@@ -193,8 +191,8 @@ namespace parametric {
             Set S_Union = S.Union(S_apostrophe);
             Set T_Union = T.Union(T_apostrophe);
             insert_set(T_Union);
-            slice(S, T_Union);
-            slice(S_Union, T);
+            slice(S, T_Union, pf_instance.flowMap(), false);
+            slice(S_Union, T, pf_instance.flowMap(), true);
         }
         else {
             insert(lambda_2);
