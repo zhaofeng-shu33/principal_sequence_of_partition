@@ -544,23 +544,25 @@ namespace lemon {
       for (ArcIt e(_graph); e != INVALID; ++e) {
         _flow->set(e, flowMap[e]);
       }
-      // update _flow connected with sink_node
-      for (InArcIt e(_graph, _target); e != INVALID; ++e) {
-          if (flowMap[e] > (*_capacity)[e])
-              _flow->set(e, (*_capacity)[e]);
-      }
-
-      bool updateResult = updateExcess();
-      if (updateResult == false)
-          return false;
 
       // copy the elevator to _level
       copyElevator(elevator);
-
+      // update _flow connected with sink_node
+      for (InArcIt e(_graph, _target); e != INVALID; ++e) {
+          if (flowMap[e] > (*_capacity)[e]) {
+              _flow->set(e, (*_capacity)[e]);
+              // activate the node
+              _level->activate(_graph.source(e));
+          }
+      }
       // update _flow connected with source_node
       for (OutArcIt e(_graph, _source); e != INVALID; ++e) {
           continue;
       }
+      bool updateResult = updateExcess();
+      if (updateResult == false)
+          return false;
+
       return true;
     }
 

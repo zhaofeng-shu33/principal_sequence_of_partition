@@ -152,14 +152,20 @@ TEST(PM, COPY_ELEVATOR) {
         EXPECT_EQ((*ele_1)[n], (*ele_2)[n]);
     }
     pf.startFirstPhase();
-    pf.startSecondPhase();
     lemon::Preflow<lemon::ListDigraph, ArcMap> pf_3(g, edge_cost_map, source_node, sink_node);
     pf_3.copyElevator(*ele_1);
     Elevator* ele_3 = &pf_3.elevator();
     for (lemon::ListDigraph::NodeIt n(g); n != lemon::INVALID; ++n) {
         EXPECT_EQ((*ele_1)[n], (*ele_3)[n]);
     }
-
+    pf.startSecondPhase();
+    const FlowMap* fM = &pf.flowMap();
+    // check that the label is valid for the flowMap
+    for (lemon::ListDigraph::ArcIt e(g); e != lemon::INVALID; ++e) {
+        if ((*fM)[e] < edge_cost_map[e])
+            EXPECT_TRUE((*ele_3)[g.source(e)] <= (*ele_3)[g.target(e)] + 1);
+    }
+   
 }
 TEST(PDT, RUN) {
     lemon::ListDigraph g;
