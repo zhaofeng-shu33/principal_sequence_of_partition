@@ -256,9 +256,9 @@ namespace submodular {
         }
     private:
         //! evalute the submodular function at the given partition
-        value_type evaluate(std::vector<Set>& P) {
+        value_type evaluate(const std::vector<Set>& P) {
             value_type sum = 0;
-            for (Set& s : P)
+            for (const Set& s : P)
                 sum += submodular_function->Call(s);
             return sum;
         }

@@ -15,7 +15,7 @@ namespace submodular {
             this->SetDomain(Set::MakeDense(sg_parameter.GetNodeNumber()));
         }
         value_type Call(const Set& X) {
-            auto members = X.GetMembers();
+            const std::vector<element_type>& members = X.GetMembers();
             value_type val = sg.GetCutValueByNames(members);
             return val;
         }

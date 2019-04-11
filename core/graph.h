@@ -158,7 +158,7 @@ public:
   //! Method of Graph Cut Utility Function
   value_type GetCutValueByNames(const std::vector<element_type>& members) {
       std::vector<TermType> cut(nodes_.size(), SOURCE);
-      for (const auto& name : members) {
+      for (const element_type name : members) {
           cut[name] = SINK;
       }
       return GetCutValue(cut);
