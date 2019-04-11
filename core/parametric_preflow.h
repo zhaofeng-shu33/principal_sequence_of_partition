@@ -557,7 +557,10 @@ namespace lemon {
       }
       // update _flow connected with source_node
       for (OutArcIt e(_graph, _source); e != INVALID; ++e) {
-          continue;
+          if ((*_capacity)[e] > flowMap[e] && (*_level)[e] < _level->maxLevel()) {
+              _flow->set(e, (*_capacity)[e]);
+              _level->activate(_graph.target(e));
+          }
       }
       bool updateResult = updateExcess();
       if (updateResult == false)
