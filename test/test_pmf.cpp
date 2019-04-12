@@ -201,15 +201,18 @@ TEST(PM, TEST_VALID_LABEL) {
     pf.init();
     lemon::Preflow<lemon::ListDigraph, ArcMap> pf_2(g, edge_cost_map, source_node, sink_node);
     pf.startFirstPhase();
-    pf_2.copyElevator(pf.elevator());
+    Elevator* new_elevator = Preflow::Traits::createElevator(g, 6);
+    Preflow::copy_elevator(g, pf.elevator(), new_elevator);
+    // check the active status of new_elevator
+
     pf.startSecondPhase();
     const FlowMap* flowMap = &pf.flowMap();
-    const Elevator* ele_1 = &pf_2.elevator();
     // check that the label is valid for the flowMap
     for (lemon::ListDigraph::ArcIt e(g); e != lemon::INVALID; ++e) {
         if ((*flowMap)[e] < edge_cost_map[e])
-            EXPECT_TRUE((*ele_1)[g.source(e)] <= (*ele_1)[g.target(e)] + 1);
+            EXPECT_TRUE((*new_elevator)[g.source(e)] <= (*new_elevator)[g.target(e)] + 1);
     }
+    pf_2.init(*flowMap, *new_elevator);
 }
 TEST(PDT, RUN) {
     lemon::ListDigraph g;

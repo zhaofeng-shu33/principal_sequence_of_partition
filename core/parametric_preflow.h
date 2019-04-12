@@ -527,13 +527,12 @@ namespace lemon {
         target_ele->initFinish();
     }
     void copyElevator(const Elevator& elevator) {
-        if (!_level) {
-            _level = Traits::createElevator(_graph, countNodes(_graph));
-            _local_level = true;
-        }
-        else {
+        if (_level) {
             delete _level;
         }
+        _level = Traits::createElevator(_graph, countNodes(_graph));
+        _local_level = true;
+
         copy_elevator(_graph, elevator, _level);
     }
     /// \brief Initializes the internal data structures using the
