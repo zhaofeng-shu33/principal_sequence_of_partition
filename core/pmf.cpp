@@ -181,6 +181,7 @@ namespace parametric {
         pf_instance.init();
         //pf_instance.init(pack.flowMap(), pack.elevator());
         pf_instance.startFirstPhase();
+        Elevator* ele = &pf_instance.elevator();
         pf_instance.startSecondPhase();
         Set S_apostrophe = get_min_cut_source_side(pf_instance);
         Set T_apostrophe = S_apostrophe.Complement(tilde_G_size);
@@ -193,7 +194,7 @@ namespace parametric {
             Set S_Union = S.Union(S_apostrophe);
             Set T_Union = T.Union(T_apostrophe);
             insert_set(T_Union);
-            Pack pack(pf_instance.flowMap(), pf_instance.elevator());
+            Pack pack(pf_instance.flowMap(), *ele);
             slice(S, T_Union, pack, false);
             slice(S_Union, T, pack, true);
         }
