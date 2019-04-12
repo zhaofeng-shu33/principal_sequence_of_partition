@@ -505,29 +505,36 @@ namespace lemon {
         }
         return true;
     }
+    static void copy_elevator(const Digraph& g, const Elevator& elevator, Elevator* target_ele) {
+        std::vector<std::list<Node>> node_list(elevator.maxLevel()); //sorted by level
+        target_ele->initStart();
+        for (NodeIt n(g); n != INVALID; ++n) {
+            if (elevator[n] == 0){
+                target_ele->initAddItem(n); // n = _target
+                continue;
+            }
+            node_list[elevator[n] - 1].push_back(n);
+        }
+        for (std::list<Node>& node_list_level : node_list) {
+            target_ele->initNewLevel();
+            if (node_list_level.empty()) {
+                continue;
+            }
+            for (Node& v : node_list_level) {
+                target_ele->initAddItem(v);
+            }
+        }
+        target_ele->initFinish();
+    }
     void copyElevator(const Elevator& elevator) {
         if (!_level) {
             _level = Traits::createElevator(_graph, countNodes(_graph));
             _local_level = true;
         }
-        std::vector<std::list<Node>> node_list(elevator.maxLevel()); //sorted by level
-        for (NodeIt n(_graph); n != INVALID; ++n) {
-            if (elevator[n] == 0)
-                continue;
-            node_list[elevator[n] - 1].push_back(n);
+        else {
+            delete _level;
         }
-        _level->initStart();
-        _level->initAddItem(_target);
-        for (std::list<Node>& node_list_level : node_list) {
-            _level->initNewLevel();
-            if (node_list_level.empty()) {
-                continue;
-            }
-            for (Node& v : node_list_level) {
-                _level->initAddItem(v);
-            }
-        }
-        _level->initFinish();
+        copy_elevator(_graph, elevator, _level);
     }
     /// \brief Initializes the internal data structures using the
     /// given flow map.
@@ -544,22 +551,25 @@ namespace lemon {
       for (ArcIt e(_graph); e != INVALID; ++e) {
         _flow->set(e, flowMap[e]);
       }
-
-      // copy the elevator to _level
       copyElevator(elevator);
       // update _flow connected with sink_node
       for (InArcIt e(_graph, _target); e != INVALID; ++e) {
           if (flowMap[e] > (*_capacity)[e]) {
               _flow->set(e, (*_capacity)[e]);
-              // activate the node
-              _level->activate(_graph.source(e));
+              Node u = _graph.source(e);
+              if (u != _source && !_level->active(u)){
+                  // activate the node
+                  _level->activate(u);
+              }
           }
       }
       // update _flow connected with source_node
       for (OutArcIt e(_graph, _source); e != INVALID; ++e) {
-          if ((*_capacity)[e] > flowMap[e] && (*_level)[e] < _level->maxLevel()) {
+          if ((*_capacity)[e] > flowMap[e] && (*_level)[_graph.target(e)] < _level->maxLevel()) {
               _flow->set(e, (*_capacity)[e]);
-              _level->activate(_graph.target(e));
+              Node u = _graph.target(e);
+              if( u!= _target && !_level->active(u))
+                _level->activate(u);
           }
       }
       bool updateResult = updateExcess();

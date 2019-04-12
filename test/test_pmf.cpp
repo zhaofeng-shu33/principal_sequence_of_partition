@@ -120,8 +120,6 @@ TEST(PMF, PMClass) {
 }
 TEST(PM, COPY_ELEVATOR) {
     lemon::ListDigraph g;
-    std::vector<lemon::ListDigraph::Node> node_list;
-    int graph_size = 4;
     g.reserveNode(4);
     g.reserveArc(5);
     lemon::ListDigraph::Node source_node = g.addNode();
@@ -145,16 +143,16 @@ TEST(PM, COPY_ELEVATOR) {
     lemon::Preflow<lemon::ListDigraph, ArcMap> pf(g, edge_cost_map, source_node, sink_node);
     pf.init();
     lemon::Preflow<lemon::ListDigraph, ArcMap> pf_2(g, edge_cost_map, source_node, sink_node);
-    Elevator* ele_1 = &pf.elevator();
+    const Elevator* ele_1 = &pf.elevator();
     pf_2.copyElevator(*ele_1);
-    Elevator* ele_2 = &pf_2.elevator();
+    const Elevator* ele_2 = &pf_2.elevator();
     for (lemon::ListDigraph::NodeIt n(g); n != lemon::INVALID; ++n) {
         EXPECT_EQ((*ele_1)[n], (*ele_2)[n]);
     }
     pf.startFirstPhase();
     lemon::Preflow<lemon::ListDigraph, ArcMap> pf_3(g, edge_cost_map, source_node, sink_node);
     pf_3.copyElevator(*ele_1);
-    Elevator* ele_3 = &pf_3.elevator();
+    const Elevator* ele_3 = &pf_3.elevator();
     for (lemon::ListDigraph::NodeIt n(g); n != lemon::INVALID; ++n) {
         EXPECT_EQ((*ele_1)[n], (*ele_3)[n]);
     }
@@ -166,6 +164,52 @@ TEST(PM, COPY_ELEVATOR) {
             EXPECT_TRUE((*ele_3)[g.source(e)] <= (*ele_3)[g.target(e)] + 1);
     }
    
+}
+TEST(PM, TEST_VALID_LABEL) {
+    // this test is used to test after the init method, the label is valid and nodes
+    // are activated in the right way
+    // example taken from https://en.wikipedia.org/wiki/Push¨Crelabel_maximum_flow_algorithm
+    lemon::ListDigraph g;
+    g.reserveNode(6);
+    g.reserveArc(8);
+    lemon::ListDigraph::Node source_node = g.addNode();
+    lemon::ListDigraph::Node sink_node = g.addNode();
+    lemon::ListDigraph::Node node_a = g.addNode();
+    lemon::ListDigraph::Node node_b = g.addNode();
+    lemon::ListDigraph::Node node_c = g.addNode();
+    lemon::ListDigraph::Node node_d = g.addNode();
+    // construct edge cost map
+    typedef lemon::ListDigraph::ArcMap<double> ArcMap;
+    ArcMap edge_cost_map(g);
+    lemon::ListDigraph::Arc arc1 = g.addArc(source_node, node_a);
+    edge_cost_map[arc1] = 15;
+    lemon::ListDigraph::Arc arc2 = g.addArc(node_a, node_b);
+    edge_cost_map[arc2] = 12;
+    lemon::ListDigraph::Arc arc3 = g.addArc(source_node, node_c);
+    edge_cost_map[arc3] = 4;
+    lemon::ListDigraph::Arc arc4 = g.addArc(node_c, node_d);
+    edge_cost_map[arc4] = 10;
+    lemon::ListDigraph::Arc arc5 = g.addArc(node_b, node_c);
+    edge_cost_map[arc5] = 3;
+    lemon::ListDigraph::Arc arc6 = g.addArc(node_d, node_a);
+    edge_cost_map[arc6] = 5;
+    lemon::ListDigraph::Arc arc7 = g.addArc(node_b, sink_node);
+    edge_cost_map[arc7] = 7;
+    lemon::ListDigraph::Arc arc8 = g.addArc(node_d, sink_node);
+    edge_cost_map[arc8] = 10;
+    lemon::Preflow<lemon::ListDigraph, ArcMap> pf(g, edge_cost_map, source_node, sink_node);
+    pf.init();
+    lemon::Preflow<lemon::ListDigraph, ArcMap> pf_2(g, edge_cost_map, source_node, sink_node);
+    pf.startFirstPhase();
+    pf_2.copyElevator(pf.elevator());
+    pf.startSecondPhase();
+    const FlowMap* flowMap = &pf.flowMap();
+    const Elevator* ele_1 = &pf_2.elevator();
+    // check that the label is valid for the flowMap
+    for (lemon::ListDigraph::ArcIt e(g); e != lemon::INVALID; ++e) {
+        if ((*flowMap)[e] < edge_cost_map[e])
+            EXPECT_TRUE((*ele_1)[g.source(e)] <= (*ele_1)[g.target(e)] + 1);
+    }
 }
 TEST(PDT, RUN) {
     lemon::ListDigraph g;

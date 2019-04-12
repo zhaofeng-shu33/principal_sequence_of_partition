@@ -70,7 +70,7 @@ namespace parametric {
         sink_capacity.resize(_y_lambda.size());
 
     }
-    Set PMF::get_min_cut_source_side(lemon::Preflow<lemon::ListDigraph, ArcMap>& pf) {
+    Set PMF::get_min_cut_source_side(Preflow& pf) {
         Set s = Set::MakeEmpty(tilde_G_size);
         for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
             if (pf.minCut(n))
@@ -110,11 +110,13 @@ namespace parametric {
             dig.addArc(source_node, n);            
         }
         // reset the source_node and sink_node
-        lemon::Preflow<lemon::ListDigraph, ArcMap> pf(dig, dig_aM, source_node, sink_node);
+        Preflow pf(dig, dig_aM, source_node, sink_node);
         //find S_0 and T_0
         update_dig(0);
         pf.init();
         pf.startFirstPhase();
+        Elevator* new_elevator = Preflow::Traits::createElevator(dig, tilde_G_size);
+        Preflow::copy_elevator(dig, pf.elevator(), new_elevator);
         pf.startSecondPhase();
         Set S_0 = get_min_cut_source_side(pf);
         Set T_0 = S_0.Complement(tilde_G_size);
@@ -122,7 +124,7 @@ namespace parametric {
         T_1.AddElement(_j);
         set_list.push_back(T_0);
         set_list.push_back(T_1);
-        Pack pack(pf.flowMap(), pf.elevator());
+        Pack pack(pf.flowMap(), *new_elevator);
         slice(S_0, T_1, pack, true);
     }
     void PMF::reset_j(std::size_t j) { 
@@ -177,11 +179,12 @@ namespace parametric {
         double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const);
         update_dig(lambda_2);
         // do not use graph contraction
-        lemon::Preflow<lemon::ListDigraph, ArcMap> pf_instance(dig, dig_aM, source_node, sink_node);
+        Preflow pf_instance(dig, dig_aM, source_node, sink_node);
         pf_instance.init();
         //pf_instance.init(pack.flowMap(), pack.elevator());
         pf_instance.startFirstPhase();
-        Elevator* ele = &pf_instance.elevator();
+        Elevator* new_elevator = Preflow::Traits::createElevator(dig, tilde_G_size);
+        Preflow::copy_elevator(dig, pf_instance.elevator(), new_elevator);
         pf_instance.startSecondPhase();
         Set S_apostrophe = get_min_cut_source_side(pf_instance);
         Set T_apostrophe = S_apostrophe.Complement(tilde_G_size);
@@ -194,7 +197,7 @@ namespace parametric {
             Set S_Union = S.Union(S_apostrophe);
             Set T_Union = T.Union(T_apostrophe);
             insert_set(T_Union);
-            Pack pack(pf_instance.flowMap(), *ele);
+            Pack pack(pf_instance.flowMap(), *new_elevator);
             slice(S, T_Union, pack, false);
             slice(S_Union, T, pack, true);
         }
