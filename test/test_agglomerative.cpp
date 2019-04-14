@@ -8,7 +8,7 @@
 #include "core/dt.h"
 #include "test/graph/test_graph_base.h"
 #include "core/oracles/graph_cut.h"
-#include "utility/gaussian2Dcase.h"
+#include "core/gaussian2Dcase.h"
 namespace submodular{
 TEST(Agglomerative, HyperGraphicalModel2_Bottom) {
     HyperGraphicalModel2<double> hgm2;

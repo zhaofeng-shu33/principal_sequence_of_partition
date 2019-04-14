@@ -12,7 +12,7 @@
 #include <core/graph.h>
 #include <core/graph/maxflow.h>
 #include <lemon/list_graph.h>
-#include "core/parametric_preflow.h"
+#include "preflow/mf_base.h"
 namespace submodular{
 
 template <typename ValueType>
@@ -51,7 +51,7 @@ public:
             }
         }
         
-        lemon::Preflow<lemon::ListDigraph, ArcMap> pf(g,edge_cost_map, source_node, sink_node);
+        lemon::Preflow_Relabel<lemon::ListDigraph, ArcMap> pf(g,edge_cost_map, source_node, sink_node);
         pf.run();
         value_type minimum_value = pf.flowValue() - const_difference;
 
