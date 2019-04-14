@@ -15,7 +15,7 @@ class TestPyGraph(unittest.TestCase):
         g = psp.Gaussian2DGraph(4, _gamma)
         pos_list = construct_pos_list(g.get_x_pos_list(), g.get_y_pos_list())
         # Method 1
-        g.run(False)        
+        g.run()        
         cv_list = to_py_list(g.get_critical_values())
         p_list = to_py_list(g.get_partitions())
         cat_1_list = to_py_list(g.get_category(2))
@@ -38,7 +38,7 @@ class TestPyGraph(unittest.TestCase):
         g = psp.Gaussian2DGraph(num_points, _gamma)
         pos_list = construct_pos_list(g.get_x_pos_list(), g.get_y_pos_list())
         # Method 1
-        g.run(False)
+        g.run()
         cv_list = to_py_list(g.get_critical_values())
         p_list = to_py_list(g.get_partitions())
         cat_1_list = to_py_list(g.get_category(4))
@@ -63,7 +63,7 @@ class TestPyGraph(unittest.TestCase):
         pos_list = construct_pos_list(g.get_x_pos_list(), g.get_y_pos_list())
         # get the >=4 clusters solution using two method
         # Method 1
-        g.run(False)
+        g.run()
         cat_1_list = to_py_list(g.get_category(4))
         # Method 2
         info_cluster = InfoCluster(gamma=_gamma)

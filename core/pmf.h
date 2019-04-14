@@ -10,8 +10,9 @@
 typedef std::pair<double, double> pair;
 namespace parametric{
 typedef lemon::ListDigraph::ArcMap<double> ArcMap;
-typedef lemon::Preflow<lemon::ListDigraph, ArcMap>::FlowMap FlowMap;
-typedef const lemon::Preflow<lemon::ListDigraph, ArcMap>::Elevator Elevator;
+typedef lemon::Preflow<lemon::ListDigraph, ArcMap> Preflow;
+typedef Preflow::FlowMap FlowMap;
+typedef Preflow::Elevator Elevator;
 class Pack;
 class PMF {
 public:
