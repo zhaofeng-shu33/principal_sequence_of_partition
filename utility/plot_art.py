@@ -6,10 +6,12 @@ import os
 import random
 import math
 import cmath
+import argparse
+import pdb
 
 from matplotlib import pyplot as plt
 import numpy as np
-import argparse
+
 
 from info_cluster import InfoCluster
 import schema
@@ -156,7 +158,7 @@ def plot_ThreeCircle():
         ratio = 2000
         g = ThreeCircle([60,100,140], ratio*gamma_2, gamma_2)
         g.run()    
-        # divide into >=4 parts        
+        # divide into >=2 parts        
         i = check_cat(2, g.partition_num_list)
     plot_inner(i, g, '3circle.eps')
 
@@ -167,10 +169,15 @@ if __name__ == '__main__':
         default=False, nargs='?', const=True)
     parser.add_argument('--show_pic', type=bool, help='whether to show the picture while program is running',
         default=False, nargs='?', const=True)
+    parser.add_argument('--ignore_four_part', type=bool, help='ignore plotting four part case', default=False, nargs='?', const=True)
+    parser.add_argument('--debug', type=bool, help='enter debug mode', default=False, nargs='?', const=True)
     args = parser.parse_args()
     USE_PDT = args.use_pdt
     SHOW_PIC = args.show_pic
     plt.figure(figsize=(9.2, 3))
-    plt.subplots_adjust(wspace=.05)    
-    plot_FourPart()
+    plt.subplots_adjust(wspace=.05)
+    if(args.debug):
+        pdb.set_trace()
+    if not(args.ignore_four_part):
+        plot_FourPart()
     plot_ThreeCircle()
