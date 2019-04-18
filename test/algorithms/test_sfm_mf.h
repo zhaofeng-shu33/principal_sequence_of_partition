@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <core/algorithms/sfm_mf.h>
 
-#include "utility/gaussian2Dcase.h"
+#include "core/gaussian2Dcase.h"
 namespace demo {
 
 TEST_F(Graph4PointTest, MFCompare) {

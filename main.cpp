@@ -7,7 +7,7 @@
 #if USE_BOOST
 #include <boost/program_options.hpp>
 #endif
-#include "utility/gaussian2Dcase.h"
+#include "core/gaussian2Dcase.h"
 #include "core/pmf.h"
 void check_size(int size) {
     if (size % 4 != 0) {

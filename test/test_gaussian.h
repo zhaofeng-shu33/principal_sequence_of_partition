@@ -7,7 +7,7 @@
 #if USE_EIGEN3
     #include "core/algorithms/sfm_fw.h"
 #endif
-#include "utility/gaussian2Dcase.h"
+#include "core/gaussian2Dcase.h"
 namespace demo {
 
 TEST(Gaussian2D, GivenPoint) {
