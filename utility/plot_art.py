@@ -175,6 +175,7 @@ def plot_ThreeCircle():
         gamma_2 = 1
         ratio = 2000
         g = ThreeCircle([60,100,140], ratio*gamma_2, gamma_2)
+        print('run three circle...')
         g.run()    
         # divide into >=2 parts        
         i = check_cat(2, g.partition_num_list)
