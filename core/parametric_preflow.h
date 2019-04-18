@@ -514,6 +514,7 @@ namespace lemon {
                 continue;
             }
             node_list[elevator[n] - 1].push_back(n);
+            
         }
         for (std::list<Node>& node_list_level : node_list) {
             target_ele->initNewLevel();
@@ -555,19 +556,17 @@ namespace lemon {
       for (InArcIt e(_graph, _target); e != INVALID; ++e) {
           if (flowMap[e] > (*_capacity)[e]) {
               _flow->set(e, (*_capacity)[e]);
-              Node u = _graph.source(e);
-              if (u != _source && !_level->active(u)){
-                  // activate the node
-                  _level->activate(u);
-              }
           }
       }
       // update _flow connected with source_node
       for (OutArcIt e(_graph, _source); e != INVALID; ++e) {
-          if ((*_capacity)[e] > flowMap[e] && (*_level)[_graph.target(e)] < _level->maxLevel()) {
-              _flow->set(e, (*_capacity)[e]);
+          if ((*_capacity)[e] > flowMap[e]) {
+              // can we do not distinguish _level->maxLevel() ?
+              if((*_level)[_graph.target(e)] < _level->maxLevel())
+                  _flow->set(e, (*_capacity)[e]);
+
               Node u = _graph.target(e);
-              if( u!= _target && !_level->active(u))
+              if( u != _target && !_level->active(u))
                 _level->activate(u);
           }
       }

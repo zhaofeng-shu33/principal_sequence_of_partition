@@ -202,6 +202,10 @@ TEST(PM, TEST_VALID_LABEL) {
     lemon::Preflow<lemon::ListDigraph, ArcMap> pf_2(g, edge_cost_map, source_node, sink_node);
     pf.startFirstPhase();
     Elevator* new_elevator = Preflow::Traits::createElevator(g, 6);
+    const Elevator* ele_1 = &pf.elevator();
+    for (lemon::ListDigraph::NodeIt n(g); n != lemon::INVALID; ++n) {
+        EXPECT_FALSE(ele_1->active(n));
+    }
     Preflow::copy_elevator(g, pf.elevator(), new_elevator);
     // check the active status of new_elevator
 
@@ -212,7 +216,11 @@ TEST(PM, TEST_VALID_LABEL) {
         if ((*flowMap)[e] < edge_cost_map[e])
             EXPECT_TRUE((*new_elevator)[g.source(e)] <= (*new_elevator)[g.target(e)] + 1);
     }
+    edge_cost_map[arc7] = 6;
     pf_2.init(*flowMap, *new_elevator);
+    pf_2.startFirstPhase();
+    pf_2.startSecondPhase();
+    std::cout << pf_2.flowValue();
 }
 TEST(PDT, RUN) {
     lemon::ListDigraph g;
