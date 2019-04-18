@@ -28,4 +28,5 @@ The result is like
 ```
 
 3. Plotting routines are provided to visualize the clustering result.
-Usage: `python plot_art.py --show_pic`.
+Usage: `python plot_art.py --show_pic`. 
+Notice that for the three circle plot is a little bit slow (1min above).

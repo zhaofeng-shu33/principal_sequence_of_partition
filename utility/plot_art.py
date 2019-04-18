@@ -8,6 +8,7 @@ import math
 import cmath
 import argparse
 import pdb
+import time
 
 from matplotlib import pyplot as plt
 import numpy as np
@@ -20,6 +21,7 @@ marker_list = ['o', 'v', 's', '*', '+', 'x', 'D', '1']
 MAX_CAT = len(color_list)
 USE_PDT = False
 SHOW_PIC = False
+CAL_TIME = False
 class ThreeCircle:
     def __init__(self, np_list, gamma_1=1, gamma_2=1):
         '''
@@ -122,7 +124,8 @@ def plot_inner(index, grach_cluster_object, fileName):
     p = grach_cluster_object.partition_num_list
     cv = grach_cluster_object.critical_values
     i = index
-
+    plt.figure(figsize=(9.2, 3))
+    plt.subplots_adjust(wspace=.05)    
     lambda_list = [cv[i-1],cv[i],cv[i+1]]
     cat_num_list = [p[i], p[i+1], p[i+2]]    
     for index, cat_num in enumerate(cat_num_list):
@@ -136,18 +139,34 @@ def plot_inner(index, grach_cluster_object, fileName):
     if(SHOW_PIC):
         plt.show()
     plt.savefig(os.path.join(schema.BUILD_DIR, fileName))
-  
+    
+def cal_time(func):
+    '''
+    print the time used to execute the func
+    '''    
+    def func_wrapper():
+        start_time = time.time()
+        func()
+        end_time = time.time()
+        if(CAL_TIME):
+            print('time used to execute %s is %.2f'%(func.__name__, end_time - start_time))
+    
+    return func_wrapper
+        
+@cal_time    
 def plot_FourPart():
     print('plot_FourPart')
     global color_list, marker_list, MAX_CAT
     i = -1
     while(i < 0): # check category requirement, regenerate the points if necessary
         g = FourPart(25, 0.6)
+        print('run four part...')
         g.run()    
         # divide into >=4 parts        
         i = check_cat(4, g.partition_num_list)
     plot_inner(i, g, '4part.eps')
     
+@cal_time    
 def plot_ThreeCircle():
     print('plot_ThreeCircle')
     global color_list, marker_list, MAX_CAT
@@ -161,7 +180,7 @@ def plot_ThreeCircle():
         i = check_cat(2, g.partition_num_list)
     plot_inner(i, g, '3circle.eps')
 
-    
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()      
     parser.add_argument('--use_pdt', type=bool, help='use parameteric Dilworth Truncation implementation of info-cluster to draw',
@@ -170,11 +189,11 @@ if __name__ == '__main__':
         default=False, nargs='?', const=True)
     parser.add_argument('--ignore_four_part', type=bool, help='ignore plotting four part case', default=False, nargs='?', const=True)
     parser.add_argument('--debug', type=bool, help='enter debug mode', default=False, nargs='?', const=True)
+    parser.add_argument('--report_time', type=bool, help='report the time used to plot the graph', default=False, nargs='?', const=True)
     args = parser.parse_args()
     USE_PDT = args.use_pdt
     SHOW_PIC = args.show_pic
-    plt.figure(figsize=(9.2, 3))
-    plt.subplots_adjust(wspace=.05)
+    CAL_TIME = args.report_time
     if(args.debug):
         pdb.set_trace()
     if not(args.ignore_four_part):
