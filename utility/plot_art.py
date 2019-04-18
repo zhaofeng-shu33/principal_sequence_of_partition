@@ -99,7 +99,7 @@ def check_cat(min_num, partition):
         return -2
     else:    
         return i
-def plot_cluster(pos_list, cat, cat_num):
+def plot_cluster(pos_list, cat, cat_num, axis):
     global color_list, marker_list
     p = np.asarray(pos_list)
     for i in range(cat_num):
@@ -109,8 +109,7 @@ def plot_cluster(pos_list, cat, cat_num):
             if(cat[j]==i):
                 xx.append(p[j,0])
                 yy.append(p[j,1])
-        plt.scatter(xx, yy, c=color_list[i], marker=marker_list[i])    
-    return plt
+        axis.scatter(xx, yy, c=color_list[i], marker=marker_list[i])    
     
 def plot_inner(index, grach_cluster_object, fileName):  
     '''
@@ -130,7 +129,7 @@ def plot_inner(index, grach_cluster_object, fileName):
         ax = plt.subplot(1,3,index+1)          
         cat = grach_cluster_object.get_category(cat_num)
         print('num of cat:', cat_num)
-        plot_cluster(grach_cluster_object.pos_list, cat, cat_num)
+        plot_cluster(grach_cluster_object.pos_list, cat, cat_num, ax)
         if(index>0):
             plt.yticks(())
         ax.set_title('$\lambda = %.2f$' % lambda_list[index])
