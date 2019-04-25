@@ -6,8 +6,11 @@ import os,sys
 import pathlib
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext as build_ext_orig
-import pdb
 from shutil import copy
+
+with open('README.md') as fh:
+    long_description = fh.read()
+    
 class CMakeExtension(Extension):
 
     def __init__(self, name):
@@ -66,7 +69,7 @@ class build_ext(build_ext_orig):
         
 setup(
     name='info_cluster',
-    version='0.1',
+    version='0.2',
     packages=['info_cluster'],
     ext_modules=[CMakeExtension('info_cluster/psp')],
     install_requires=['numpy'],
@@ -74,6 +77,8 @@ setup(
     author_email="616545598@qq.com",
     description="a hierachical clustering algorithm based on information theory",
     url="https://github.com/zhaofeng-shu33/principal_sequence_of_partition",
+    long_description = long_description,
+    long_description_content_type="text/markdown",        
     classifiers=[
         "Programming Language :: Python :: 3",
     ], 

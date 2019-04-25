@@ -1,4 +1,8 @@
 #include "config.h"
+#include <boost/config/user.hpp>
+#ifndef BOOST_ALL_DYN_LINK
+    #define BOOST_PYTHON_STATIC_LIB
+#endif
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "core/gaussian2Dcase.h"
