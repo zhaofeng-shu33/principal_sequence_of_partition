@@ -3,7 +3,7 @@ from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.neighbors import kneighbors_graph
 from ete3 import Tree
 
-import psp # [package] principal sequence of partition
+from . import psp # [package] principal sequence of partition
 
 class InfoCluster:
     '''Info clustering is a kind of hierarchical clustering method.

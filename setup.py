@@ -2,11 +2,73 @@
 # this kind of installation is more flexible and maintainable than `cmake install`
 # you can only choose one of the two installation methods.
 # before running this file, make sure psp dynamic lib exists in build directory
-from setuptools import setup
+import os,sys
+import pathlib
+from setuptools import setup, Extension
+from setuptools.command.build_ext import build_ext as build_ext_orig
+import pdb
+from shutil import copy
+class CMakeExtension(Extension):
+
+    def __init__(self, name):
+        # don't invoke the original build_ext for this special extension
+        super().__init__(name, sources=[])
+        
+class build_ext(build_ext_orig):
+
+    def run(self):
+        for ext in self.extensions:
+            self.build_cmake(ext)
+        super().run()
+
+    def build_cmake(self, ext):
+        cwd = pathlib.Path().absolute()
+
+        # these dirs will be created in build_py, so if you don't have
+        # any python sources to bundle, the dirs will be missing
+        build_temp = pathlib.Path('build')
+        build_temp.mkdir(parents=True, exist_ok=True)
+
+        # example of cmake args
+        config = 'Debug' if self.debug else 'Release'
+        cmake_args = []
+        if not(os.path.exists('CMakeCache.txt')):
+            if sys.platform == 'win32':
+                VCPKG_ROOT = os.environ.get('VCPKG_ROOT',None)
+                if(VCPKG_ROOT == None):
+                    raise NameError("VCPKG_ROOT environment variable not set")
+                cmake_args += [
+                    '-DCMAKE_TOOLCHAIN_FILE=' + os.path.join(VCPKG_ROOT, 'scripts', 'buildsystems', 'vcpkg.cmake'),
+                    '-GVisual Studio 15 2017 Win64'
+                ]
+            else:
+                cmake_args += [
+                    '-DCMAKE_BUILD_TYPE=' + config
+                ]
+            cmake_args += ['-DUSE_BOOST_OPTION=ON', '-DUSE_LEMON=ON', '-DUSE_PYTHON=ON']
+        # example of build args
+        build_args = [
+            '--config', config
+        ]
+
+        os.chdir(str(build_temp))
+        self.spawn(['cmake', str(cwd)] + cmake_args)
+        if not self.dry_run:
+            self.spawn(['cmake', '--build', '.'] + build_args)
+        os.chdir(str(cwd))            
+        # after building, rename and copy the file to the lib directory 
+        if sys.platform == 'win32':
+            psp_path = os.path.join(str(build_temp), config, 'psp.dll')
+            copy(psp_path, self.get_ext_fullpath(ext.name))            
+        else:
+            copy(os.path.join(str(build_temp), 'psp.so'), self.get_ext_fullpath(ext.name))
+
+        
 setup(
-    name='info-clustering',
+    name='info_cluster',
     version='0.1',
     packages=['info_cluster'],
+    ext_modules=[CMakeExtension('info_cluster/psp')],
     install_requires=['numpy'],
     author="zhaofeng-shu33",
     author_email="616545598@qq.com",
@@ -14,5 +76,7 @@ setup(
     url="https://github.com/zhaofeng-shu33/principal_sequence_of_partition",
     classifiers=[
         "Programming Language :: Python :: 3",
-    ],    
+    ], 
+    license="Apache License Version 2.0",
+    cmdclass={'build_ext': build_ext,}    
 )

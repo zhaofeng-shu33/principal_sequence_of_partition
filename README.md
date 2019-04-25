@@ -25,6 +25,7 @@ This project uses boost library in two places. Firstly, the `main.cpp` uses *boo
 
 # Python binding
 Disabled by default. The binding requires boost-python library. To enable it, run `cmake` with `-DUSE_PYTHON=ON`
+To make it independent of boost dynamic library, static linking should be enabled in CMAKE configuration.
 
 ## Demo code
 ![](example.png)
