@@ -1,3 +1,6 @@
+dist/*
+info_cluster/psp.so
+info_clustering.egg-info/
 **/build
 **/.DS_Store
 utility/debug/*
