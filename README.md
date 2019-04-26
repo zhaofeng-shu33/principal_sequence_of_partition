@@ -24,8 +24,10 @@ Use brute force search to solve submodualr function minimization(SFM) problem. F
 This project uses boost library in two places. Firstly, the `main.cpp` uses *boost-option* to parse command-line arguments. But this feature is optional. To use it, run `cmake` with `-DUSE_BOOST_OPTION=ON`. Secondly, *boost-python* is used to make the procedure callable from Python.
 
 # Python binding
+[![PyPI](https://img.shields.io/pypi/v/info_cluster.svg)](https://pypi.org/project/info_cluster)
 Disabled by default. The binding requires boost-python library. To enable it, run `cmake` with `-DUSE_PYTHON=ON`
 To make it independent of boost dynamic library, static linking should be enabled in CMAKE configuration.
+To package the library, use `python setup.py bdist_wheel`.
 
 ## Demo code
 ![](example.png)
