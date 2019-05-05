@@ -64,7 +64,11 @@ class build_ext(build_ext_orig):
             psp_path = os.path.join(str(build_temp), config, 'psp.dll')
             copy(psp_path, self.get_ext_fullpath(ext.name))            
         else:
-            copy(os.path.join(str(build_temp), 'psp.so'), self.get_ext_fullpath(ext.name))
+            if(sys.platform == 'darwin'):
+                psp_name = 'libpsp.dylib'
+            else:
+                psp_name = 'psp.so'
+            copy(os.path.join(str(build_temp), psp_name), self.get_ext_fullpath(ext.name))
 
         
 setup(
