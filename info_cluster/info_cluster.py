@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.neighbors import kneighbors_graph
 from ete3 import Tree
+import networkx as nx
 
 from . import psp # [package] principal sequence of partition
 
@@ -32,7 +33,7 @@ class InfoCluster:
         Parameters
         ----------
         X : array-like, shape (n_samples, n_features)
-            if affinity='precomputed', X is affinity matrix(upper triangle)
+            if affinity='precomputed', X is networkx like object or affinity matrix(upper triangle)
            
         '''
         if(self.n_clusters is not None and use_pdt == False):
@@ -104,24 +105,37 @@ class InfoCluster:
         return -1       
         
     def _init_g(self, X, use_pdt = False):
-        if(type(X) == list):
+        is_nx_graph = False
+        if(type(X) is list):
             n_samples = len(X)
-        else:
+        elif(type(X) is np.ndarray):
             n_samples = X.shape[0]
-        if(self.affinity == 'precomputed'):
-            affinity_matrix = X
-        elif(self.affinity == 'nearest_neighbors'):
-            connectivity = kneighbors_graph(X, n_neighbors=self.n_neighbors,include_self=True)
-            affinity_matrix = 0.5 * (connectivity + connectivity.T)        
-        elif(self.affinity == 'laplacian'):
-            affinity_matrix = pairwise_kernels(X, metric='laplacian', gamma = self._gamma)
+        elif(type(X) is nx.Graph):
+            n_samples = X.size()
+            is_nx_graph = True
         else:
-            affinity_matrix = pairwise_kernels(X, metric='rbf', gamma = self._gamma)
+            raise TypeError('type(X) must be list, numpy.ndarray or networkx.Graph')
+        sim_list = []            
+        if not(is_nx_graph):    
+            if(self.affinity == 'precomputed'):
+                affinity_matrix = X
+            elif(self.affinity == 'nearest_neighbors'):
+                connectivity = kneighbors_graph(X, n_neighbors=self.n_neighbors,include_self=True)
+                affinity_matrix = 0.5 * (connectivity + connectivity.T)        
+            elif(self.affinity == 'laplacian'):
+                affinity_matrix = pairwise_kernels(X, metric='laplacian', gamma = self._gamma)
+            else:
+                affinity_matrix = pairwise_kernels(X, metric='rbf', gamma = self._gamma)
             
-        sim_list = []
-        for s_i in range(n_samples):
-            for s_j in range(s_i+1, n_samples):
-                sim_list.append((s_i, s_j, affinity_matrix[s_i, s_j]))       
+            for s_i in range(n_samples):
+                for s_j in range(s_i+1, n_samples):
+                    sim_list.append((s_i, s_j, affinity_matrix[s_i, s_j]))       
+        else:
+            for e in X.edges(data=True):
+                if(e[2].get('weight')):
+                    sim_list.append((e[0], e[1], e[2]['weight']))
+                else:
+                    sim_list.append((e[0], e[1], 1.0))
         if(use_pdt):
             self.g = psp.PyGraphPDT(n_samples, sim_list)
         else:
