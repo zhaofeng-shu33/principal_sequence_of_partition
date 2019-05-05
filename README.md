@@ -93,3 +93,4 @@ print(g.get_category(2)) # get the result which has at least 2 categories, which
 # ChangeLog
 * Version 1.1: expose `Gaussian2DGraph` (C++) class, which can be used directly in python.
 * Version 1.2: expose `PyGraph` (C++) class, which is high customizable in python.
+* Version 1.3: expose `PyGraphPDT` (C++) class, which has similar api as `PyGraph` but different inner implementation.
