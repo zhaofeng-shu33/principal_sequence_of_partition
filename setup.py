@@ -69,7 +69,7 @@ class build_ext(build_ext_orig):
         
 setup(
     name='info_cluster',
-    version='0.2', # python binding version, not the C++ lib version
+    version='0.3', # python binding version, not the C++ lib version
     packages=['info_cluster'],
     ext_modules=[CMakeExtension('info_cluster/psp')],
     install_requires=['numpy'],

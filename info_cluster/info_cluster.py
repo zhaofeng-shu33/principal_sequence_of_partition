@@ -111,7 +111,7 @@ class InfoCluster:
         elif(type(X) is np.ndarray):
             n_samples = X.shape[0]
         elif(type(X) is nx.Graph):
-            n_samples = X.size()
+            n_samples = nx.number_of_nodes(X)
             is_nx_graph = True
         else:
             raise TypeError('type(X) must be list, numpy.ndarray or networkx.Graph')
@@ -125,17 +125,15 @@ class InfoCluster:
             elif(self.affinity == 'laplacian'):
                 affinity_matrix = pairwise_kernels(X, metric='laplacian', gamma = self._gamma)
             else:
-                affinity_matrix = pairwise_kernels(X, metric='rbf', gamma = self._gamma)
-            
-            for s_i in range(n_samples):
-                for s_j in range(s_i+1, n_samples):
-                    sim_list.append((s_i, s_j, affinity_matrix[s_i, s_j]))       
+                affinity_matrix = pairwise_kernels(X, metric='rbf', gamma = self._gamma)            
         else:
-            for e in X.edges(data=True):
-                if(e[2].get('weight')):
-                    sim_list.append((e[0], e[1], e[2]['weight']))
-                else:
-                    sim_list.append((e[0], e[1], 1.0))
+            sparse_mat = nx.adjacency_matrix(X)
+            affinity_matrix = np.asarray(sparse_mat.todense(),dtype=float)
+            
+        for s_i in range(n_samples):
+            for s_j in range(s_i+1, n_samples):
+                sim_list.append((s_i, s_j, affinity_matrix[s_i, s_j]))       
+
         if(use_pdt):
             self.g = psp.PyGraphPDT(n_samples, sim_list)
         else:
