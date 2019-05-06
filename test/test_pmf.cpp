@@ -2,6 +2,7 @@
 #include <cmath>
 #include "core/pmf.h"
 #include "core/gaussian2Dcase.h"
+#include "test_utility.h"
 namespace parametric {
 TEST(PMF, EquationSolve) {
     std::vector<pair> parameter_list;
