@@ -8,6 +8,7 @@
     #include "core/algorithms/sfm_fw.h"
 #endif
 #include "core/gaussian2Dcase.h"
+#include "test_utility.h"
 namespace demo {
 
 TEST(Gaussian2D, GivenPoint) {
