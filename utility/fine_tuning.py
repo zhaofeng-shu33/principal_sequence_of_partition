@@ -226,5 +226,4 @@ if __name__ == '__main__':
         pdb.set_trace()
     dic = compute(args.dataset, args.method, args.use_cloud)
     json_str = json.dumps(dic, indent=4)
-    if(args.use_cloud):
-        schema.set_file(schema.PARAMETER_FILE, json_str)
+    schema.set_file(schema.PARAMETER_FILE, json_str, args.use_cloud)

@@ -94,11 +94,12 @@ def get_file(file_name, use_cloud = True):
             str = f.read()
     return str
     
-def set_file(file_name, str):
+def set_file(file_name, str, upload=False):
     global BUILD_DIR
     file_path = os.path.join(BUILD_DIR, file_name)
     open(file_path, 'w').write(str)
-    upload_to_my_oss(str, file_name)
+    if(upload):
+        upload_to_my_oss(str, file_name)
         
 if __name__ == '__main__':
     if not(os.path.exists(BUILD_DIR)):
