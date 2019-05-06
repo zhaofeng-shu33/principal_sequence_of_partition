@@ -1,7 +1,7 @@
 #include <sstream>
 
 #include <gtest/gtest.h>
-
+#include "config.h"
 #include "core/agglomerative.h"
 #include "test/test_extreme.h"
 #include "core/io_utility.h"
