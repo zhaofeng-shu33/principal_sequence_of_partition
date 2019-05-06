@@ -14,6 +14,7 @@ import nxviz as nv
 import matplotlib.pyplot as plt
 from sklearn import metrics
 import argparse
+
 def plot(graph, labels):
     nodelist = []
     label_dic = {}
@@ -27,6 +28,7 @@ def plot(graph, labels):
     ssm = nx.adjacency_matrix(graph)
     plt.matshow(csr_matrix.todense(ssm))
     plt.show()
+    
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser()
     parser.add_argument('--plot',default=False, type=bool, nargs='?', const=True)     

@@ -3,7 +3,7 @@ import math
 import unittest
 import psp
 import numpy as np
-from info_cluster import InfoCluster,to_py_list
+from info_cluster import InfoCluster, to_py_list
 
         
 def construct_pos_list(x_pos_list, y_pos_list):
@@ -77,6 +77,7 @@ def get_total_diff(L1, L2):
     total_diff = 0
     for i in range(len(L1)):
         total_diff += np.abs(L1[i] - L2[i])
-    return total_diff        
+    return total_diff  
+    
 if __name__ == '__main__':
     unittest.main()

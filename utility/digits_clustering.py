@@ -1,3 +1,5 @@
+# try to use info_cluster on 1700 digits (small images)
+# The problem is that info_clustering alg is too slow on such large num_of_samples.
 import numpy as np
 import mahotas
 from sklearn.datasets import load_digits
