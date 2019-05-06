@@ -106,17 +106,17 @@ def Libras(parameter_dic):
     feature = preprocessing.scale(feature)
     return compute_adjusted_rand_score(feature, ground_truth, parameter_dic)
     
-def compute(use_cloud):
+def compute(use_cloud, dataset_list):
     json_str = schema.get_file(schema.PARAMETER_FILE, use_cloud)
     p_dic = json.loads(json_str)
     dic = {}
-    for key in p_dic:
+    for key in dataset_list:
         logging.info('Start computing for dataset %s'%key)
         exec('dic["{0}"] = {0}(p_dic["{0}"])'.format(key))
     schema.set_file(schema.PARAMETER_FILE, json.dumps(p_dic, indent=4), use_cloud)
     return dic
 
-def make_table(dic):
+def make_table(dic, tb_name):
     table = [[i] for i in schema.METHOD_SCHEMA]
     for i in table:
         for _, v in dic.items():
@@ -126,14 +126,29 @@ def make_table(dic):
     for i in table:
         i[0] = i[0].replace('_', ' ')
     latex_table_string = tabulate(table, headers = _headers, tablefmt = 'latex_raw')
-    schema.set_file(schema.LATEX_TABLE_NAME, latex_table_string)
+    schema.set_file(tb_name, latex_table_string)
     
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    dataset_choices = [i for i in schema.DATASET_SCHEMA]
+    method_chocies = [i for i in schema.METHOD_SCHEMA]
+    dataset_choices.append('all')
+    parser = argparse.ArgumentParser()    
     parser.add_argument('--use_cloud', help='whether to use cloud parameter.json', default=False, type=bool, nargs='?', const=True)
+    parser.add_argument('--custom_table_name', help='user provided latex table name instead of schema.LATEX_TABLE_NAME', default=schema.LATEX_TABLE_NAME)
     parser.add_argument('--ignore_computing', help='whether to ignore computing and use ari field in parameter file directly', default=False, type=bool, nargs='?', const=True)    
     parser.add_argument('--debug', help='whether to enter debug mode', default=False, type=bool, nargs='?', const=True)    
+    parser.add_argument('--dataset', help='name of the dataset to fine tuning', default='all', choices=dataset_choices, nargs='+')
     args = parser.parse_args()
+
+    dataset_choices.pop()
+    dataset_dic = {}
+    for i in args.dataset:
+        if(i == 'all'):
+            for j in dataset_choices:
+                dataset_dic[j] = True
+            break
+        dataset_dic[i] = True
+
     if(args.debug):
         pdb.set_trace()
     if(args.ignore_computing):
@@ -141,12 +156,14 @@ if __name__ == '__main__':
         p_dic = json.loads(json_str)
         dic = {}
         for k, v in p_dic.items():
+            if(dataset_dic.get(k) is None):
+                continue
             dic[k] = {}
             for k_1, v_1 in v.items():
                 if(v_1.get('ari')):
                     dic[k][k_1] = v_1['ari']
                 else:
-                    dic[k][k_1] = 0
-        make_table(dic)
+                    dic[k][k_1] = 0        
     else:
-        make_table(compute(args.use_cloud))
+        dic = compute(args.use_cloud, dataset_dic)
+    make_table(dic, args.custom_table_name)
