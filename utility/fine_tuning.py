@@ -192,7 +192,8 @@ def compute(dataset, method, use_cloud):
         dic = json.loads(parameter_json_str)
     else:
         dic = {}
-    tuning_dic = json.loads(schema.get_file(schema.TUNING_FILE, use_cloud))
+    # for tuning file, only use local
+    tuning_dic = json.loads(schema.get_file(schema.TUNING_FILE))
     if(method == 'all'):
         method_list = [i for i in schema.METHOD_SCHEMA]
     else:

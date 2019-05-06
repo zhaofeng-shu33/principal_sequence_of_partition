@@ -78,7 +78,7 @@ def set_npx(fileName, data):
     file_path = os.path.join(BUILD_DIR, fileName)
     np.hstack(data).dump(file_path)
     
-def get_file(file_name, use_cloud = True):
+def get_file(file_name, use_cloud = False):
     '''return tuning json string    
     '''
     global BUILD_DIR
