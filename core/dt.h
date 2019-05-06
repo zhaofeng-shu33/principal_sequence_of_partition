@@ -7,7 +7,9 @@
 #include "core/algorithms/sfm_mf.h"
 #endif
 #include "core/oracles/modular.h"
+#if USE_EIGEN3
 #include "core/agglomerative.h"
+#endif
 namespace submodular {
     template <typename ValueType>
     class SampleFunctionPartial : public SubmodularOracle<ValueType> {

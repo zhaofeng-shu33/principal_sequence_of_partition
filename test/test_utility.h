@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include <tuple>
-#include <gtest/gtest.h>
 namespace demo {
     typedef std::vector<std::tuple<std::size_t, std::size_t, double>> EdgeListTuple;
     void construct_edge_list_tuple_4(EdgeListTuple& edges) {
