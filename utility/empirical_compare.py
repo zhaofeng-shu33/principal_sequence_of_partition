@@ -5,6 +5,7 @@ import random
 import json
 import os
 import logging
+import pdb
 # third party module
 import sklearn
 from sklearn import metrics
@@ -130,5 +131,22 @@ def make_table(dic):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--use_cloud', help='whether to use cloud parameter.json', default=False, type=bool, nargs='?', const=True)
+    parser.add_argument('--ignore_computing', help='whether to ignore computing and use ari field in parameter file directly', default=False, type=bool, nargs='?', const=True)    
+    parser.add_argument('--debug', help='whether to enter debug mode', default=False, type=bool, nargs='?', const=True)    
     args = parser.parse_args()
-    make_table(compute(args.use_cloud))
+    if(args.debug):
+        pdb.set_trace()
+    if(args.ignore_computing):
+        json_str = schema.get_file(schema.PARAMETER_FILE, args.use_cloud)
+        p_dic = json.loads(json_str)
+        dic = {}
+        for k, v in p_dic.items():
+            dic[k] = {}
+            for k_1, v_1 in v.items():
+                if(v_1.get('ari')):
+                    dic[k][k_1] = v_1['ari']
+                else:
+                    dic[k][k_1] = 0
+        make_table(dic)
+    else:
+        make_table(compute(args.use_cloud))

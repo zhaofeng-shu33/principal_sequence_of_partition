@@ -44,6 +44,7 @@ namespace submodular {
             psp_list = psp_class.Get_psp();
             delete dgc;
         }
+#if USE_EIGEN3
         void agglomerative_run() {
             DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
             PSP<double> psp_class(dgc);
@@ -52,6 +53,7 @@ namespace submodular {
             psp_list = psp_class.Get_psp();
             delete dgc;
         }
+#endif
         std::vector<double>& get_gamma_list() {
             return gamma_list;
         }

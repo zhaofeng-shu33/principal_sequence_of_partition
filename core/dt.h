@@ -237,6 +237,7 @@ namespace submodular {
             psp[P.size()-1] = P;
             split(Q, P, bruteForce);
         }
+#if USE_EIGEN3
         void agglomerative_run() {
             std::vector<Set> P;
             P = Set::MakeFine(NodeSize);
@@ -250,6 +251,7 @@ namespace submodular {
                 psp[s] = result.second;
             }
         }
+#endif
         std::vector<value_type>& Get_critical_values() {
             return critical_values;
         }
