@@ -67,6 +67,8 @@ def compute_adjusted_rand_score(feature, ground_truth, parameter_dic):
         exec('ari = _{0}(feature, ground_truth, parameter)'.format(_method))
         _ari = locals()['ari']
         dic[method] = _ari
+        if not(parameter.get('ari') and parameter['ari'] > _ari):
+            parameter['ari'] = _ari
         logging.info('%s ari is %.3f' % (method, _ari))    
     return dic
     
@@ -110,6 +112,7 @@ def compute(use_cloud):
     for key in p_dic:
         logging.info('Start computing for dataset %s'%key)
         exec('dic["{0}"] = {0}(p_dic["{0}"])'.format(key))
+    schema.set_file(schema.PARAMETER_FILE, json.dumps(p_dic, indent=4), use_cloud)
     return dic
 
 def make_table(dic):

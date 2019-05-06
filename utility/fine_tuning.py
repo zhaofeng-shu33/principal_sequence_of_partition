@@ -55,7 +55,7 @@ def _k_means(feature, ground_truth, config):
     y_pred_kmeans = cluster.KMeans(n_clusters=optimal_n_c).fit_predict(feature)
     ars_kmeans = metrics.adjusted_rand_score(ground_truth, y_pred_kmeans)    
     logging.info('ari %.3f'% ars_kmeans)                
-    return {'nc': optimal_n_c}
+    return {'nc': optimal_n_c, 'ari': ref_sc}
 def _agglomerative(feature, ground_truth, config):
     ref_sc = -1
     optimal_n_c = 0
@@ -70,7 +70,7 @@ def _agglomerative(feature, ground_truth, config):
                 ref_sc = sc
                 optimal_linkage = _linkage
             logging.info('ari %.3f'% sc)                        
-    return {'nc': optimal_n_c, 'linkage':optimal_linkage}
+    return {'nc': optimal_n_c, 'linkage':optimal_linkage, 'ari': ref_sc}
 
 def _spectral_clustering(feature, ground_truth, config):
     ref_sc = -1
@@ -84,7 +84,7 @@ def _spectral_clustering(feature, ground_truth, config):
             optimal_n_c = n_c
             ref_sc = sc
     logging.info('ari %.3f'% ref_sc)                        
-    return {'nc': optimal_n_c}
+    return {'nc': optimal_n_c, 'ari': ref_sc}
 
 def _info_clustering(feature, ground_truth, config):
     # we should fine tuning the min required cluster instead of lambda s.t. I(Z_V)>lambda
@@ -115,7 +115,7 @@ def _info_clustering(feature, ground_truth, config):
                     optimal_parameter['nc'] = max(y_pred_ic) + 1
                     ref_sc = sc
             logging.info('nc = %d, ari = %.3f, n_neighbors = %d, affinity = nearest_neighbors'% (optimal_parameter['nc'], sc, _n_neighbors))            
-            
+    optimal_parameter['ari'] = ref_sc        
     return optimal_parameter
     
 def _affinity_propagation(feature, ground_truth, config):
@@ -132,7 +132,7 @@ def _affinity_propagation(feature, ground_truth, config):
                 optimal_preference = p
                 optimal_damping_factor = d
     logging.info('ari %.3f'% ref_sc)                            
-    return {'preference': optimal_preference, 'damping_factor': optimal_damping_factor}
+    return {'preference': optimal_preference, 'damping_factor': optimal_damping_factor, 'ari': ref_sc}
     
 def fine_tuning(feature, ground_truth, method, config):
     global logging
@@ -141,7 +141,7 @@ def fine_tuning(feature, ground_truth, method, config):
     function_name = '_' + method.replace('-','_')
     exec("parameter = %s(feature, ground_truth, config)"%function_name)
     end_time = time.time()
-    logging.info('Finish tuning for %s, total time used = %.2f' % (method,end_time-start_time))
+    logging.info('Finish tuning for %s, total time used = %.2f' % (method, end_time - start_time))
     return locals()['parameter']
 
 
@@ -207,8 +207,15 @@ def compute(dataset, method, use_cloud):
             if(dic.get(_dataset) is None):
                 dic[_dataset] = {}                
             config = tuning_dic["%s"%_dataset]
-            exec('dic["{0}"]["{1}"] = {0}("{1}",{2})'.format(_dataset, _method, config[_method])) 
-    
+            result = [{}]
+            exec('result[0] = {0}("{1}",{2})'.format(_dataset, _method, config[_method])) 
+            result = result[0]
+            dm_dic = dic[_dataset][_method]
+            if(dm_dic.get('ari') and result['ari'] <= dm_dic['ari']):
+                continue
+            for k, v in result.items():
+                dm_dic[k] = v
+            logging.info('update parameter for {0}, {1} with new ari {2}'.format(_dataset, _method, result['ari'])) 
     return dic
     
 if __name__ == '__main__':
