@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
-set(ic_lib set_utils.cpp io_utility.cpp linalg.cpp reporter.cpp base.cpp)
+set(ic_lib set_utils.cpp io_utility.cpp reporter.cpp base.cpp)
+
 if(USE_EIGEN3)
 list(APPEND ic_lib agglomerative.cpp)
+list(APPEND ic_lib linalg.cpp)
 endif()
+
 add_library(ic_static ${ic_lib})
 add_library(pmf pmf.cpp)
 
