@@ -210,6 +210,9 @@ def compute(dataset, method, use_cloud):
             result = [{}]
             exec('result[0] = {0}("{1}",{2})'.format(_dataset, _method, config[_method])) 
             result = result[0]
+            if(dic[_dataset].get(_method) is None):
+                dic[_dataset][_method] = result
+                continue
             dm_dic = dic[_dataset][_method]
             if(dm_dic.get('ari') and result['ari'] <= dm_dic['ari']):
                 continue
