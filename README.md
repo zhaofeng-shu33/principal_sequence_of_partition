@@ -7,21 +7,35 @@ Currently, two methods are available:
 1. Dilworth truncation based on graph maximal flow
 2. using paramatric maximal flow
 
-Both method relies on Lemon Library to compute maximal flow for graph.
+Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to compute maximal flow for graph.
 
 Agglomerative clustering method is implemented but cannot be used in general case because of FWRobust method is cursed with float accuracy.
 
 # How to build
+
+## Dependencies
+
+* LEMON (required)
+* boost (required)
+* gtest (optional)
+* eigen3 (optional)
+
+You can use your os package manager to install the above dependencies.
+
+## CMake
 `main.cpp` is the user-implemented part. Run `cmake` will generate build recipe for building this cpp file.
 
-# CMake with GTest
-Testing is disabled by default, which requires gtest library. To enable it, run `cmake` with `-DENABLE_TESTING=ON`
-
-# Lemon library
+### with LEMON
 Use brute force search to solve submodualr function minimization(SFM) problem. For set with more than 10 elements, it is impractical. We use graph maximal flow(MF) to solve the special SFM problem. MF requires [lemon](https://lemon.cs.elte.hu/trac/lemon) library, which is disabled by default. To enable it, run `cmake` with `-DUSE_LEMON=ON`. 
 
-# boost library
+This library is included in Ubuntu from 18.4, see [liblemon-dev](https://packages.ubuntu.com/bionic/liblemon-dev).
+
+### with boost
 This project uses boost library in two places. Firstly, the `main.cpp` uses *boost-option* to parse command-line arguments. But this feature is optional. To use it, run `cmake` with `-DUSE_BOOST_OPTION=ON`. Secondly, *boost-python* is used to make the procedure callable from Python.
+
+### with GTest
+Testing is disabled by default, which requires gtest library. To enable it, run `cmake` with `-DENABLE_TESTING=ON`
+
 
 # Python binding
 [![PyPI](https://img.shields.io/pypi/v/info_cluster.svg)](https://pypi.org/project/info_cluster)
