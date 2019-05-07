@@ -34,10 +34,13 @@ def _generate_three_circle_data():
     pos_list = []
     num_list = [60,100,140]
     ground_truth = []
+    rd = random.Random()
+    # make the result reproducible across multiple run
+    rd.seed(0)
     for i in range(1,4): # radius: 0.1*i
         for j in range(num_list[i-1]):
-            r = 0.1*i + 0.01 * (2*random.random()-1)
-            angle = 2*np.pi * random.random()
+            r = 0.1*i + 0.01 * (2*rd.random()-1)
+            angle = 2*np.pi * rd.random()
             pos_list.append([r * np.cos(angle), r * np.sin(angle)])
             ground_truth.append(i)
     return (np.asarray(pos_list), np.asarray(ground_truth))
@@ -150,7 +153,8 @@ def Gaussian(method, config):
     GfileName = 'Gaussian.npx'
     data = schema.get_npx(GfileName)
     if(data is None):
-        pos_list, ground_truth = datasets.make_blobs(n_samples = 100, centers=[[3,3],[-3,-3],[3,-3],[-3,3]], cluster_std=1)
+        # set random_state to make the result reproducible
+        pos_list, ground_truth = datasets.make_blobs(n_samples = 100, centers=[[3,3],[-3,-3],[3,-3],[-3,3]], cluster_std=1, random_state=0)
         ground_truth_s = ground_truth.reshape(len(ground_truth),1)
         schema.set_npx(GfileName, (pos_list, ground_truth_s))
     else:
