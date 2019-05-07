@@ -139,7 +139,7 @@ if __name__ == '__main__':
     parser.add_argument('--ignore_computing', help='whether to ignore computing and use ari field in parameter file directly', default=False, type=bool, nargs='?', const=True)    
     parser.add_argument('--debug', help='whether to enter debug mode', default=False, type=bool, nargs='?', const=True)    
     parser.add_argument('--dataset', help='name of the dataset to fine tuning', default='all', choices=dataset_choices, nargs='+')
-    parser.add_argument('--method', help='clustering method to fine tuning', default='all', choices=method_chocies)    
+    parser.add_argument('--method', help='clustering method to fine tuning', default='all', choices=method_chocies, nargs='+')    
     args = parser.parse_args()
 
     dataset_choices.pop()
