@@ -10,7 +10,7 @@ with open ('schema.yaml') as f:
     schema_str = f.read()
     schema_dic = yaml.load(schema_str)
     locals().update(edict(schema_dic))       
-    
+        
 def update_tuning_json():
     '''update tuning json string
     '''

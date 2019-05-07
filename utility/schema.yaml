@@ -36,6 +36,8 @@ METHOD_SCHEMA:
         - 10
         nc:
         - 0
+        transformer:
+        - keep
     k-means:
         nc:
         - 0

@@ -14,6 +14,7 @@ from sklearn import datasets
 from sklearn import preprocessing
 from sklearn.neighbors import kneighbors_graph
 from sklearn.model_selection import cross_validate
+from sklearn.preprocessing import scale
 import numpy as np
 from tabulate import tabulate
 import argparse
@@ -70,6 +71,8 @@ def _agglomerative(feature, ground_truth, config):
     
 def compute_adjusted_rand_score(feature, ground_truth, parameter_dic):
     dic = {}    
+    if(parameter_dic.get('transformer') and parameter_dic['transformer'] == 'scale'):
+        feature = scale(feature)        
     for method, parameter in parameter_dic.items():
         _method = method.replace('-','_')
         exec('ari = _{0}(feature, ground_truth, parameter)'.format(_method))
@@ -103,15 +106,7 @@ def Iris(parameter_dic):
     feature, ground_truth = datasets.load_iris(return_X_y = True)
     return compute_adjusted_rand_score(feature, ground_truth, parameter_dic)    
 
-def Glass(parameter_dic):
-    feature, ground_truth = fetch_uci_glass()
-    feature = preprocessing.scale(feature)
-    return compute_adjusted_rand_score(feature, ground_truth, parameter_dic)
 
-def Libras(parameter_dic):
-    feature, ground_truth = fetch_uci_libras()
-    feature = preprocessing.scale(feature)
-    return compute_adjusted_rand_score(feature, ground_truth, parameter_dic)
     
 def compute(use_cloud, dataset_list):
     json_str = schema.get_file(schema.PARAMETER_FILE, use_cloud)

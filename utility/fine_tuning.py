@@ -14,10 +14,10 @@ import pdb
 import sklearn
 from sklearn import metrics
 from sklearn import cluster
-from sklearn import datasets
-from sklearn import preprocessing
 from sklearn.neighbors import kneighbors_graph
 from sklearn.model_selection import cross_validate
+from sklearn import datasets
+from sklearn.preprocessing import scale
 import numpy as np
 
 # user provided module
@@ -25,7 +25,6 @@ import info_cluster
 import schema
 from uci_glass import fetch_uci_glass
 from uci_libras import fetch_uci_libras
-
 # module level global variables go here
 logging.basicConfig(filename=os.path.join(schema.BUILD_DIR, schema.FINE_TUNING_LOGGING_FILE), level=logging.INFO, format='%(asctime)s %(message)s')
 
@@ -95,18 +94,23 @@ def _info_clustering(feature, ground_truth, config):
     # this is because lambda is variant in difference cases, and grid search is not economic
     ref_sc = -1
     optimal_parameter = {'nc':0,'affinity':'rbf','n_neighbors':0,'gamma':0}
+    config_kernel = []
     if(config['affinity'].count('rbf')>0):
+        config_kernel.append('rbf')
+    if(config['affinity'].count('laplacian')>0):
+        config_kernel.append('laplacian')
+    for kernel in config_kernel:
         for _gamma in config['gamma']:
-            g = info_cluster.InfoCluster(gamma = _gamma, affinity = 'rbf')
+            g = info_cluster.InfoCluster(gamma = _gamma, affinity = kernel)
             for n_c in config['nc']:
                 y_pred_ic = g.get_category(n_c, feature)
                 sc = metrics.adjusted_rand_score(ground_truth, y_pred_ic)
                 if(sc>ref_sc):
-                    optimal_parameter['affinity'] = 'rbf'
+                    optimal_parameter['affinity'] = kernel
                     optimal_parameter['gamma'] = _gamma
                     optimal_parameter['nc'] = max(y_pred_ic) + 1
                     ref_sc = sc
-            logging.info('nc = %d, ari = %.3f, gamma = %f, affinity = rbf'% (optimal_parameter['nc'], sc, _gamma))            
+            logging.info('nc = %d, ari = %.3f, gamma = %f, affinity = %s'% (optimal_parameter['nc'], sc, _gamma, kernel))            
     if(config['affinity'].count('nearest_neighbors')>0):
         for _n_neighbors in config['n_neighbors']:
             g = info_cluster.InfoCluster(affinity = 'nearest_neighbors', n_neighbors=_n_neighbors)
@@ -164,10 +168,24 @@ def fine_tuning(feature, ground_truth, method, config):
     logging.info('Start tuning for %s' % method)
     start_time = time.time()
     function_name = '_' + method.replace('-','_')
-    exec("parameter = %s(feature, ground_truth, config)"%function_name)
+    parameter = [{}]
+    exec("parameter[0] = %s(feature, ground_truth, config)"%function_name)
+    parameter = parameter[0]
+    if(config.get('transformer') and config['transformer'].count('scale')>0):
+        feature_scale = scale(feature)
+        parameter_2 = [{}]
+        logging.info('tuning for scaled data...')
+        exec("parameter_2[0] = %s(feature_scale, ground_truth, config)"%function_name)
+        parameter_2 = parameter_2[0]                
+        if(parameter_2['ari'] > parameter['ari']):
+            parameter_2['transformer'] = 'scale'
+            return parameter_2
+        else:
+            parameter['transformer'] = 'keep'
+            return parameter
     end_time = time.time()
     logging.info('Finish tuning for %s, total time used = %.2f' % (method, end_time - start_time))
-    return locals()['parameter']
+    return parameter
 
 
     
@@ -196,11 +214,11 @@ def Circle(method, config):
         pos_list = data[:,:2]
         ground_truth = data[:,-1]   
     return fine_tuning(pos_list, ground_truth, method, config)
-        
+
 def Iris(method, config):
     feature, ground_truth = datasets.load_iris(return_X_y = True)
     return fine_tuning(feature, ground_truth, method, config)    
-
+    
 def Glass(method, config):
     feature, ground_truth = fetch_uci_glass()
     feature = preprocessing.scale(feature)
@@ -209,8 +227,8 @@ def Glass(method, config):
 def Libras(method, config):
     feature, ground_truth = fetch_uci_libras()
     feature = preprocessing.scale(feature)
-    return fine_tuning(feature, ground_truth, method, config)
-    
+    return fine_tuning(feature, ground_truth, method, config)    
+            
 def compute(dataset, method, use_cloud):
     global logging
     parameter_json_str = schema.get_file(schema.PARAMETER_FILE, use_cloud)
