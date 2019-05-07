@@ -221,12 +221,12 @@ def Iris(method, config):
     
 def Glass(method, config):
     feature, ground_truth = fetch_uci_glass()
-    feature = preprocessing.scale(feature)
+    feature = scale(feature)
     return fine_tuning(feature, ground_truth, method, config)
 
 def Libras(method, config):
     feature, ground_truth = fetch_uci_libras()
-    feature = preprocessing.scale(feature)
+    feature = scale(feature)
     return fine_tuning(feature, ground_truth, method, config)    
             
 def compute(dataset, method, use_cloud):
