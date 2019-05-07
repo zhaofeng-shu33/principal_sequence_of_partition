@@ -16,6 +16,7 @@ from sklearn import metrics
 from sklearn import cluster
 from sklearn import datasets
 from sklearn import preprocessing
+from sklearn.neighbors import kneighbors_graph
 from sklearn.model_selection import cross_validate
 import numpy as np
 
@@ -124,18 +125,39 @@ def _info_clustering(feature, ground_truth, config):
 def _affinity_propagation(feature, ground_truth, config):
     ref_sc = -1
     optimal_preference = 0
-    optimal_damping_factor = -1 
-    for p in config['preference']:
-        for d in config['damping_factor']:
-            af = cluster.AffinityPropagation(preference=p, damping=d).fit(feature)
-            y_pred_af = af.labels_
-            ars_af = metrics.adjusted_rand_score(ground_truth, y_pred_af)
-            if(ars_af > ref_sc):
-                ref_sc = ars_af
-                optimal_preference = p
-                optimal_damping_factor = d
+    optimal_damping_factor = -1
+    optimal_affinity = 'euclidean'
+    optimal_n_neighbors = config['n_neighbors'][0]
+    if(config['affinity'].count('euclidean')>0):
+        for p in config['preference']:
+            for d in config['damping_factor']:    
+                af = cluster.AffinityPropagation(preference=p, damping=d).fit(feature)
+                y_pred_af = af.labels_
+                ars_af = metrics.adjusted_rand_score(ground_truth, y_pred_af)
+                if(ars_af > ref_sc):
+                    ref_sc = ars_af
+                    optimal_preference = p
+                    optimal_damping_factor = d
+    if(config['affinity'].count('precomputed')>0):      
+        for p in config['preference']:
+            for d in config['damping_factor']:     
+                for n_neighbors in config['n_neighbors']:
+                    connectivity = kneighbors_graph(feature, n_neighbors=n_neighbors,include_self=True)
+                    affinity_matrix = 0.5 * (connectivity + connectivity.T)
+                    affinity_matrix = np.asarray(affinity_matrix.todense(),dtype=float)
+                    af = cluster.AffinityPropagation(damping=d, affinity='precomputed').fit(affinity_matrix)
+                    y_pred_af = af.labels_
+                    ars_af = metrics.adjusted_rand_score(ground_truth, y_pred_af)
+                    if(ars_af > ref_sc):
+                        ref_sc = ars_af
+                        optimal_preference = p
+                        optimal_damping_factor = d        
+                        optimal_affinity = 'precomputed'
+                        optimal_n_neighbors = n_neighbors
     logging.info('ari %.3f'% ref_sc)                            
-    return {'preference': optimal_preference, 'damping_factor': optimal_damping_factor, 'ari': ref_sc}
+    return {'preference': optimal_preference, 'damping_factor': optimal_damping_factor, 'ari': ref_sc, 
+        'affinity': optimal_affinity, 'n_neighbors': optimal_n_neighbors
+        }
     
 def fine_tuning(feature, ground_truth, method, config):
     global logging

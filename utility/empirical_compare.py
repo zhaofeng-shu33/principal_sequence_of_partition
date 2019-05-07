@@ -12,6 +12,7 @@ from sklearn import metrics
 from sklearn import cluster
 from sklearn import datasets
 from sklearn import preprocessing
+from sklearn.neighbors import kneighbors_graph
 from sklearn.model_selection import cross_validate
 import numpy as np
 from tabulate import tabulate
@@ -48,7 +49,13 @@ def _info_clustering(feature, ground_truth, parameter):
 def _affinity_propagation(feature, ground_truth, p_d):
     p = p_d['preference']
     d = p_d['damping_factor']
-    af = cluster.AffinityPropagation(preference=p, damping=d).fit(feature)
+    if(p_d.get('affinity') and p_d['affinity'] == 'precomputed'):
+        connectivity = kneighbors_graph(feature, n_neighbors=p_d['n_neighbors'], include_self=True)
+        affinity_matrix = 0.5 * (connectivity + connectivity.T)
+        affinity_matrix = np.asarray(affinity_matrix.todense(),dtype=float)
+        af = cluster.AffinityPropagation(damping=d, affinity='precomputed').fit(affinity_matrix)
+    else:
+        af = cluster.AffinityPropagation(preference=p, damping=d).fit(feature)
     y_pred_af = af.labels_
     ars_af = metrics.adjusted_rand_score(ground_truth, y_pred_af)
     return ars_af

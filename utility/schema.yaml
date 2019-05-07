@@ -20,7 +20,12 @@ METHOD_SCHEMA:
         damping_factor:
         - 0.5
         preference:
-        - -50
+        - 50
+        affinity:
+        - euclidean
+        - precomputed
+        n_neighbors:
+        - 10
     info-clustering:
         affinity:
         - nearest_neighbors

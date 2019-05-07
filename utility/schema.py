@@ -15,7 +15,7 @@ def update_tuning_json():
     '''update tuning json string
     '''
     global METHOD_SCHEMA, DATASET_SCHEMA
-    json_str = download_from_my_oss(TUNING_FILE)
+    json_str = get_file(TUNING_FILE)
     if(json_str == ''):
         json_str = '{}'
     dic = json.loads(json_str)
@@ -116,7 +116,6 @@ if __name__ == '__main__':
         print('construct tuning json files...')
         with open(tuning_file_path, 'w') as f:
             json_str = update_tuning_json()
-            upload_to_my_oss(json_str, TUNING_FILE)
             f.write(json_str)
         print('tuning files written to %s' % tuning_file_path)
             
