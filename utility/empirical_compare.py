@@ -116,8 +116,8 @@ def compute(use_cloud, dataset_list):
     schema.set_file(schema.PARAMETER_FILE, json.dumps(p_dic, indent=4), use_cloud)
     return dic
 
-def make_table(dic, tb_name):
-    table = [[i] for i in schema.METHOD_SCHEMA]
+def make_table(dic, tb_name, method_dic):
+    table = [[i] for i in method_dic]
     for i in table:
         for _, v in dic.items():
             i.append('%.2f'%v.get(i[0]))
@@ -132,22 +132,36 @@ if __name__ == '__main__':
     dataset_choices = [i for i in schema.DATASET_SCHEMA]
     method_chocies = [i for i in schema.METHOD_SCHEMA]
     dataset_choices.append('all')
+    method_chocies.append('all')
     parser = argparse.ArgumentParser()    
     parser.add_argument('--use_cloud', help='whether to use cloud parameter.json', default=False, type=bool, nargs='?', const=True)
     parser.add_argument('--custom_table_name', help='user provided latex table name instead of schema.LATEX_TABLE_NAME', default=schema.LATEX_TABLE_NAME)
     parser.add_argument('--ignore_computing', help='whether to ignore computing and use ari field in parameter file directly', default=False, type=bool, nargs='?', const=True)    
     parser.add_argument('--debug', help='whether to enter debug mode', default=False, type=bool, nargs='?', const=True)    
     parser.add_argument('--dataset', help='name of the dataset to fine tuning', default='all', choices=dataset_choices, nargs='+')
+    parser.add_argument('--method', help='clustering method to fine tuning', default='all', choices=method_chocies)    
     args = parser.parse_args()
 
     dataset_choices.pop()
+    method_chocies.pop()
     dataset_dic = {}
+    method_dic = {}
+    if(type(args.dataset) is str):
+        args.dataset = [args.dataset]
     for i in args.dataset:
         if(i == 'all'):
             for j in dataset_choices:
                 dataset_dic[j] = True
             break
         dataset_dic[i] = True
+    if(type(args.method) is str):
+        args.method = [args.method]        
+    for i in args.method:
+        if(i == 'all'):
+            for j in method_chocies:
+                method_dic[j] = True
+            break
+        method_dic[i] = True
 
     if(args.debug):
         pdb.set_trace()
@@ -166,4 +180,4 @@ if __name__ == '__main__':
                     dic[k][k_1] = 0        
     else:
         dic = compute(args.use_cloud, dataset_dic)
-    make_table(dic, args.custom_table_name)
+    make_table(dic, args.custom_table_name, method_dic)

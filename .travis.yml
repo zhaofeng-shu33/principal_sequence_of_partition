@@ -47,8 +47,9 @@ before_install:
 install:
   - make
   - cd ..
+  - python -c "import pathlib" 2>/dev/null || python -m pip install pathlib
   - sudo python setup.py install
-  - python -c "import easydict" 2>/dev/null || sudo python -m pip install -r ../utility/requirement.txt
+  - python -c "import easydict" 2>/dev/null || python -m pip install -r ../utility/requirement.txt
 script:
 # used for testing
   - ls
