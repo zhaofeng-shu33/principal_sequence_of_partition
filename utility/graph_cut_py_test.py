@@ -1,7 +1,7 @@
 # \brief: use python unittest framework to check the rightness of psp exported class PyGraph
 import math
 import unittest
-import psp
+from info_cluster import psp
 import numpy as np
 from info_cluster import InfoCluster, to_py_list
 
