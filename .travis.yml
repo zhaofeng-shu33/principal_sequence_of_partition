@@ -1,16 +1,16 @@
+language: python
 matrix:
   include: 
   - os: linux
     dist: xenial
     sudo: required
+    python: "3.6"
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
         packages:
           - g++-6
-          - python3-pip
-          - python3-setuptools
     cache:
       - directories:
         - /usr/src/gtest
@@ -47,16 +47,16 @@ before_install:
 install:
   - make
   - cd ..
-  - sudo python3 setup.py install
-  - python3 -c "import easydict" 2>/dev/null || sudo python3 -m pip install -r ../utility/requirement.txt
+  - sudo python setup.py install
+  - python -c "import easydict" 2>/dev/null || sudo python -m pip install -r ../utility/requirement.txt
 script:
 # used for testing
   - ls
   - test/TestAll
   - test/test_pmf
   - set/test_set
-  - python3 -c "from info_cluster import psp;print(psp.__version__)"
-  - python3 -c "from info_cluster import InfoCluster"
+  - python -c "from info_cluster import psp;print(psp.__version__)"
+  - python -c "from info_cluster import InfoCluster"
   - cd ../utility
   - coverage run graph_cut_py_test.py
   - codecov
