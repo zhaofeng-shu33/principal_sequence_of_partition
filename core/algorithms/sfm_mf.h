@@ -12,6 +12,10 @@
 #include <core/graph.h>
 #include <core/graph/maxflow.h>
 #include <lemon/list_graph.h>
+#ifdef _DEBUG
+#include <lemon/lgf_writer.h>
+#include <fstream>
+#endif
 #include "preflow/mf_base.h"
 namespace submodular{
 
@@ -66,6 +70,14 @@ public:
             minimum_value_2 -= xl[i];
         if (std::abs(minimum_value - minimum_value_2) > 1e-5) {
             std::cout << "maxflow value differs: " << minimum_value << " != " << minimum_value_2 << std::endl;
+            // dump the graph in graph_dump.txt(current directory) with lemon graph format
+            std::ofstream fout("graph_dump.txt");
+            lemon::digraphWriter(g, fout).
+                arcMap("capacity", edge_cost_map)
+                .node("source", source_node)
+                .node("target", sink_node).
+                run();
+            fout.close();
             exit(0);
         }
 #endif
