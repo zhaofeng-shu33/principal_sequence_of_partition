@@ -54,6 +54,13 @@ namespace submodular {
 		}
 		return target_value;
 	}
+	template <typename T>
+	T get_partition_value(lemon::ListGraph& g, lemon::ListGraph::EdgeMap<T>& edge_map, const stl::Partition _partition) {
+		T target_value = 0;
+		for (const stl::CSet& _s : _partition)
+			target_value += get_cut_value(g, edge_map, _s);
+		return target_value / 2;
+	}
 using Height_t = int;
 enum TermType { SOURCE = 1, SINK = 0, INNER = 2 };
 enum NodeColor { WHITE, GRAY, BLACK };
