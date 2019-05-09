@@ -177,8 +177,8 @@ namespace submodular {
             if (Q.Cardinality() == P.Cardinality()) {
                 throw std::logic_error("Q and P have the same size");
             }
-            value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.size() - Q.size());
-            value_type h_apostrophe = (P.size() * evaluate(Q) - Q.size() * evaluate(P)) / (P.size() - Q.size());
+            value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.Cardinality() - Q.Cardinality());
+            value_type h_apostrophe = (P.Cardinality() * evaluate(Q) - Q.Cardinality() * evaluate(P)) / (P.Cardinality() - Q.Cardinality());
             DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
             dt.Run(bruteForce);
             value_type min_value = dt.Get_min_value();
@@ -187,10 +187,10 @@ namespace submodular {
                 return P;
             }
             else {
-                if (P_apostrophe.size() == partition_num) {
+                if (P_apostrophe.Cardinality() == partition_num) {
                     return P_apostrophe;
                 }
-                else if (P_apostrophe.size() < partition_num) {
+                else if (P_apostrophe.Cardinality() < partition_num) {
                     return split(P_apostrophe, P, partition_num, bruteForce);
                 }
                 else {
@@ -203,28 +203,22 @@ namespace submodular {
             if (Q.Cardinality() == P.Cardinality()) {
                 throw std::logic_error("Q and P have the same size");
             }
-            value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.size() - Q.size());
-            value_type h_apostrophe = (P.size() * evaluate(Q) - Q.size() * evaluate(P)) / (P.size() - Q.size());
+            value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.Cardinality() - Q.Cardinality());
+            value_type h_apostrophe = (P.Cardinality() * evaluate(Q) - Q.Cardinality() * evaluate(P)) / (P.Cardinality() - Q.Cardinality());
             DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
             dt.Run(bruteForce);
             value_type min_value = dt.Get_min_value();
 			stl::Partition P_apostrophe = convert_partition(dt.Get_min_partition());
             if (min_value > h_apostrophe-1e-4) {
-                critical_values[Q.size() - 1] = gamma_apostrophe;
+                critical_values[Q.Cardinality() - 1] = gamma_apostrophe;
             }
             else {                
-                psp[P_apostrophe.size() - 1] = P_apostrophe;
+                psp[P_apostrophe.Cardinality() - 1] = P_apostrophe;
                 try{
                     split(Q, P_apostrophe, bruteForce);
                     split(P_apostrophe, P, bruteForce);
                 }
                 catch (std::exception e) {
-                    value_type q_value = dt.evaluate(Q);
-                    value_type p_a_value = dt.evaluate(P_apostrophe);
-                    value_type p_value = dt.evaluate(P);
-                    std::cout << Q.size() << " at " << Q << " = " << q_value << std::endl;
-                    std::cout << P_apostrophe.size() << " at " << P_apostrophe << " = " << p_a_value << std::endl;
-                    std::cout << P.size() << " at " << P << " = " << p_value << std::endl;
                     std::cout << "h: " << h_apostrophe << std::endl;
                     std::cout << "min_value: " << min_value << std::endl;
                     exit(-1);
@@ -232,37 +226,22 @@ namespace submodular {
             }
         }
 
-        std::vector<Set> run(int partition_num, bool bruteForce = false) {
+		stl::Partition run(int partition_num, bool bruteForce = false) {
 			stl::CSet V = stl::CSet::MakeDense(NodeSize);
 			stl::Partition Q, P;
             Q.AddElement(V);
-			P = stl::Partition::MakeFine(NodeSize);
+			P = stl::Partition::makeFine(NodeSize);
 			return split(Q, P, partition_num, bruteForce);
         }
         void run(bool bruteForce = false) {
 			stl::CSet V = stl::CSet::MakeDense(NodeSize);
             stl::Partition Q, P;
             Q.AddElement(V);
-            P = stl::Partition::MakeFine(NodeSize);
+            P = stl::Partition::makeFine(NodeSize);
             psp[0] = Q;
-            psp[P.size()-1] = P;
+            psp[P.Cardinality()-1] = P;
             split(Q, P, bruteForce);
         }
-#if USE_EIGEN3
-        void agglomerative_run() {
-            std::vector<Set> P;
-            P = Set::MakeFine(NodeSize);
-            int s = P.size() - 1;
-            psp[s] = P;
-            while (s > 0) {
-                std::pair<double, std::vector<Set>> result;
-                result = agglomerate(psp[s], submodular_function);
-                s = result.second.size() - 1;
-                critical_values[s] = result.first;
-                psp[s] = result.second;
-            }
-        }
-#endif
         std::vector<value_type>& Get_critical_values() {
             return critical_values;
         }

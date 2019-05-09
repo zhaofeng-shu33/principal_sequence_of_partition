@@ -57,7 +57,7 @@ int main(int argc, const char *argv[]){
 #else
         demo::Gaussian2DGraph<double>* g2g = new demo::Gaussian2DGraph<double>(8);
 #endif
-        std::vector<submodular::Set> p;
+        stl::Partition p;
         if (run_full) {
             g2g->run();
             p = g2g->get_smallest_partition(4);

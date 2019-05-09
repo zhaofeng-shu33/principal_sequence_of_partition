@@ -21,13 +21,13 @@ namespace submodular {
         //! get the partition which has at least pn clusters
         //! rerun the total algorithm, use with caution.
         std::vector<int> get_labels(int pn) {
-            std::vector<Set> p = get_partition(pn);
+            stl::Partition p = get_partition(pn);
             return to_category(p);
         }
-        std::vector<Set> get_partition(int pn) {
+		stl::Partition get_partition(int pn) {
             DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
             PSP<double> psp_class(dgc, g, edge_map);
-            std::vector<Set> p = psp_class.run(pn);
+			stl::Partition p = psp_class.run(pn);
             delete dgc;
             return p;
         }
@@ -63,7 +63,7 @@ namespace submodular {
         std::vector<double> get_critical_values() {
             std::vector<double> critical_value_list;
             for (int i = 0; i < psp_list.size(); i++) {
-                if (psp_list[i].size() > 0) {
+                if (psp_list[i].Cardinality() > 0) {
                     critical_value_list.push_back(gamma_list[i]);
                 }
             }
@@ -73,27 +73,27 @@ namespace submodular {
         std::vector<int> get_partitions() {
             std::vector<int> partitions;
             for (int i = 0; i < psp_list.size(); i++) {
-                if (psp_list[i].size() > 0) {
-                    partitions.push_back(psp_list[i].size());
+                if (psp_list[i].Cardinality() > 0) {
+                    partitions.push_back(psp_list[i].Cardinality());
                 }
             }
             return partitions;
         }
 
-        std::vector<std::vector<Set>>& get_psp_list() {
+        std::vector<stl::Partition>& get_psp_list() {
             return psp_list;
         }
         //! get the smallest partition whose size >= k
-        std::vector<Set>& get_smallest_partition(int k) {
-            for (std::vector<Set>& i : psp_list) {
-                if (i.size() >= k)
+		stl::Partition& get_smallest_partition(int k) {
+            for (stl::Partition& i : psp_list) {
+                if (i.Cardinality() >= k)
                     return i;
             }
         }
         //! get the smallest partition whose size >= k, label each data point with an integer
         std::vector<int> get_category(int k) {
-            for (std::vector<Set>& i : psp_list) {
-                if (i.size() >= k) {
+            for (stl::Partition& i : psp_list) {
+                if (i.Cardinality() >= k) {
                     return to_category(i);
                 }
             }
@@ -107,12 +107,12 @@ namespace submodular {
     private:
         std::vector<double> gamma_list;
         
-        std::vector<std::vector<Set>> psp_list;
+        std::vector<stl::Partition> psp_list;
         //! form conversion
-        std::vector<int> to_category(std::vector<Set>& partition) {
+        std::vector<int> to_category(stl::Partition& partition) {
             std::vector<int> cat(num_points, 0);
             int t = 0;
-            for (Set& j : partition) {
+            for (const stl::CSet& j : partition) {
                 for (int i : j.GetMembers()) {
                     cat[i] = t;
                 }

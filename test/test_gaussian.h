@@ -25,11 +25,11 @@ TEST(Gaussian2D, GivenPoint) {
     EXPECT_DOUBLE_EQ(y_pos[2], 3);
     g2g.run();
     std::vector<double> gamma_list = g2g.get_gamma_list();
-    std::vector<std::vector<submodular::Set>> psp_list = g2g.get_psp_list();
-    EXPECT_EQ(psp_list[0].size(), 1);
-    EXPECT_EQ(psp_list[1].size(), 0);
-    EXPECT_EQ(psp_list[2].size(), 0);
-    EXPECT_EQ(psp_list[3].size(), 4);
+    std::vector<stl::Partition> psp_list = g2g.get_psp_list();
+    EXPECT_EQ(psp_list[0].Cardinality(), 1);
+    EXPECT_EQ(psp_list[1].Cardinality(), 0);
+    EXPECT_EQ(psp_list[2].Cardinality(), 0);
+    EXPECT_EQ(psp_list[3].Cardinality(), 4);
 
     std::vector<int> cat = g2g.get_category(2);
     std::cout << cat << std::endl;
@@ -53,13 +53,13 @@ TEST(Gaussian2D, GivenPoint8) {
     Gaussian2DGraph g2g(8, 1.0, a);
     g2g.run_bruteForce();
     std::vector<double> gamma_list = g2g.get_gamma_list();
-    std::vector<std::vector<submodular::Set>> psp_list = g2g.get_psp_list();
+    std::vector<stl::Partition> psp_list = g2g.get_psp_list();
     g2g.run();
     std::vector<double> gamma_list_2 = g2g.get_gamma_list();
-    std::vector<std::vector<submodular::Set>> psp_list_2 = g2g.get_psp_list();
+    std::vector<stl::Partition> psp_list_2 = g2g.get_psp_list();
 
     for (int i = 0; i < gamma_list.size(); i++) {
-        if (psp_list[i].size() == 0)
+        if (psp_list[i].Cardinality() == 0)
             continue;
         EXPECT_DOUBLE_EQ(gamma_list[i], gamma_list_2[i]);
         EXPECT_EQ(psp_list[i], psp_list_2[i]);
@@ -72,12 +72,12 @@ TEST_F(Graph4PointTest, TwoCase) {
     submodular::PSP<double> psp_class(dgc, &g, &edge_map);
     psp_class.run();
     std::vector<double> gamma_list = psp_class.Get_critical_values();
-    std::vector<std::vector<submodular::Set>> psp_list = psp_class.Get_psp();
+    std::vector<stl::Partition> psp_list = psp_class.Get_psp();
     EXPECT_DOUBLE_EQ(gamma_list[0],1+2/3.0);    
-    EXPECT_EQ(psp_list[0].size(), 1);
-    EXPECT_EQ(psp_list[1].size(), 0);
-    EXPECT_EQ(psp_list[2].size(), 0);
-    EXPECT_EQ(psp_list[3].size(), 4);
+    EXPECT_EQ(psp_list[0].Cardinality(), 1);
+    EXPECT_EQ(psp_list[1].Cardinality(), 0);
+    EXPECT_EQ(psp_list[2].Cardinality(), 0);
+    EXPECT_EQ(psp_list[3].Cardinality(), 4);
 }
 
 #if USE_EIGEN3
