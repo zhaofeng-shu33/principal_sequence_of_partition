@@ -352,7 +352,7 @@ namespace demo {
         submodular::InfoCluster ic(elt, 8);
         ic.run();
         std::vector<double> lambda_list_2 = ic.get_gamma_list();
-        std::vector<std::vector<submodular::Set>> partition_list_2 = ic.get_psp_list();
+        std::vector<stl::Partition> partition_list_2 = ic.get_psp_list();
 
         EXPECT_EQ(lambda_list.size(), lambda_list_2.size());
         lemon::Tolerance<double> Tol;
@@ -364,14 +364,9 @@ namespace demo {
         }
         std::list<parametric::Partition>::iterator partition_it = partition_list.begin();
         for (int i = 0; i < partition_list_2.size(); i++) {
-            if (partition_list_2[i].size() == 0)
+            if (partition_list_2[i].Cardinality() == 0)
                 continue;
-            std::vector<submodular::Set> set = partition_list_2[i];
-            parametric::Partition p;
-            // convert one type to another and compare the two
-            for (submodular::Set& s : set) {
-                p.AddElement(stl::CSet(s.GetRepresentation()));
-            }
+            stl::Partition p = partition_list_2[i];
             EXPECT_EQ(p, *partition_it);
             partition_it++;
         }
