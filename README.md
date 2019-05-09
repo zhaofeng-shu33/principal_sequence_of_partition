@@ -104,6 +104,9 @@ print(g.get_category(2)) # get the result which has at least 2 categories, which
 1. [2010] A Faster Algorithm for Computing the Principal Sequence of Partitions of a Graph
 1. [2017] Info-Clustering: An Efficient Algorithm by Network Information Flow
 
+# Contributing
+See [contributing.md](./contributing.md)
+
 # ChangeLog
 * Version 1.1: expose `Gaussian2DGraph` (C++) class, which can be used directly in python.
 * Version 1.2: expose `PyGraph` (C++) class, which is high customizable in python.

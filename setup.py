@@ -40,9 +40,10 @@ class build_ext(build_ext_orig):
                 VCPKG_ROOT = os.environ.get('VCPKG_ROOT',None)
                 if(VCPKG_ROOT == None):
                     raise NameError("VCPKG_ROOT environment variable not set")
+                VCPKG_DEFAULT_TRIPLET = os.environ.get('VCPKG_DEFAULT_TRIPLET', 'x64-windows')
                 cmake_args += [
                     '-DCMAKE_TOOLCHAIN_FILE=' + os.path.join(VCPKG_ROOT, 'scripts', 'buildsystems', 'vcpkg.cmake'),
-                    '-GVisual Studio 15 2017 Win64'
+                    '-DVCPKG_TARGET_TRIPLET=' + VCPKG_DEFAULT_TRIPLET
                 ]
             else:
                 cmake_args += [
