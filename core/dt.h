@@ -147,6 +147,17 @@ namespace submodular {
         value_type lambda_;
         int NodeSize;
     };
+	// converter function (temporary use).
+	stl::Partition convert_partition(const std::vector<Set>& _old_p) {
+		stl::Partition _p;
+		for (const Set& s : _old_p) {
+			stl::CSet _s;
+			for (int a : s.GetMembers())
+				_s.AddElement(a);
+			_p.AddElement(_s);
+		}
+		return _p;
+	}
     /**
     * computing principal sequence of partition for given submodular function
     */
@@ -161,9 +172,9 @@ namespace submodular {
             psp.resize(NodeSize);
         }
         //! evaluate and find the finest partition with $\abs{\P} > \texttt{partition_num}$
-        std::vector<Set> split(std::vector<Set>& Q, std::vector<Set>& P, int partition_num, bool bruteForce = false)
+		stl::Partition split(stl::Partition& Q, stl::Partition& P, int partition_num, bool bruteForce = false)
         {
-            if (Q.size() == P.size()) {
+            if (Q.Cardinality() == P.Cardinality()) {
                 throw std::logic_error("Q and P have the same size");
             }
             value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.size() - Q.size());
@@ -171,8 +182,8 @@ namespace submodular {
             DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
             dt.Run(bruteForce);
             value_type min_value = dt.Get_min_value();
-            std::vector<Set> P_apostrophe = dt.Get_min_partition();
-            if (min_value>h_apostrophe - 1e-4) {
+			stl::Partition P_apostrophe = convert_partition(dt.Get_min_partition());
+            if (min_value > h_apostrophe - 1e-4) {
                 return P;
             }
             else {
@@ -188,8 +199,8 @@ namespace submodular {
             }
         }
         //! |Q| < |P|
-        void split(std::vector<Set>& Q, std::vector<Set>& P, bool bruteForce = false) {
-            if (Q.size() == P.size()) {
+        void split(stl::Partition& Q, stl::Partition& P, bool bruteForce = false) {
+            if (Q.Cardinality() == P.Cardinality()) {
                 throw std::logic_error("Q and P have the same size");
             }
             value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.size() - Q.size());
@@ -197,8 +208,8 @@ namespace submodular {
             DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
             dt.Run(bruteForce);
             value_type min_value = dt.Get_min_value();
-            std::vector<Set> P_apostrophe = dt.Get_min_partition();
-            if (min_value>h_apostrophe-1e-4) {
+			stl::Partition P_apostrophe = convert_partition(dt.Get_min_partition());
+            if (min_value > h_apostrophe-1e-4) {
                 critical_values[Q.size() - 1] = gamma_apostrophe;
             }
             else {                
@@ -220,23 +231,19 @@ namespace submodular {
                 }
             }
         }
+
         std::vector<Set> run(int partition_num, bool bruteForce = false) {
-            Set V = Set::MakeDense(NodeSize);
-            Set Empt;
-            std::vector<Set> Q, P;
-            Q.push_back(V);
-            for (int i = 0; i < NodeSize; i++) {
-                Set EmptyExceptOne(NodeSize);
-                EmptyExceptOne.AddElement(i);
-                P.push_back(EmptyExceptOne);
-            }
-            return split(Q, P, partition_num, bruteForce);
+			stl::CSet V = stl::CSet::MakeDense(NodeSize);
+			stl::Partition Q, P;
+            Q.AddElement(V);
+			P = stl::Partition::MakeFine(NodeSize);
+			return split(Q, P, partition_num, bruteForce);
         }
         void run(bool bruteForce = false) {
-            Set V = Set::MakeDense(NodeSize);
-            std::vector<Set> Q, P;
-            Q.push_back(V);
-            P = Set::MakeFine(NodeSize);
+			stl::CSet V = stl::CSet::MakeDense(NodeSize);
+            stl::Partition Q, P;
+            Q.AddElement(V);
+            P = stl::Partition::MakeFine(NodeSize);
             psp[0] = Q;
             psp[P.size()-1] = P;
             split(Q, P, bruteForce);
@@ -259,22 +266,19 @@ namespace submodular {
         std::vector<value_type>& Get_critical_values() {
             return critical_values;
         }
-        std::vector<std::vector<Set>>& Get_psp() {
+        std::vector<stl::Partition>& Get_psp() {
             return psp;
         }
     private:
         //! evalute the submodular function at the given partition
-        value_type evaluate(const std::vector<Set>& P) {
-            value_type sum = 0;
-            for (const Set& s : P)
-                sum += submodular_function->Call(s);
-            return sum;
+        value_type evaluate(const stl::Partition& P) {
+			return get_partition_value(*_g, *_edge_map, P);
         }
 
         SubmodularOracle<ValueType> *submodular_function;
         int NodeSize;
         std::vector<value_type> critical_values;
-        std::vector<std::vector<Set>> psp;
+        std::vector<stl::Partition> psp;
 		lemon::ListGraph* _g;
 		lemon::ListGraph::EdgeMap<ValueType>* _edge_map;
     };
