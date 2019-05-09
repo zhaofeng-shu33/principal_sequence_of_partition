@@ -57,12 +57,12 @@ namespace demo {
         }
     };
 
-    class Gaussian2DGraph : public submodular::InfoCluster, public Gaussian2DGraphBase {
+    class Gaussian2DGraph : public Gaussian2DGraphBase, public submodular::InfoCluster {
     public:
-        Gaussian2DGraph(int np, double gamma = 1, double a[][2] = NULL) : Gaussian2DGraphBase(np, gamma, a)
+        Gaussian2DGraph(int np, double gamma = 1, double a[][2] = NULL): 
+			Gaussian2DGraphBase(np, gamma, a),
+			InfoCluster(edge_list_tuple, np)
         {
-            this->num_points = np;
-            sg = submodular::make_dgraph(num_points, edge_list_tuple);
         }
         std::vector<double>& get_x_pos_list() {
             return x_pos;
