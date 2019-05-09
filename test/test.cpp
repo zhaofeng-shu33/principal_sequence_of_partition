@@ -18,7 +18,7 @@
 #endif
 
 // Graph tests
-#include "graph/test_maxflow.h"
+#include "graph/test_graph.h"
 
 // Dilworth truncation tests
 #include "test_dt.h"

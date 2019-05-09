@@ -5,6 +5,7 @@
 #include "core/algorithms/brute_force.h"
 #if USE_LEMON
 #include "core/algorithms/sfm_mf.h"
+#include "core/graph.h"
 #include <lemon/list_graph.h>
 #include "set/set_stl.h"
 #endif
@@ -13,18 +14,7 @@
 #include "core/agglomerative.h"
 #endif
 namespace submodular {
-	// replace submodular_function->Call
-	template <typename T>
-	T get_cut_value(lemon::ListGraph& g, lemon::ListGraph::EdgeMap<T> edge_map, stl::CSet _set) {
-		T target_value = 0;
-		for (lemon::ListGraph::EdgeIt e(g); e != lemon::INVALID; ++e) {
-			int _u = g.id(g.u(e));
-			int _v = g.id(g.v(e));
-			if(_set.HasElement(_u) ^ _set.HasElement(_v)) // xor
-					target_value += edge_map[e];
-		}
-		return target_value;
-	}
+
     template <typename ValueType>
     class SampleFunctionPartial : public SubmodularOracle<ValueType> {
     public:

@@ -24,7 +24,7 @@
 #include <lemon/list_graph.h>
 #include "core/utils.h"
 #include "core/set_utils.h"
-
+#include "set/set_stl.h"
 
 namespace submodular {
 
@@ -42,7 +42,18 @@ namespace submodular {
 			edge_map[e] = cap;
 		}
 	}
-
+	// replace submodular_function->Call
+	template <typename T>
+	T get_cut_value(lemon::ListGraph& g, lemon::ListGraph::EdgeMap<T>& edge_map, const stl::CSet _set) {
+		T target_value = 0;
+		for (lemon::ListGraph::EdgeIt e(g); e != lemon::INVALID; ++e) {
+			int _u = g.id(g.u(e));
+			int _v = g.id(g.v(e));
+			if(_set.HasElement(_u) ^ _set.HasElement(_v)) // xor
+					target_value += edge_map[e];
+		}
+		return target_value;
+	}
 using Height_t = int;
 enum TermType { SOURCE = 1, SINK = 0, INNER = 2 };
 enum NodeColor { WHITE, GRAY, BLACK };
