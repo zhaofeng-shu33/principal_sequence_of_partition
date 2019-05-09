@@ -19,7 +19,7 @@ matrix:
     
 before_install:
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gsl boost-python; fi 
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libgtest-dev libboost-all-dev libeigen3-dev; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libgtest-dev libboost-all-dev; fi
   # build and install gtest library manually  
   - pushd /usr/src/gtest
   - sudo chmod -R a+w ./
@@ -43,7 +43,7 @@ before_install:
   - sudo mv LEMONConfig.cmake lemonConfig.cmake
   - popd
   - cd ../..  
-  - cmake -DENABLE_TESTING=ON -DUSE_PYTHON=ON -DUSE_LEMON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_EIGEN3=ON -DUSE_BOOST_OPTION=ON -DCMAKE_BUILD_TYPE=Release ../ 
+  - cmake -DENABLE_TESTING=ON -DUSE_PYTHON=ON -DUSE_LEMON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_BOOST_OPTION=ON -DCMAKE_BUILD_TYPE=Release ../ 
 install:
   - make
   - cd ..
