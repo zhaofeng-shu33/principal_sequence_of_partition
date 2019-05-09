@@ -2,19 +2,36 @@
 #include "core/oracles/modular.h"
 #include "core/graph.h"
 #include "core/oracles/graph_cut.h"
-
+#include <lemon/list_graph.h>
 namespace submodular {
+	template <typename T>
+	void make_graph(std::size_t n, const std::vector<std::tuple<std::size_t, std::size_t, T>>& edges, lemon::ListGraph& g, lemon::ListGraph::EdgeMap<T>& edge_map) {
+		int m = edges.size();
+		for (std::size_t i = 0; i < n; ++i) {
+			g.addNode();
+		}
+		for (std::size_t edge_id = 0; edge_id < m; ++edge_id) {
+			std::size_t src, dst;
+			T cap;
+			std::tie(src, dst, cap) = edges[edge_id];
+			lemon::ListGraph::Edge e = g.addEdge(g.nodeFromId(src), g.nodeFromId(dst));
+			edge_map[e] = cap;
+		}
+	}
     class InfoCluster {
     public:
         InfoCluster(){}
-        InfoCluster(const InfoCluster& pg) {
-            sg = pg.sg;
-            num_points = pg.num_points;
-        }
         InfoCluster(const std::vector<std::tuple<std::size_t, std::size_t, double>>& elt, int np) {
             num_points = np;
-            sg = submodular::make_dgraph(num_points, elt);
+            sg = make_dgraph(num_points, elt);
+			g = new lemon::ListGraph();
+			edge_map = new lemon::ListGraph::EdgeMap<double>(*g);
+			make_graph(np, elt, *g, *edge_map);
         }
+		~InfoCluster() {
+			delete edge_map;
+			delete g;
+		}
         //! get the partition which has at least pn clusters
         //! rerun the total algorithm, use with caution.
         std::vector<int> get_labels(int pn) {
@@ -23,14 +40,14 @@ namespace submodular {
         }
         std::vector<Set> get_partition(int pn) {
             DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
-            PSP<double> psp_class(dgc);
+            PSP<double> psp_class(dgc, g, edge_map);
             std::vector<Set> p = psp_class.run(pn);
             delete dgc;
             return p;
         }
         void run() {
             DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
-            PSP<double> psp_class(dgc);
+            PSP<double> psp_class(dgc, g, edge_map);
             psp_class.run(false);
             gamma_list = psp_class.Get_critical_values();
             psp_list = psp_class.Get_psp();
@@ -38,7 +55,7 @@ namespace submodular {
         }
         void run_bruteForce() {
             DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
-            PSP<double> psp_class(dgc);
+            PSP<double> psp_class(dgc, g, edge_map);
             psp_class.run(true);
             gamma_list = psp_class.Get_critical_values();
             psp_list = psp_class.Get_psp();
@@ -98,6 +115,8 @@ namespace submodular {
         }
     protected:
         SimpleGraph<double> sg;
+		lemon::ListGraph* g;
+		lemon::ListGraph::EdgeMap<double>* edge_map;
         int num_points;
     private:
         std::vector<double> gamma_list;

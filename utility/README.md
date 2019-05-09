@@ -1,6 +1,6 @@
 # Prerequisite
 To run the Python code in the directory, you need to install packages listed in `requirement.txt` and some other packages
-including 'oss2, info_cluster, tabulate'. Since `requirement.txt` is used in travis ci, we only include build required packages in 
+including 'oss2, info_cluster, pyyaml'. Since `requirement.txt` is used in travis ci, we only include build required packages in 
 `requirement.txt`.
 
 To start refreshly, you need run

@@ -310,34 +310,6 @@ namespace parametric {
             partition_list = partition_list_apostrophe;
         }
     }
-    Partition Partition::makeFine(int size) {
-        Partition p;
-        for (int i = 0; i < size; i++) {
-            stl::CSet A;
-            A.AddElement(i);
-            p.AddElement(A);
-        }
-        return p;
-    }
-    Partition Partition::makeDense(int size) {
-        Partition p;
-        p.AddElement(stl::CSet::MakeDense(size));
-        return p;
-    }
-    Partition Partition::expand(const stl::CSet& A) {
-        Partition p;
-        stl::CSet A_extend = A;
-        for (auto it = begin(); it != end(); it++) {
-            if (it->Intersection(A).IsEmpty()) {
-                p.AddElement(*it);
-            }
-            else {
-                A_extend = A_extend.Union(*it);
-            }
-        }
-        p.AddElement(A_extend);
-        return p;
-    }
 }
 int remain(){
     // set elevator and flow maps before running the algorithm.

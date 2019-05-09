@@ -5,12 +5,26 @@
 #include "core/algorithms/brute_force.h"
 #if USE_LEMON
 #include "core/algorithms/sfm_mf.h"
+#include <lemon/list_graph.h>
+#include "set/set_stl.h"
 #endif
 #include "core/oracles/modular.h"
 #if USE_EIGEN3
 #include "core/agglomerative.h"
 #endif
 namespace submodular {
+	// replace submodular_function->Call
+	template <typename T>
+	T get_cut_value(lemon::ListGraph& g, lemon::ListGraph::EdgeMap<T> edge_map, stl::CSet _set) {
+		T target_value = 0;
+		for (lemon::ListGraph::EdgeIt e(g); e != lemon::INVALID; ++e) {
+			int _u = g.id(g.u(e));
+			int _v = g.id(g.v(e));
+			if(_set.HasElement(_u) ^ _set.HasElement(_v)) // xor
+					target_value += edge_map[e];
+		}
+		return target_value;
+	}
     template <typename ValueType>
     class SampleFunctionPartial : public SubmodularOracle<ValueType> {
     public:
@@ -150,7 +164,7 @@ namespace submodular {
     class PSP {
     public:
         using value_type = typename ValueTraits<ValueType>::value_type;
-        PSP(SubmodularOracle<ValueType>* sf) :submodular_function(sf)
+        PSP(SubmodularOracle<ValueType>* sf, lemon::ListGraph* g, lemon::ListGraph::EdgeMap<ValueType>* edge_map ) :submodular_function(sf), _g(g), _edge_map(edge_map)
         {
             NodeSize = submodular_function->GetN();
             critical_values.resize(NodeSize);
@@ -271,5 +285,7 @@ namespace submodular {
         int NodeSize;
         std::vector<value_type> critical_values;
         std::vector<std::vector<Set>> psp;
+		lemon::ListGraph* _g;
+		lemon::ListGraph::EdgeMap<ValueType>* _edge_map;
     };
 }

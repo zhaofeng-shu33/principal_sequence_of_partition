@@ -13,6 +13,7 @@ typedef lemon::ListDigraph::ArcMap<double> ArcMap;
 typedef lemon::Preflow<lemon::ListDigraph, ArcMap> Preflow;
 typedef Preflow::FlowMap FlowMap;
 typedef Preflow::Elevator Elevator;
+typedef stl::Partition Partition;
 class Pack;
 class PMF {
 public:
@@ -63,13 +64,6 @@ public:
 private:
     const FlowMap* _flow;
     const Elevator* _elevator;
-};
-class Partition : public stl::Set<stl::CSet> {
-public:
-    static Partition makeFine(int size);
-    static Partition makeDense(int size);
-    Partition(){}
-    Partition expand(const stl::CSet& A);
 };
 class PDT {
 public:
