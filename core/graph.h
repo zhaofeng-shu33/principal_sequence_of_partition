@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <deque>
 #include <algorithm>
+#include <lemon/list_graph.h>
 #include "core/utils.h"
 #include "core/set_utils.h"
 

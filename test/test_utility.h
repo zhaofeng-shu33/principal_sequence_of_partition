@@ -27,7 +27,7 @@ namespace demo {
             construct_edge_list_tuple_4(edge_list_tuple_1);
 
             submodular::SimpleGraph<double> sg = submodular::make_dgraph(4, edge_list_tuple_1);
-            make_graph(4,  edge_list_tuple_1,  g, edge_map);
+            submodular::make_graph(4,  edge_list_tuple_1,  g, edge_map);
             dgc = new submodular::DirectedGraphCutOracle<double>(sg);
 
         }

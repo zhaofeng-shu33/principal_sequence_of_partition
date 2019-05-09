@@ -19,7 +19,6 @@
 
 // Graph tests
 #include "graph/test_maxflow.h"
-#include "graph/test_graph_oracle.h"
 
 // Dilworth truncation tests
 #include "test_dt.h"

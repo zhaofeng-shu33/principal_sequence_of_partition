@@ -66,59 +66,6 @@ namespace submodular {
         // optimal value is 0
         // optimal partition is{ 0, 1 }, { 2 },        
     }
-    TEST(PSP, HyperGraphicalModel){
-        HyperGraphicalModel<double>* hgm = new HyperGraphicalModel<double>();
-        PSP<double> psp_class(hgm);
-        psp_class.run(true);
-        std::vector<double> gamma_list = psp_class.Get_critical_values();
-        std::vector<std::vector<Set>> psp_list = psp_class.Get_psp();
-        EXPECT_EQ(gamma_list.size(), 3);
-        EXPECT_EQ(gamma_list[0], 1);
-        EXPECT_EQ(gamma_list[1], 2);
-
-        EXPECT_EQ(psp_list.size(), 3);
-
-        EXPECT_EQ(psp_list[0].size(), 1);
-        EXPECT_EQ(psp_list[0][0], Set::MakeDense(3));
-
-        EXPECT_EQ(psp_list[1].size(), 2);
-        EXPECT_EQ(psp_list[1][0], Set::FromIndices(3, { 0, 1 }));
-        EXPECT_EQ(psp_list[1][1], Set::FromIndices(3, { 2 }));
-
-        EXPECT_EQ(psp_list[2].size(), 3);
-        EXPECT_EQ(psp_list[2][0], Set::FromIndices(3, { 0 }));
-        EXPECT_EQ(psp_list[2][1], Set::FromIndices(3, { 1 }));
-        EXPECT_EQ(psp_list[2][2], Set::FromIndices(3, { 2 }));
-
-        delete hgm;
-        // partition list is {{{0, 1, 2}}, {{0, 1}, {2}}, {{0}, {1}, {2}}}  
-        // gamma list is {1, 2}
-    }
-    TEST(PSP, SplitFind) {
-        HyperGraphicalModel<double>* hgm = new HyperGraphicalModel<double>();
-        PSP<double> psp_class(hgm);
-        // for hypergraphical model, only brute force method can be used
-        std::vector<Set> p2 = psp_class.run(2, true);
-
-        EXPECT_EQ(p2.size(), 2);
-        EXPECT_EQ(p2[0], Set::FromIndices(3, { 0, 1 }));
-        EXPECT_EQ(p2[1], Set::FromIndices(3, { 2 }));
-        // p2 = {{0, 1}, {2}}
-
-        HyperGraphicalModel2<double>* hgm2 = new HyperGraphicalModel2<double>();
-        PSP<double> psp_class2(hgm2);
-        std::vector<Set> p4 = psp_class2.run(4, true);
-
-        EXPECT_EQ(p4.size(), 5);
-        EXPECT_EQ(p4[0], Set::FromIndices(6, { 0, 1 }));
-        EXPECT_EQ(p4[1], Set::FromIndices(6, { 2 }));
-        EXPECT_EQ(p4[2], Set::FromIndices(6, { 3 }));
-        EXPECT_EQ(p4[3], Set::FromIndices(6, { 4 }));
-        EXPECT_EQ(p4[4], Set::FromIndices(6, { 5 }));
-
-        delete hgm;
-        delete hgm2;
-    }
     TEST(DilworthTruncation, HyperGraphicalModel2) {
         HyperGraphicalModel2<double> hgm2;
         DilworthTruncation<double> dt(&hgm2, 1.5);
@@ -160,51 +107,6 @@ namespace submodular {
         EXPECT_DOUBLE_EQ(alpha_l, 1.0);
 #endif
 	delete hgm;
-    }
-    TEST(PSP, HyperGraphicalModel2) {
-        HyperGraphicalModel2<double>* hgm = new HyperGraphicalModel2<double>();
-        PSP<double> psp_class(hgm);
-        psp_class.run(true);
-        std::vector<double> gamma_list = psp_class.Get_critical_values();
-        std::vector<std::vector<Set>> psp_list = psp_class.Get_psp();
-        EXPECT_EQ(gamma_list.size(), 6);
-        // effective element of gamma_list is corresponding to non-empty element of psp_list
-        EXPECT_EQ(gamma_list[0], 0);
-        EXPECT_EQ(gamma_list[2], 1);
-        EXPECT_EQ(gamma_list[4], 2);
-
-        EXPECT_EQ(psp_list.size(), 6);
-
-        EXPECT_EQ(psp_list[0].size(), 1);
-        EXPECT_EQ(psp_list[0][0], Set::MakeDense(6));
-
-        EXPECT_EQ(psp_list[1].size(), 0);
-
-        EXPECT_EQ(psp_list[2].size(), 3);
-        EXPECT_EQ(psp_list[2][0], Set::FromIndices(6, { 0, 1, 2 }));
-        EXPECT_EQ(psp_list[2][1], Set::FromIndices(6, { 3, 4 }));
-        EXPECT_EQ(psp_list[2][2], Set::FromIndices(6, { 5 }));
-
-        EXPECT_EQ(psp_list[3].size(), 0);
-
-        EXPECT_EQ(psp_list[4].size(), 5);
-        EXPECT_EQ(psp_list[4][0], Set::FromIndices(6, { 0, 1 }));
-        EXPECT_EQ(psp_list[4][1], Set::FromIndices(6, { 2 }));
-        EXPECT_EQ(psp_list[4][2], Set::FromIndices(6, { 3 }));
-        EXPECT_EQ(psp_list[4][3], Set::FromIndices(6, { 4 }));
-        EXPECT_EQ(psp_list[4][4], Set::FromIndices(6, { 5 }));
-
-        EXPECT_EQ(psp_list[5].size(), 6);
-        EXPECT_EQ(psp_list[5][0], Set::FromIndices(6, { 0 }));
-        EXPECT_EQ(psp_list[5][1], Set::FromIndices(6, { 1 }));
-        EXPECT_EQ(psp_list[5][2], Set::FromIndices(6, { 2 }));
-        EXPECT_EQ(psp_list[5][3], Set::FromIndices(6, { 3 }));
-        EXPECT_EQ(psp_list[5][4], Set::FromIndices(6, { 4 }));
-        EXPECT_EQ(psp_list[5][5], Set::FromIndices(6, { 5 }));
-
-        delete hgm;
-        // partition list is {{0, 1, 2, 3, 4, 5}}, {{{0, 1, 2}, {3, 4}, {5}}, {{0, 1}, {2}, {3}, {4}, {5}}, {{0}, {1}, {2}, {3}, {4}, {5}}}  
-        // gamma list is {0, 1, 2}
     }
 
 }
