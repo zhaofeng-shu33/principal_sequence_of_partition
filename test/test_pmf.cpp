@@ -254,18 +254,7 @@ TEST(PDT, RUN) {
         std::cout << p << std::endl;
     }
 }
-TEST(Set, Partition) {
-    Partition a, b, c;
-    a.AddElement(stl::CSet(std::string("101")));
-    a.AddElement(stl::CSet(std::string("01")));
-    b.AddElement(stl::CSet(std::string("01")));
-    b.AddElement(stl::CSet(std::string("101")));
-    EXPECT_EQ(a, b);
-    c = c.expand(stl::CSet(std::string("1")));
-    c = c.expand(stl::CSet(std::string("01")));
-    c = c.expand(stl::CSet(std::string("101")));
-    EXPECT_EQ(a, c);
-}
+
 TEST(PMF, ComputeCut) {
     lemon::ListDigraph g;
     lemon::ListDigraph::Node n1 = g.addNode();

@@ -4,9 +4,6 @@
 #include "core/dt.h"
 #include "core/oracles/graph_cut.h"
 #include "core/set_utils.h"
-#if USE_EIGEN3
-    #include "core/algorithms/sfm_fw.h"
-#endif
 #include "core/gaussian2Dcase.h"
 #include "test_utility.h"
 namespace demo {
@@ -80,31 +77,4 @@ TEST_F(Graph4PointTest, TwoCase) {
     EXPECT_EQ(psp_list[3].Cardinality(), 4);
 }
 
-#if USE_EIGEN3
-    // This test is used to verify the FWRobust algorithm can return in finite times
-    TEST_F(Graph4PointTest, NotReturn) {
-        std::vector<double> xl({ -1-2/3.0,-2/3.0,-1/6.0 });
-        submodular::SampleFunctionPartial<double> F1(xl, dgc, 1+2/3.0);
-        submodular::FWRobust<double> solver2;
-        solver2.Minimize(F1);
-        submodular::BruteForce<double> solver1;
-        solver1.Minimize(F1);
-        EXPECT_DOUBLE_EQ(solver2.GetMinimumValue(), solver1.GetMinimumValue());
-        std::cout << solver2.GetReporter() << std::endl;
-        std::cout << solver1.GetReporter() << std::endl;
-    }
-
-    // This test is used to verify the FWRobust algorithm returns the right solution to SFM problem
-    // When two min solution exists, FWRobust not necessarily returns the finest partition
-    TEST_F(Graph4PointTest, ReturnTrue) {
-        submodular::DilworthTruncation<double> dt(dgc, 5/3.0+0.1);
-        dt.Run(true);//BruteForce
-        double min_value = dt.Get_min_value();
-        std::vector<submodular::Set> P_apostrophe = dt.Get_min_partition();
-        EXPECT_EQ(P_apostrophe.size(), 4);
-        dt.Run(); //MaxFlow
-        EXPECT_DOUBLE_EQ(dt.Get_min_value(), min_value);
-        EXPECT_EQ(dt.Get_min_partition().size(), 4);
-    }
-#endif
 }

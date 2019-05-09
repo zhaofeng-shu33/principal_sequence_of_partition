@@ -10,9 +10,6 @@
 #include "set/set_stl.h"
 #endif
 #include "core/oracles/modular.h"
-#if USE_EIGEN3
-#include "core/agglomerative.h"
-#endif
 namespace submodular {
 
     template <typename ValueType>
