@@ -64,7 +64,7 @@ namespace submodular {
 #if USE_EIGEN3
         void agglomerative_run() {
             DirectedGraphCutOracle<double>* dgc = new DirectedGraphCutOracle<double>(sg);
-            PSP<double> psp_class(dgc);
+            PSP<double> psp_class(dgc, g, edge_map);
             psp_class.agglomerative_run();
             gamma_list = psp_class.Get_critical_values();
             psp_list = psp_class.Get_psp();
