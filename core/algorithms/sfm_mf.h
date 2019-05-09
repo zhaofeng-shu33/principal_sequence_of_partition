@@ -51,24 +51,30 @@ public:
             edge_cost_map[arc] = std::max<value_type>(0, -xl[i]);
 
             arc = g.addArc(node_list[i], sink_node);			
-			edge_cost_map[arc] = std::max<value_type>(0, xl[i]) + sf->GetArcCap(graph_size, i); // sink_node_id = graph_size
+			edge_cost_map[arc] = std::max<value_type>(0, xl[i]); // sink_node_id = graph_size
 
             const_difference += std::max<value_type>(0, xl[i]);
         }
 		lemon::ListGraph::NodeMap<bool> node_filter(*_g);
+		for (int i = 0; i <= graph_size; i++) {
+			node_filter[_g->nodeFromId(i)] = true;
+		}
 		for (int i = graph_size + 1; i <= _g->maxNodeId(); i++) {
 			node_filter[_g->nodeFromId(i)] = false;
 		}
 		lemon::FilterNodes<lemon::ListGraph> subgraph(*_g, node_filter);
 		for (lemon::FilterNodes<lemon::ListGraph>::IncEdgeIt e(subgraph, subgraph.nodeFromId(graph_size)); e != lemon::INVALID; ++e) {
-			int t_id = subgraph.id(subgraph.v(e));
-			// lemon::ListDigraph::InArcIt arc(g, )
+			int t_id = subgraph.id(subgraph.u(e));
+			lemon::ListDigraph::OutArcIt arc(g, g.nodeFromId(t_id));
+			edge_cost_map[arc] += (*_edge_map)[e];
 		}
 		for (lemon::FilterNodes<lemon::ListGraph>::EdgeIt e(subgraph); e != lemon::INVALID; ++e) {
 			int s_id = subgraph.id(subgraph.u(e));
 			int t_id = subgraph.id(subgraph.v(e));
 			if (s_id > t_id)
 				boost::swap(s_id, t_id);
+			if (t_id == graph_size)
+				continue;
 			lemon::ListDigraph::Arc arc = g.addArc(node_list[s_id], node_list[t_id]);
 			edge_cost_map[arc] = (*_edge_map)[e];
 		}

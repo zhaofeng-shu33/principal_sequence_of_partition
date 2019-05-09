@@ -86,7 +86,7 @@ namespace submodular {
                 }
                 else {
 #if USE_LEMON                    
-                    solver2->Minimize(submodular_function, xl, lambda_);
+                    solver2->Minimize(submodular_function, xl, lambda_, _g, _edge_map);
 #else
                     SampleFunctionPartial<ValueType> F1(xl, submodular_function, lambda_);
                     solver2->Minimize(F1);
