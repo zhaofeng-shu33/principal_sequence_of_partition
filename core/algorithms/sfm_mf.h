@@ -17,6 +17,8 @@
 #include <fstream>
 #endif
 #include "preflow/mf_base.h"
+#include <lemon/adaptors.h>
+#include <boost/core/swap.hpp>
 namespace submodular{
 
 template <typename ValueType>
@@ -25,7 +27,7 @@ public:
     using value_type = typename ValueTraits<ValueType>::value_type;
     void Minimize(SubmodularOracle<ValueType>& F){}
 #ifdef USE_LEMON
-    void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl,value_type lambda_) {
+    void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl, value_type lambda_, lemon::ListGraph* _g, lemon::ListGraph::EdgeMap<ValueType>* _edge_map) {
         this->reporter_.SetNames(GetName(), sf->GetName());
         //construct lemon graph
         lemon::ListDigraph g;
@@ -44,17 +46,32 @@ public:
         lemon::ListDigraph::Node sink_node = node_list[graph_size];
         value_type const_difference = lambda_;
         for (int i = 0; i < graph_size; i++) {
+			
             lemon::ListDigraph::Arc arc = g.addArc(source_node, node_list[i]);
             edge_cost_map[arc] = std::max<value_type>(0, -xl[i]);
-            arc = g.addArc(node_list[i], sink_node);
-            edge_cost_map[arc] = std::max<value_type>(0, xl[i]) + sf->GetArcCap(graph_size, i); // sink_node_id = graph_size
+
+            arc = g.addArc(node_list[i], sink_node);			
+			edge_cost_map[arc] = std::max<value_type>(0, xl[i]) + sf->GetArcCap(graph_size, i); // sink_node_id = graph_size
+
             const_difference += std::max<value_type>(0, xl[i]);
-            for (int j = i+1; j < graph_size; j++) {
-                lemon::ListDigraph::Arc arc = g.addArc(node_list[i], node_list[j]);
-                edge_cost_map[arc] = sf->GetArcCap(j, i);
-            }
         }
-        
+		lemon::ListGraph::NodeMap<bool> node_filter(*_g);
+		for (int i = graph_size + 1; i <= _g->maxNodeId(); i++) {
+			node_filter[_g->nodeFromId(i)] = false;
+		}
+		lemon::FilterNodes<lemon::ListGraph> subgraph(*_g, node_filter);
+		for (lemon::FilterNodes<lemon::ListGraph>::IncEdgeIt e(subgraph, subgraph.nodeFromId(graph_size)); e != lemon::INVALID; ++e) {
+			int t_id = subgraph.id(subgraph.v(e));
+			// lemon::ListDigraph::InArcIt arc(g, )
+		}
+		for (lemon::FilterNodes<lemon::ListGraph>::EdgeIt e(subgraph); e != lemon::INVALID; ++e) {
+			int s_id = subgraph.id(subgraph.u(e));
+			int t_id = subgraph.id(subgraph.v(e));
+			if (s_id > t_id)
+				boost::swap(s_id, t_id);
+			lemon::ListDigraph::Arc arc = g.addArc(node_list[s_id], node_list[t_id]);
+			edge_cost_map[arc] = (*_edge_map)[e];
+		}
         lemon::Preflow_Relabel<lemon::ListDigraph, ArcMap> pf(g, edge_cost_map, source_node, sink_node);
         pf.run();
         value_type minimum_value = pf.flowValue() - const_difference;
@@ -130,6 +147,8 @@ public:
     }
 #endif
     std::string GetName() { return "maximal flow"; }
+	private:
+		lemon::Tolerance<ValueType> _tolerance;
 };
 
 }
