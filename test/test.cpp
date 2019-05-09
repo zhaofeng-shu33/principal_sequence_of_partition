@@ -1,10 +1,6 @@
 #include "config.h"
 #include "gtest/gtest.h"
 
-
-// Algorithm tests
-#include "algorithms/test_brute_force.h"
-
 // Graph tests
 #include "graph/test_graph.h"
 

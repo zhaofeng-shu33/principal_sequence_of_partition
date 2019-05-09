@@ -41,29 +41,31 @@ namespace submodular {
     class DilworthTruncation {
     public:
         using value_type = typename ValueTraits<ValueType>::value_type;
-        DilworthTruncation(SubmodularOracle<ValueType>* sf, value_type lambda) :
+        DilworthTruncation(SubmodularOracle<ValueType>* sf, value_type lambda, lemon::ListGraph* g, lemon::ListGraph::EdgeMap<ValueType>* edge_map):
             submodular_function(sf),
-            lambda_(lambda), min_value(0) 
+            lambda_(lambda), min_value(0), _g(g), _edge_map(edge_map)
         {
             NodeSize = submodular_function->GetN();
         }
         value_type Get_min_value() {
             return min_value;
         }
-        std::vector<Set>& Get_min_partition(){
-            return lastPartition;
+        stl::Partition& Get_min_partition(){
+            return _partition;
         }
-        value_type evaluate(std::vector<Set>& partition) {
-            value_type result = 0;
-            for (const Set& i : partition) {
-                result += submodular_function->Call(i);
-            }
-            return result - lambda_ * partition.size();
+        value_type evaluate(stl::Partition& partition) {
+			value_type result = get_partition_value(*_g, *_edge_map, partition);
+            return result - lambda_ * partition.Cardinality();
         }
+		stl::CSet convert_set(const Set& _s) {
+			stl::CSet s;
+			for (int i : _s.GetMembers())
+				s.AddElement(i);
+			return s;
+		}
         void Run(bool bruteForce = false) {
             min_value = 0;
-            lastPartition.resize(0);
-            currentPartition.resize(0);
+			_partition.clear();
             std::vector<value_type> xl;
             value_type alpha_l = 0;
             SFMAlgorithm<ValueType>* solver2;
@@ -106,41 +108,33 @@ namespace submodular {
                     std::cout << std::endl;
                     exit(-1);
                 }
+				
 #endif
-                Set Tl = solver2->GetMinimizer().Extend(1);
-                Set Ul = Tl;
-                for (std::vector<Set>::iterator it = lastPartition.begin(); it != lastPartition.end(); it++) {
-                    Set intersect = Tl.Intersection(it->Extend());
-                    if (intersect.Cardinality() > 0)
-                        Ul = Ul.Union(it->Extend());
-                }
-                for (std::vector<Set>::iterator it = lastPartition.begin(); it != lastPartition.end(); it++) {
-                    Set intersect = Tl.Intersection(it->Extend());
-                    if (intersect.Cardinality() == 0) {
-                        currentPartition.push_back(it->Extend());
-                    }
-                }
-                currentPartition.push_back(Ul);
-                lastPartition = currentPartition;
-                currentPartition.clear();
+                stl::CSet Tl = convert_set(solver2->GetMinimizer());
+				Tl.AddElement(i);
+				_partition = _partition.expand(Tl);
                 xl.push_back(alpha_l);
             }
             for (auto it = xl.begin(); it != xl.end(); it++) {
                 min_value += *it;
             }
-            value_type min_value_check = evaluate(lastPartition);
+#ifdef _DEBUG            
+			value_type min_value_check = evaluate(_partition);
             if (std::abs(min_value - min_value_check) > 1e-4) {
                 std::cout << "min_value_check error: " << std::endl;
                 std::cout << min_value << std::endl;
                 std::cout << min_value_check << std::endl;
                 exit(-1);
             }
+#endif
             delete solver2;
         }
     private:
         SubmodularOracle<ValueType> *submodular_function;
+		lemon::ListGraph* _g;
+		lemon::ListGraph::EdgeMap<ValueType>* _edge_map;
         value_type min_value;
-        std::vector<Set> lastPartition, currentPartition;
+        stl::Partition _partition;
         value_type lambda_;
         int NodeSize;
     };
@@ -176,10 +170,10 @@ namespace submodular {
             }
             value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.Cardinality() - Q.Cardinality());
             value_type h_apostrophe = (P.Cardinality() * evaluate(Q) - Q.Cardinality() * evaluate(P)) / (P.Cardinality() - Q.Cardinality());
-            DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
+            DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe, _g, _edge_map);
             dt.Run(bruteForce);
             value_type min_value = dt.Get_min_value();
-			stl::Partition P_apostrophe = convert_partition(dt.Get_min_partition());
+			stl::Partition P_apostrophe = dt.Get_min_partition();
             if (min_value > h_apostrophe - 1e-4) {
                 return P;
             }
@@ -202,10 +196,10 @@ namespace submodular {
             }
             value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.Cardinality() - Q.Cardinality());
             value_type h_apostrophe = (P.Cardinality() * evaluate(Q) - Q.Cardinality() * evaluate(P)) / (P.Cardinality() - Q.Cardinality());
-            DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe);
+            DilworthTruncation<value_type> dt(submodular_function, gamma_apostrophe, _g, _edge_map);
             dt.Run(bruteForce);
             value_type min_value = dt.Get_min_value();
-			stl::Partition P_apostrophe = convert_partition(dt.Get_min_partition());
+			stl::Partition P_apostrophe = dt.Get_min_partition();
             if (min_value > h_apostrophe-1e-4) {
                 critical_values[Q.Cardinality() - 1] = gamma_apostrophe;
             }

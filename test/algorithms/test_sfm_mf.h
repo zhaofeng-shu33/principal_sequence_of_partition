@@ -18,14 +18,14 @@ TEST_F(Graph4PointTest, MFCompare) {
 }
 
 TEST_F(Graph4PointTest, MFDT) {
-    submodular::DilworthTruncation<double> dt(dgc, 5 / 3.0 + 0.1);
+    submodular::DilworthTruncation<double> dt(dgc, 5 / 3.0 + 0.1, &g, &edge_map);
     dt.Run(true);//BruteForce
     double min_value = dt.Get_min_value();
-    std::vector<submodular::Set> P_apostrophe = dt.Get_min_partition();
-    EXPECT_EQ(P_apostrophe.size(), 4);
+    stl::Partition P_apostrophe = dt.Get_min_partition();
+    EXPECT_EQ(P_apostrophe.Cardinality(), 4);
     dt.Run(false);
     EXPECT_DOUBLE_EQ(dt.Get_min_value(), min_value);
-    EXPECT_EQ(dt.Get_min_partition().size(), 4);
+    EXPECT_EQ(dt.Get_min_partition().Cardinality(), 4);
 }
 
 }
