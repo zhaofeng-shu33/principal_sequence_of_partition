@@ -48,7 +48,7 @@ public:
 		}
 		lemon::FilterNodes<Digraph> subgraph(*_g, node_filter);
 		std::vector<value_type> sink_node_cost_map;
-		sink_node_cost_map.resize(graph_size - 1);
+		sink_node_cost_map.resize(graph_size);
 		for (lemon::FilterNodes<Digraph>::InArcIt a(subgraph, subgraph.nodeFromId(graph_size)); a != lemon::INVALID; ++a) {
 			int node_id = subgraph.id(subgraph.source(a));
 			sink_node_cost_map[node_id] = (*_edge_map)[a];
