@@ -171,14 +171,18 @@ def plot_ThreeCircle():
     print('plot_ThreeCircle')
     global color_list, marker_list, MAX_CAT
     i = -1
+    rerun = False
     while(i < 0): # check category requirement, regenerate the points if necessary
+        if(rerun):
+            print('rerun the clustering routine...')
         gamma_2 = 1
         ratio = 2000
-        g = ThreeCircle([60,100,140], ratio*gamma_2, gamma_2)
+        g = ThreeCircle([60, 100, 140], ratio * gamma_2, gamma_2)
         print('run three circle...')
         g.run()    
         # divide into >=2 parts        
         i = check_cat(2, g.partition_num_list)
+        rerun = True
     plot_inner(i, g, '3circle.eps')
 
 

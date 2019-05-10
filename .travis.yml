@@ -58,6 +58,6 @@ script:
   - set/test_set
   - python -c "from info_cluster import psp;print(psp.__version__)"
   - python -c "from info_cluster import InfoCluster"
-  - cd ../utility
+  - cd ../test
   - coverage run graph_cut_py_test.py
   - codecov
