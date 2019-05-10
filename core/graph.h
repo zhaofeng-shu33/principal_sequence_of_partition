@@ -38,6 +38,7 @@ namespace submodular {
 
 	template <typename T>
 	void make_dgraph(std::size_t n, const std::vector<std::tuple<std::size_t, std::size_t, T>>& arcs, lemon::ListDigraph& g, lemon::ListDigraph::ArcMap<T>& arc_map) {
+		lemon::Tolerance<T> _tolerance;
 		int m = arcs.size();
 		for (std::size_t i = 0; i < n; ++i) {
 			g.addNode();
@@ -46,6 +47,8 @@ namespace submodular {
 			std::size_t src, dst;
 			T cap;
 			std::tie(src, dst, cap) = arcs[arc_id];
+			if (!_tolerance.positive(cap))
+				continue;
 			lemon::ListDigraph::Arc a = g.addArc(g.nodeFromId(src), g.nodeFromId(dst));
 			arc_map[a] = cap;
 		}

@@ -42,8 +42,8 @@ public:
 		lemon::ListDigraph::NodeMap<bool> node_filter(*_g);
 		for (int i = 0; i <= graph_size; i++) {
 			node_filter[_g->nodeFromId(i)] = true;
-		}
-		for (int i = graph_size + 1; i <= _g->maxNodeId(); i++) {
+		}		
+		for (int i = graph_size + 1; i < lemon::countNodes(*_g); i++) {
 			node_filter[_g->nodeFromId(i)] = false;
 		}
 		lemon::FilterNodes<Digraph> subgraph(*_g, node_filter);
@@ -65,7 +65,7 @@ public:
 			Digraph::Arc arc;
 			if (xl[i] < 0) {
 				arc = subgraph.addArc(source_node, subgraph.nodeFromId(i));
-				(*_edge_map)[arc] = xl[i];
+				(*_edge_map)[arc] = -xl[i];
 			}
 			value_type sink_cost = std::max<value_type>(0, xl[i]) + sink_node_cost_map[i];
 			if(sink_cost > 0){
@@ -74,20 +74,21 @@ public:
 			}
             const_difference += std::max<value_type>(0, xl[i]);
         }
-		
+		subgraph.enable(source_node);
+		subgraph.enable(sink_node);
         lemon::Preflow_Relabel<Digraph, ArcMap, PreflowSubgraphTraits> pf(subgraph, *_edge_map, source_node, sink_node);
         pf.run();
         value_type minimum_value = pf.flowValue() - const_difference;
-
         Set X = Set::MakeEmpty(graph_size);
         for (int v = 0; v < graph_size; ++v) {
             if (!pf.minCut(subgraph.nodeFromId(v)))
                 X.AddElement(v);
         }
 		// house keeping, map is handled automatically
-		subgraph.erase(source_node);
-		subgraph.erase(sink_node);		
-#ifdef _DEBUG
+
+#ifdef  _DEBUG	
+		subgraph.disable(source_node);
+		subgraph.disable(sink_node);
 		stl::CSet _X = convert_set(X);
 		_X.AddElement(graph_size);
 		subgraph.enable(_g->nodeFromId(graph_size));
@@ -99,7 +100,7 @@ public:
             // dump the graph in graph_dump.txt(current directory) with lemon graph format
             std::ofstream fout("graph_dump.txt");
             lemon::digraphWriter(subgraph, fout).
-                arcMap("capacity", *_edge_map)
+                arcMap("capacity",*_edge_map)
                 .node("source", source_node)
                 .node("target", sink_node).
                 run();
@@ -107,8 +108,8 @@ public:
             exit(0);
         }
 #endif
-
-
+		subgraph.erase(source_node);
+		subgraph.erase(sink_node);
         this->SetResults(minimum_value, X);
     }
 #else

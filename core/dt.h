@@ -2,6 +2,7 @@
 /**
 *   Example from Literature "Minimum Average Cost Clustering"
 **/
+#include "config.h"
 #include "core/algorithms/brute_force.h"
 #if USE_LEMON
 #include "core/algorithms/sfm_mf.h"
@@ -183,6 +184,7 @@ namespace submodular {
                     split(P_apostrophe, P, bruteForce);
                 }
                 catch (std::exception e) {
+					std::cout << e.what() << std::endl;
                     std::cout << "h: " << h_apostrophe << std::endl;
                     std::cout << "min_value: " << min_value << std::endl;
                     exit(-1);
