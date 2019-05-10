@@ -15,6 +15,7 @@
 
 #include <vector>
 #include <lemon/list_graph.h>
+#include <lemon/adaptors.h>
 
 #include "set/set_stl.h"
 
@@ -49,6 +50,7 @@ namespace submodular {
 			arc_map[a] = cap;
 		}
 	}
+
 	// replace submodular_function->Call
 	template <typename T>
 	T get_cut_value(lemon::ListGraph& g, lemon::ListGraph::EdgeMap<T>& edge_map, const stl::CSet _set) {
@@ -62,8 +64,22 @@ namespace submodular {
 		return target_value;
 	}
 
+
+
 	template <typename T>
 	T get_cut_value(lemon::ListDigraph& g, lemon::ListDigraph::ArcMap<T>& arc_map, const stl::CSet _set) {
+		T target_value = 0;
+		for (lemon::ListDigraph::ArcIt a(g); a != lemon::INVALID; ++a) {
+			int _s = g.id(g.source(a));
+			int _t = g.id(g.target(a));
+			if (!_set.HasElement(_s) && _set.HasElement(_t))
+				target_value += arc_map[a];
+		}
+		return target_value;
+	}
+
+	template <typename T>
+	T get_cut_value(lemon::FilterNodes<lemon::ListDigraph>& g, lemon::ListDigraph::ArcMap<T>& arc_map, const stl::CSet _set) {
 		T target_value = 0;
 		for (lemon::ListDigraph::ArcIt a(g); a != lemon::INVALID; ++a) {
 			int _s = g.id(g.source(a));
@@ -82,6 +98,13 @@ namespace submodular {
 		return target_value / 2;
 	}
 
+	template <typename T>
+	T get_partition_value(lemon::ListDigraph& g, lemon::ListDigraph::ArcMap<T>& arc_map, const stl::Partition _partition) {
+		T target_value = 0;
+		for (const stl::CSet& _s : _partition)
+			target_value += get_cut_value(g, arc_map, _s);
+		return target_value;
+	}
 }
 
 #endif
