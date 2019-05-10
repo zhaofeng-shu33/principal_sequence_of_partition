@@ -18,6 +18,7 @@ Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to co
 * gtest (optional)
 
 You can use your os package manager to install the above dependencies.
+It is tested you need g++ version >= 6.0 to compile the source code.
 
 ## CMake
 `main.cpp` is the user-implemented part. Run `cmake` will generate build recipe for building this cpp file.

@@ -15,7 +15,7 @@ namespace submodular {
 			edge_map = new ArcMap(*g);
 			make_dgraph(np, elt, *g, *edge_map);
         }
-		~InfoCluster() {
+		virtual  ~InfoCluster() {
 			delete edge_map;
 			delete g;
 		}

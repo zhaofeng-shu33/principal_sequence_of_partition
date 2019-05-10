@@ -1,5 +1,6 @@
 dist/*
 info_cluster/psp.so
+*.pyd
 info_cluster/*.pyd
 info_cluster.egg-info/
 **/build

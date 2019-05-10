@@ -22,6 +22,9 @@ namespace submodular {
                 double capacity = boost::python::extract<double>(pt[2]);
                 edge_list.push_back(std::make_tuple(source_node_id, target_node_id, capacity));
             }
+			g = new Digraph();
+			edge_map = new ArcMap(*g);
+			make_dgraph(np, edge_list, *g, *edge_map);
         }
     };
 }
