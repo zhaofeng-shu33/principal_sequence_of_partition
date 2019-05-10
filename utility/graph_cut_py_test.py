@@ -72,6 +72,17 @@ class TestPyGraph(unittest.TestCase):
         # assert
         total_diff = get_total_diff(cat_1_list, cat_2_list)
         self.assertTrue(total_diff<1e-5)
+    
+    def test_non_complete(self):
+        # See https://github.com/zhaofeng-shu33/principal_sequence_of_partition/projects/1
+        g = psp.PyGraph(3, [(0,1,1), (0,2,2)])
+        g.run()
+        cat_1_list = to_py_list(g.get_category(1))
+        self.assertEqual(cat_1_list, [0, 0, 0])
+        cat_2_list = to_py_list(g.get_category(2))
+        self.assertEqual(cat_2_list, [0, 1, 0])
+        cat_3_list = to_py_list(g.get_category(3))
+        self.assertEqual(cat_3_list, [0, 1, 2])
         
 def get_total_diff(L1, L2):
     total_diff = 0
