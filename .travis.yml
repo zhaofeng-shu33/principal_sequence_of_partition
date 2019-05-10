@@ -60,4 +60,6 @@ script:
   - python -c "from info_cluster import InfoCluster"
   - cd ../test
   - coverage run graph_cut_py_test.py
+  - cd ../example
+  - coverage run example.py
   - codecov
