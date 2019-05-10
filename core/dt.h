@@ -51,7 +51,7 @@ namespace submodular {
         DilworthTruncation(value_type lambda, Digraph* g, ArcMap* edge_map):
             lambda_(lambda), min_value(0), _g(g), _edge_map(edge_map)
         {
-			NodeSize = _g->maxNodeId() + 1;
+			NodeSize = lemon::countNodes(*_g);
         }
         value_type Get_min_value() {
             return min_value;
@@ -132,7 +132,7 @@ namespace submodular {
 		typedef typename Digraph::ArcMap<ValueType> ArcMap;
         PSP(Digraph* g, ArcMap* edge_map ) : _g(g), _edge_map(edge_map)
         {
-			NodeSize = _g->maxNodeId() + 1;
+			NodeSize = lemon::countNodes(*_g);
             critical_values.resize(NodeSize);
             psp.resize(NodeSize);
         }
@@ -185,6 +185,13 @@ namespace submodular {
                 }
                 catch (std::exception e) {
 					std::cout << e.what() << std::endl;
+					value_type q_value = dt.evaluate(Q);
+					value_type p_a_value = dt.evaluate(P_apostrophe);
+					value_type p_value = dt.evaluate(P);
+					std::cout << Q.Cardinality() << " at " << Q << " = " << q_value << std::endl;
+					std::cout << P_apostrophe.Cardinality() << " at " << P_apostrophe << " = " << p_a_value << std::endl;
+					std::cout << P.Cardinality() << " at " << P << " = " << p_value << std::endl;
+
                     std::cout << "h: " << h_apostrophe << std::endl;
                     std::cout << "min_value: " << min_value << std::endl;
                     exit(-1);

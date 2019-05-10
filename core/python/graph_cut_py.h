@@ -22,7 +22,6 @@ namespace submodular {
                 double capacity = boost::python::extract<double>(pt[2]);
                 edge_list.push_back(std::make_tuple(source_node_id, target_node_id, capacity));
             }
-            sg = submodular::make_dgraph(num_points, edge_list);
         }
     };
 }
