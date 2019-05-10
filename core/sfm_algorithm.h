@@ -44,7 +44,7 @@ public:
   // NOTE: SubmodularOracle object F will possibly be modified by the algorithm.
   virtual void Minimize(SubmodularOracle<ValueType>& F) = 0;
   virtual void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl, value_type lambda_) {}
-  virtual void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl, value_type lambda_, lemon::ListGraph* _g, lemon::ListGraph::EdgeMap<ValueType>* _edge_map) {}
+  virtual void Minimize(std::vector<value_type>& xl, value_type lambda_, lemon::ListGraph* _g, lemon::ListGraph::EdgeMap<ValueType>* _edge_map) {}
   virtual std::string GetName() = 0;
   
   value_type GetMinimumValue();

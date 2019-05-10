@@ -9,8 +9,6 @@ Currently, two methods are available:
 
 Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to compute maximal flow for graph.
 
-Agglomerative clustering method is implemented but cannot be used in general case because of FWRobust method is cursed with float accuracy.
-
 # How to build
 
 ## Dependencies
@@ -18,7 +16,6 @@ Agglomerative clustering method is implemented but cannot be used in general cas
 * LEMON (required)
 * boost (required)
 * gtest (optional)
-* eigen3 (optional)
 
 You can use your os package manager to install the above dependencies.
 

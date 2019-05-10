@@ -32,11 +32,11 @@ public:
   std::string GetName() { return "Brute Force"; }
 
   void Minimize(SubmodularOracle<ValueType>& F);
-  void Minimize(SubmodularOracle<ValueType>* sf, std::vector<ValueType>& xl, ValueType lambda_, lemon::ListGraph* _g, lemon::ListGraph::EdgeMap<ValueType>* _edge_map);
+  void Minimize(std::vector<ValueType>& xl, ValueType lambda_, lemon::ListGraph* _g, lemon::ListGraph::EdgeMap<ValueType>* _edge_map);
 };
 
 template <typename ValueType>
-void Minimize(SubmodularOracle<ValueType>* sf, std::vector<ValueType>& xl, ValueType lambda_, lemon::ListGraph* _g, lemon::ListGraph::EdgeMap<ValueType>* _edge_map) {
+void BruteForce<ValueType>::Minimize(std::vector<ValueType>& xl, ValueType lambda_, lemon::ListGraph* _g, lemon::ListGraph::EdgeMap<ValueType>* _edge_map) {
 	int n_ground = xl.size();
 	stl::CSet minimizer;
 
@@ -47,8 +47,9 @@ void Minimize(SubmodularOracle<ValueType>* sf, std::vector<ValueType>& xl, Value
 		stl::CSet X(n_ground, i);
 		// divide it by 2 !		
 		value_type new_value = get_cut_value(*_g, *_edge_map, X.Union(fixed)) /2;
-		for(int j: X)
-			new_value -= xl[j]
+		for (int j : X)
+			new_value -= xl[j];
+
 		if (new_value < min_value) {
 			min_value = new_value;
 			minimizer = X;

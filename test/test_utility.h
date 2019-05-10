@@ -19,16 +19,13 @@ namespace demo {
     class Graph4PointTest : public testing::Test {
     protected:
         EdgeListTuple edge_list_tuple_1;
-        submodular::DirectedGraphCutOracle<double>* dgc;
 		lemon::ListGraph g;
 		lemon::ListGraph::EdgeMap<double> edge_map;
         Graph4PointTest(): edge_map(g){}
         virtual void SetUp() {
             construct_edge_list_tuple_4(edge_list_tuple_1);
 
-            submodular::SimpleGraph<double> sg = submodular::make_dgraph(4, edge_list_tuple_1);
-            submodular::make_graph(4,  edge_list_tuple_1,  g, edge_map);
-            dgc = new submodular::DirectedGraphCutOracle<double>(sg);
+            submodular::make_graph(4,  edge_list_tuple_1,  g, edge_map);            
 
         }
     };

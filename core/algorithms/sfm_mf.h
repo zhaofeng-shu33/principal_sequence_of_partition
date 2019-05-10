@@ -10,7 +10,6 @@
 // =============================================================================
 #pragma once
 #include <core/graph.h>
-#include <core/graph/maxflow.h>
 #include <lemon/list_graph.h>
 #ifdef _DEBUG
 #include <lemon/lgf_writer.h>
@@ -20,15 +19,20 @@
 #include <lemon/adaptors.h>
 #include <boost/core/swap.hpp>
 namespace submodular{
-
+	stl::CSet convert_set(const Set& _s) {
+		stl::CSet s;
+		for (int i : _s.GetMembers())
+			s.AddElement(i);
+		return s;
+	}
 template <typename ValueType>
 class MF: public SFMAlgorithm<ValueType> {
 public:
     using value_type = typename ValueTraits<ValueType>::value_type;
     void Minimize(SubmodularOracle<ValueType>& F){}
 #ifdef USE_LEMON
-    void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl, value_type lambda_, lemon::ListGraph* _g, lemon::ListGraph::EdgeMap<ValueType>* _edge_map) {
-        this->reporter_.SetNames(GetName(), sf->GetName());
+    void Minimize(std::vector<value_type>& xl, value_type lambda_, lemon::ListGraph* _g, lemon::ListGraph::EdgeMap<ValueType>* _edge_map) {
+        this->reporter_.SetNames(GetName(), "graph maximal flow");
         //construct lemon graph
         lemon::ListDigraph g;
         std::vector<lemon::ListDigraph::Node> node_list;
@@ -88,7 +92,9 @@ public:
                 X.AddElement(v);
         }
 #ifdef _DEBUG
-        value_type minimum_value_2 = sf->Call(X.Extend(1)) - lambda_;
+		stl::CSet _X = convert_set(X);
+		_X.AddElement(graph_size);
+        value_type minimum_value_2 = get_cut_value(g, edge_cost_map, _X) - lambda_;
         for (int i : X.GetMembers())
             minimum_value_2 -= xl[i];
         if (std::abs(minimum_value - minimum_value_2) > 1e-5) {
