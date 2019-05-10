@@ -21,7 +21,6 @@ namespace submodular {
         SampleFunctionPartial(std::vector<value_type>& xl, value_type lambda, lemon::ListGraph* g, lemon::ListGraph::EdgeMap<ValueType>* edge_map) :
             XL(xl),
             lambda_(lambda),
-            submodular_function(sf),
 			_g(g),
 			_edge_map(edge_map)
         {
