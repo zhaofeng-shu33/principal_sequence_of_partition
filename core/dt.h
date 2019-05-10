@@ -45,7 +45,9 @@ namespace submodular {
     class DilworthTruncation {
     public:
         using value_type = typename ValueTraits<ValueType>::value_type;
-        DilworthTruncation(value_type lambda, lemon::ListGraph* g, lemon::ListGraph::EdgeMap<ValueType>* edge_map):
+		typedef lemon::ListDigraph Digraph;
+		typedef typename Digraph::ArcMap<ValueType> ArcMap;
+        DilworthTruncation(value_type lambda, Digraph* g, ArcMap* edge_map):
             lambda_(lambda), min_value(0), _g(g), _edge_map(edge_map)
         {
 			NodeSize = _g->maxNodeId() + 1;
@@ -100,8 +102,8 @@ namespace submodular {
             delete solver2;
         }
     private:
-		lemon::ListGraph* _g;
-		lemon::ListGraph::EdgeMap<ValueType>* _edge_map;
+		Digraph* _g;
+		ArcMap* _edge_map;
         value_type min_value;
         stl::Partition _partition;
         value_type lambda_;
@@ -125,7 +127,9 @@ namespace submodular {
     class PSP {
     public:
         using value_type = typename ValueTraits<ValueType>::value_type;
-        PSP(lemon::ListGraph* g, lemon::ListGraph::EdgeMap<ValueType>* edge_map ) : _g(g), _edge_map(edge_map)
+		typedef lemon::ListDigraph Digraph;
+		typedef typename Digraph::ArcMap<ValueType> ArcMap;
+        PSP(Digraph* g, ArcMap* edge_map ) : _g(g), _edge_map(edge_map)
         {
 			NodeSize = _g->maxNodeId() + 1;
             critical_values.resize(NodeSize);
@@ -217,7 +221,7 @@ namespace submodular {
         int NodeSize;
         std::vector<value_type> critical_values;
         std::vector<stl::Partition> psp;
-		lemon::ListGraph* _g;
-		lemon::ListGraph::EdgeMap<ValueType>* _edge_map;
+		Digraph* _g;
+		ArcMap* _edge_map;
     };
 }

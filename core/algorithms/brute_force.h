@@ -26,17 +26,18 @@ template <typename ValueType>
 class BruteForce: public SFMAlgorithm<ValueType> {
 public:
   using value_type = typename ValueTraits<ValueType>::value_type;
-
+  typedef lemon::ListDigraph Digraph;
+  typedef typename Digraph::ArcMap<ValueType> ArcMap;
   BruteForce() = default;
 
   std::string GetName() { return "Brute Force"; }
 
   void Minimize(SubmodularOracle<ValueType>& F);
-  void Minimize(std::vector<ValueType>& xl, ValueType lambda_, lemon::ListGraph* _g, lemon::ListGraph::EdgeMap<ValueType>* _edge_map);
+  void Minimize(std::vector<ValueType>& xl, ValueType lambda_, Digraph* _g, ArcMap* _edge_map);
 };
 
 template <typename ValueType>
-void BruteForce<ValueType>::Minimize(std::vector<ValueType>& xl, ValueType lambda_, lemon::ListGraph* _g, lemon::ListGraph::EdgeMap<ValueType>* _edge_map) {
+void BruteForce<ValueType>::Minimize(std::vector<ValueType>& xl, ValueType lambda_, Digraph* _g, ArcMap* _edge_map) {
 	int n_ground = xl.size();
 	stl::CSet minimizer;
 
@@ -46,7 +47,7 @@ void BruteForce<ValueType>::Minimize(std::vector<ValueType>& xl, ValueType lambd
 	for (unsigned long i = 0; i < (1 << n_ground); ++i) {
 		stl::CSet X(n_ground, i);
 		// divide it by 2 !		
-		value_type new_value = get_cut_value(*_g, *_edge_map, X.Union(fixed)) /2;
+		value_type new_value = get_cut_value(*_g, *_edge_map, X.Union(fixed));
 		for (int j : X)
 			new_value -= xl[j];
 

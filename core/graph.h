@@ -81,7 +81,7 @@ namespace submodular {
 	template <typename T>
 	T get_cut_value(lemon::FilterNodes<lemon::ListDigraph>& g, lemon::ListDigraph::ArcMap<T>& arc_map, const stl::CSet _set) {
 		T target_value = 0;
-		for (lemon::ListDigraph::ArcIt a(g); a != lemon::INVALID; ++a) {
+		for (lemon::FilterNodes<lemon::ListDigraph>::ArcIt a(g); a != lemon::INVALID; ++a) {
 			int _s = g.id(g.source(a));
 			int _t = g.id(g.target(a));
 			if (!_set.HasElement(_s) && _set.HasElement(_t))

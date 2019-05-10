@@ -6,12 +6,14 @@
 namespace submodular {
     class InfoCluster {
     public:
+		typedef lemon::ListDigraph Digraph;
+		typedef Digraph::ArcMap<double> ArcMap;
         InfoCluster(){}
         InfoCluster(const std::vector<std::tuple<std::size_t, std::size_t, double>>& elt, int np) {
             num_points = np;
-			g = new lemon::ListGraph();
-			edge_map = new lemon::ListGraph::EdgeMap<double>(*g);
-			make_graph(np, elt, *g, *edge_map);
+			g = new Digraph();
+			edge_map = new ArcMap(*g);
+			make_dgraph(np, elt, *g, *edge_map);
         }
 		~InfoCluster() {
 			delete edge_map;
@@ -83,8 +85,8 @@ namespace submodular {
             return std::vector<int>();
         }
     protected:
-		lemon::ListGraph* g;
-		lemon::ListGraph::EdgeMap<double>* edge_map;
+		Digraph* g;
+		ArcMap* edge_map;
         int num_points;
     private:
         std::vector<double> gamma_list;

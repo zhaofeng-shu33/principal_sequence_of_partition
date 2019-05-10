@@ -86,4 +86,13 @@ namespace submodular {
 		_s.AddElement(1);
 		EXPECT_EQ(get_cut_value(g, arc_map, _s), 0);
 	}
+
+	TEST_F(SIMPLE_DGRAPH, get_partition_value) {
+		EXPECT_EQ(get_partition_value(g, arc_map, stl::Partition::makeFine(3)), 7);
+		EXPECT_EQ(get_partition_value(g, arc_map, stl::Partition::makeDense(3)), 0);
+		stl::Partition _p;
+		_p.AddElement(stl::CSet("100"));
+		_p.AddElement(stl::CSet("011"));
+		EXPECT_EQ(get_partition_value(g, arc_map, _p), 2);
+	}
 }
