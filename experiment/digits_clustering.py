@@ -19,4 +19,5 @@ def func():
 x1 = func()
 ic = InfoCluster()
 print('starting info-cluster')
-ic.fit(x1, use_pdt=True)
+labels = ic.get_category(10, x1)
+pdb.set_trace()

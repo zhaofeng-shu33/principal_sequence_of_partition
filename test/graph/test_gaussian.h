@@ -3,7 +3,7 @@
 #include "core/graph/graph.h"
 #include "core/dt.h"
 #include "core/graph/gaussian2Dcase.h"
-#include "utility.h"
+#include "test/utility.h"
 namespace demo {
 
 TEST(Gaussian2D, GivenPoint) {
