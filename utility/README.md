@@ -24,7 +24,7 @@ This functionality is used to share the computation results between different wo
 The write operation needed authentication.
 Currently the got method needs authentication two, but through web port it does not need authentication.
 Download link is [parameter.json](http://data-visualization.leidenschaft.cn/research/info-clustering/code/utility/parameter.json).
-
+If you are impatient, after downloading `parameter.json` and put it in `build/` directory. You can just run the `empircal_compare.py` without `fine_tuning`.
 
 ## Basic Plotting
 Plotting routines are provided to visualize the clustering result.
