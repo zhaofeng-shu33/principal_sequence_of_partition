@@ -18,6 +18,7 @@
 #include <chrono>
 #include <iostream>
 #include <utility>
+#include <vector>
 #include "set/set_stl.h"
 
 namespace submodular {
