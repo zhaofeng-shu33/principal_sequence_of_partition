@@ -115,8 +115,6 @@ namespace parametric {
         update_dig(0);
         pf.init();
         pf.startFirstPhase();
-        Elevator* new_elevator = Preflow::Traits::createElevator(dig, tilde_G_size);
-        Preflow::copy_elevator(dig, pf.elevator(), new_elevator);
         pf.startSecondPhase();
         Set S_0 = get_min_cut_source_side(pf);
         Set T_0 = S_0.Complement(tilde_G_size);
@@ -124,8 +122,7 @@ namespace parametric {
         T_1.AddElement(_j);
         set_list.push_back(T_0);
         set_list.push_back(T_1);
-        Pack pack(pf.flowMap(), *new_elevator);
-        slice(S_0, T_1, pack, true);
+        slice(S_0, T_1, true);
     }
     void PMF::reset_j(std::size_t j) { 
         _j = j; 
@@ -167,7 +164,7 @@ namespace parametric {
         }
         set_list.insert(set_list.end(), s);
     }
-    void PMF::slice(Set& S, Set& T, Pack& pack, bool isLeft) {
+    void PMF::slice(Set& S, Set& T, bool isLeft) {
         // compute lambda_2
         double lambda_const = compute_lambda_eq_const(S, T);
         std::vector<pair> y_lambda_filter;
@@ -181,10 +178,7 @@ namespace parametric {
         // do not use graph contraction
         Preflow pf_instance(dig, dig_aM, source_node, sink_node);
         pf_instance.init();
-        //pf_instance.init(pack.flowMap(), pack.elevator());
         pf_instance.startFirstPhase();
-        Elevator* new_elevator = Preflow::Traits::createElevator(dig, tilde_G_size);
-        Preflow::copy_elevator(dig, pf_instance.elevator(), new_elevator);
         pf_instance.startSecondPhase();
         Set S_apostrophe = get_min_cut_source_side(pf_instance);
         Set T_apostrophe = S_apostrophe.Complement(tilde_G_size);
@@ -197,9 +191,8 @@ namespace parametric {
             Set S_Union = S.Union(S_apostrophe);
             Set T_Union = T.Union(T_apostrophe);
             insert_set(T_Union);
-            Pack pack(pf_instance.flowMap(), *new_elevator);
-            slice(S, T_Union, pack, false);
-            slice(S_Union, T, pack, true);
+            slice(S, T_Union, false);
+            slice(S_Union, T, true);
         }
         else {
             insert(lambda_2);
@@ -310,58 +303,4 @@ namespace parametric {
             partition_list = partition_list_apostrophe;
         }
     }
-}
-int remain(){
-    // set elevator and flow maps before running the algorithm.
-    lemon::ListDigraph g;
-    std::vector<lemon::ListDigraph::Node> node_list;
-    int graph_size = 4;
-    //sink node id is graph_size, source node id is graph_size+1
-    g.reserveNode(4);
-    g.reserveArc(5);
-    lemon::ListDigraph::Node source_node = g.addNode();
-    lemon::ListDigraph::Node sink_node = g.addNode();
-    lemon::ListDigraph::Node node_1 = g.addNode();
-    lemon::ListDigraph::Node node_2 = g.addNode();
-    // construct edge cost map
-    typedef lemon::ListDigraph::ArcMap<double> ArcMap;
-    ArcMap edge_cost_map(g);
-    lemon::ListDigraph::Arc arc1 = g.addArc(source_node, node_1);
-    edge_cost_map[arc1] = 2;
-    lemon::ListDigraph::Arc arc2 = g.addArc(node_1, sink_node);
-    edge_cost_map[arc2] = 1;
-    lemon::ListDigraph::Arc arc3 = g.addArc(source_node, node_2);
-    edge_cost_map[arc3] = 4;
-    lemon::ListDigraph::Arc arc4 = g.addArc(node_2, sink_node);
-    edge_cost_map[arc4] = 5;
-    lemon::ListDigraph::Arc arc5 = g.addArc(node_1, node_2);
-    edge_cost_map[arc5] = 3;
-
-    lemon::Preflow<lemon::ListDigraph, ArcMap> pf(g, edge_cost_map, source_node, sink_node);
-    lemon::Preflow<lemon::ListDigraph, ArcMap>::FlowMap flowMap(g);
-    flowMap[arc1] = 2;
-    flowMap[arc2] = 1;
-    flowMap[arc3] = 4;
-    flowMap[arc4] = 4;
-    flowMap[arc5] = 1;
-    pf.flowMap(flowMap);
-
-    pf.init();
-    pf.startFirstPhase();
-    pf.startSecondPhase();
-    double minimum_value = pf.flowValue();
-    std::cout << minimum_value << std::endl;
-    std::cout << flowMap[arc1] << std::endl;
-    std::cout << flowMap[arc2] << std::endl;
-    std::cout << flowMap[arc3] << std::endl;
-    std::cout << flowMap[arc4] << std::endl;
-    std::cout << flowMap[arc5] << std::endl;
-
-    edge_cost_map[arc4] -= 1;
-    flowMap[arc4] -= 1;
-    pf.updateExcess();
-    pf.startFirstPhase();
-    pf.startSecondPhase();
-    std::cout << "Second min value: " << pf.flowValue() << std::endl;
-    return 0;
 }
