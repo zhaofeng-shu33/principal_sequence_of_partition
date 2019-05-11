@@ -82,7 +82,7 @@ namespace submodular {
             for (int i = 0; i < NodeSize; i++) {
                 solver2->Minimize(xl, lambda_, _g, _edge_map);
 	            alpha_l = solver2->GetMinimumValue();
-	            stl::CSet Tl = convert_set(solver2->GetMinimizer());
+	            stl::CSet Tl = solver2->GetMinimizer();
 				Tl.AddElement(i);
 				_partition = _partition.expand(Tl);
 	            xl.push_back(alpha_l);
@@ -109,17 +109,7 @@ namespace submodular {
         value_type lambda_;
         int NodeSize;
     };
-	// converter function (temporary use).
-	stl::Partition convert_partition(const std::vector<Set>& _old_p) {
-		stl::Partition _p;
-		for (const Set& s : _old_p) {
-			stl::CSet _s;
-			for (int a : s.GetMembers())
-				_s.AddElement(a);
-			_p.AddElement(_s);
-		}
-		return _p;
-	}
+
     /**
     * computing principal sequence of partition for given submodular function
     */

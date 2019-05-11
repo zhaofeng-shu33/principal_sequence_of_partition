@@ -16,10 +16,10 @@
 #include <chrono>
 #include <utility>
 #include <string>
-#include "core/set_utils.h"
-#include "core/oracle.h"
-#include "core/reporter.h"
 #include <lemon/list_graph.h>
+
+#include "core/reporter.h"
+
 namespace submodular {
 
 template <typename ValueType> class SFMAlgorithm;
@@ -30,7 +30,7 @@ template <typename ValueType>
 class SFMAlgorithm {
 public:
   using value_type = typename ValueTraits<ValueType>::value_type;
-
+  typedef stl::CSet Set;
   SFMAlgorithm(): done_sfm_(false) {}
   virtual ~SFMAlgorithm(){}
   //explicit SFMAlgorithm(const SFMReporter& reporter): reporter_(reporter), done_sfm_(false) {}
@@ -67,7 +67,7 @@ SFMAlgorithm<ValueType>::GetMinimumValue() {
 }
 
 template <typename ValueType>
-Set SFMAlgorithm<ValueType>::GetMinimizer() {
+stl::CSet SFMAlgorithm<ValueType>::GetMinimizer() {
   return reporter_.minimizer_;
 }
 
@@ -93,7 +93,7 @@ template <typename ValueType>
 class SFMAlgorithmWithReduction {
 public:
   using value_type = typename ValueTraits<ValueType>::value_type;
-
+  typedef stl::CSet Set;
   SFMAlgorithmWithReduction(): done_sfm_(false) {}
 
   virtual void Minimize(ReducibleOracle<ValueType>& F) = 0;
@@ -120,12 +120,12 @@ SFMAlgorithmWithReduction<ValueType>::GetMinimumValue() {
 }
 
 template <typename ValueType>
-Set SFMAlgorithmWithReduction<ValueType>::GetMinimizer() {
+stl::CSet SFMAlgorithmWithReduction<ValueType>::GetMinimizer() {
   return reporter_.minimizer_;
 }
 
 template <typename ValueType>
-void SFMAlgorithmWithReduction<ValueType>::SetResults(value_type minimum_value, const Set& minimizer) {
+void SFMAlgorithmWithReduction<ValueType>::SetResults(value_type minimum_value, const stl::CSet& minimizer) {
     //minimum_value_ = minimum_value;
     //minimizer_ = minimizer;
     reporter_.SetResults(static_cast<double>(minimum_value), minimizer);

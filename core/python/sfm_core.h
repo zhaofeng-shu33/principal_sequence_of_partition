@@ -28,7 +28,6 @@
 
 #include "core/python/py_utils.h"
 
-#include "core/set_utils.h"
 #include "core/oracle.h"
 #include "core/reporter.h"
 #include "core/sfm_algorithm.h"

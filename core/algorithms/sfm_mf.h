@@ -19,12 +19,7 @@
 #include <lemon/adaptors.h>
 #include <boost/core/swap.hpp>
 namespace submodular{
-	stl::CSet convert_set(const Set& _s) {
-		stl::CSet s;
-		for (int i : _s.GetMembers())
-			s.AddElement(i);
-		return s;
-	}
+
 template <typename ValueType>
 class MF: public SFMAlgorithm<ValueType> {
 public:
@@ -79,7 +74,7 @@ public:
         lemon::Preflow_Relabel<Digraph, ArcMap, PreflowSubgraphTraits> pf(subgraph, *_edge_map, source_node, sink_node);
         pf.run();
         value_type minimum_value = pf.flowValue() - const_difference;
-        Set X = Set::MakeEmpty(graph_size);
+		stl::CSet X;
         for (int v = 0; v < graph_size; ++v) {
             if (!pf.minCut(subgraph.nodeFromId(v)))
                 X.AddElement(v);
@@ -89,7 +84,8 @@ public:
 #ifdef  _DEBUG	
 		subgraph.disable(source_node);
 		subgraph.disable(sink_node);
-		stl::CSet _X = convert_set(X);
+		stl::CSet _X;
+		std::copy(X.begin(), X.end(), _X.begin());
 		_X.AddElement(graph_size);
 		subgraph.enable(_g->nodeFromId(graph_size));
 		value_type minimum_value_2 = -lambda_ + get_cut_value(subgraph, *_edge_map, _X);

@@ -18,7 +18,7 @@
 #include <chrono>
 #include <iostream>
 #include <utility>
-#include "core/set_utils.h"
+#include "set/set_stl.h"
 
 namespace submodular {
 
@@ -40,6 +40,7 @@ std::ostream& operator << (std::ostream& stream, const SFMReporter& reporter);
 
 class SFMReporter {
 public:
+  typedef stl::CSet Set;
   SFMReporter() = default;
   SFMReporter(const SFMReporter&) = default;
   SFMReporter(SFMReporter&&) = default;

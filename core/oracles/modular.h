@@ -16,7 +16,6 @@
 #include <vector>
 #include <stdexcept>
 #include "core/oracle.h"
-#include "core/set_utils.h"
 
 namespace submodular {
 

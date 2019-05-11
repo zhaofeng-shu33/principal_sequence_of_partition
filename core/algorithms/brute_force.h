@@ -15,7 +15,6 @@
 
 #include <limits>
 #include "core/oracle.h"
-#include "core/set_utils.h"
 #include "core/sfm_algorithm.h"
 #include "core/graph.h"
 #include <lemon/list_graph.h>
@@ -58,7 +57,7 @@ void BruteForce<ValueType>::Minimize(std::vector<ValueType>& xl, ValueType lambd
 	}
 	min_value -= lambda_;
 
-	Set minimizer_set(n_ground);
+	stl::CSet minimizer_set;
 	for (int i : minimizer)
 		minimizer_set.AddElement(i);
 	this->SetResults(min_value, minimizer_set);
