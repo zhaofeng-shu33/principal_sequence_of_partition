@@ -14,22 +14,32 @@ Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to co
 ## Dependencies
 
 * LEMON (required)
-* boost (required)
+* boost (boost-program-options is highly recommanded for the executable program while python binding requires boost-python)
 * gtest (optional)
 
-You can use your os package manager to install the above dependencies.
+We provide a way to compile without any dependencies (you can get an executable). But this method uses brute force search and has limited command line argument
+parsing capacity. To quickly try this way, invoke cmake with `-DUSE_LEMON=OFF -DUSE_BOOST_OPTION=OFF`.
+You can use your operating system package manager to install the above dependencies.
+
 It is tested you need g++ version >= 6.0 to compile the source code.
 
 ## CMake
-`main.cpp` is the user-implemented part. Run `cmake` will generate build recipe for building this cpp file.
+This project uses [CMake](https://cmake.org) build system. We recommand out of source build. From project root directory,
+```shell
+mkdir build
+cd build
+cmake ..
+```
+If any error occurs, you should fix the dependencies first.
 
 ### with LEMON
-Use brute force search to solve submodualr function minimization(SFM) problem. For set with more than 10 elements, it is impractical. We use graph maximal flow(MF) to solve the special SFM problem. MF requires [lemon](https://lemon.cs.elte.hu/trac/lemon) library, which is disabled by default. To enable it, run `cmake` with `-DUSE_LEMON=ON`. 
+We provide a naive brute force search method to solve submodualr function minimization(SFM) problem. For set with more than 10 elements, it is impractical. We use graph maximal flow(MF) to solve the special SFM problem. MF requires [lemon](https://lemon.cs.elte.hu/trac/lemon) library, which is disabled by default. To enable it, run `cmake` with `-DUSE_LEMON=ON`. 
 
-This library is included in Ubuntu from 18.4, see [liblemon-dev](https://packages.ubuntu.com/bionic/liblemon-dev).
+This library is included in Ubuntu from 18.04, see [liblemon-dev](https://packages.ubuntu.com/bionic/liblemon-dev).
 
 ### with boost
-This project uses boost library in two places. Firstly, the `main.cpp` uses *boost-option* to parse command-line arguments. But this feature is optional. To use it, run `cmake` with `-DUSE_BOOST_OPTION=ON`. Secondly, *boost-python* is used to make the procedure callable from Python.
+This project uses boost library in two places. Firstly, the `main.cpp` uses *boost-option* to parse command-line arguments. This feature is optional but highly recommanded, and enabled by default. To disable it, run `cmake` with `-DUSE_BOOST_OPTION=OFF`. Secondly, *boost-python* is used to make the procedure callable from Python.
+Disabled by default, to use it invoke cmake with `-DUSE_PYTHON=ON`.
 
 ### with GTest
 Testing is disabled by default, which requires gtest library. To enable it, run `cmake` with `-DENABLE_TESTING=ON`
