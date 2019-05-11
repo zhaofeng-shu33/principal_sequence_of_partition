@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-set(ic_lib io_utility.cpp reporter.cpp)
+set(ic_lib io_utility.cpp algorithms/reporter.cpp)
 
 
 

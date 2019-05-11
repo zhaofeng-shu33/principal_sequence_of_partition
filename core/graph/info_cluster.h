@@ -1,8 +1,6 @@
 #pragma once
-#include "core/oracles/modular.h"
-#include "core/graph.h"
-#include "core/oracles/graph_cut.h"
 #include <lemon/list_graph.h>
+#include "core/graph/graph.h"
 namespace submodular {
     class InfoCluster {
     public:

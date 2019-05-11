@@ -2,41 +2,17 @@
 /**
 *   Example from Literature "Minimum Average Cost Clustering"
 **/
+#include <lemon/list_graph.h>
 #include "config.h"
 #include "core/algorithms/brute_force.h"
 #if USE_LEMON
 #include "core/algorithms/sfm_mf.h"
-#include "core/graph.h"
-#include <lemon/list_graph.h>
+#include "core/graph/graph.h"
 #include "set/set_stl.h"
 #endif
-#include "core/oracles/modular.h"
 namespace submodular {
 
-    template <typename ValueType>
-    class SampleFunctionPartial{
-    public:
-        using value_type = typename ValueTraits<ValueType>::value_type;
-        std::string GetName() { return "Sample Function Partial"; }
-        SampleFunctionPartial(std::vector<value_type>& xl, value_type lambda, lemon::ListGraph* g, lemon::ListGraph::EdgeMap<ValueType>* edge_map) :
-            XL(xl),
-            lambda_(lambda),
-			_g(g),
-			_edge_map(edge_map)
-        {
-			fixed.AddElement(xl.size());
-        }
-        value_type Call(const stl::CSet& X) { // add the constraint X.extend(1)
-			value_type new_value = get_cut_value(*_g, *_edge_map, X.Union(fixed)) / 2;
-            return new_value - XL.Call(X) - lambda_;
-        }
-    private:
-        value_type lambda_;
-        ModularOracle<ValueType> XL;
-		lemon::ListGraph* _g;
-		stl::CSet fixed;
-		lemon::ListGraph::EdgeMap<ValueType>* _edge_map;
-    };
+ 
  
     /**
     *   compute the solution to \min_{P} h_{\gamma}(P)
@@ -44,7 +20,7 @@ namespace submodular {
     template <typename ValueType>
     class DilworthTruncation {
     public:
-        using value_type = typename ValueTraits<ValueType>::value_type;
+        using value_type = ValueType;
 		typedef lemon::ListDigraph Digraph;
 		typedef typename Digraph::ArcMap<ValueType> ArcMap;
         DilworthTruncation(value_type lambda, Digraph* g, ArcMap* edge_map):
@@ -116,7 +92,7 @@ namespace submodular {
     template <typename ValueType>
     class PSP {
     public:
-        using value_type = typename ValueTraits<ValueType>::value_type;
+        using value_type = ValueType;
 		typedef lemon::ListDigraph Digraph;
 		typedef typename Digraph::ArcMap<ValueType> ArcMap;
         PSP(Digraph* g, ArcMap* edge_map ) : _g(g), _edge_map(edge_map)

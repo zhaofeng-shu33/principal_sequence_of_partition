@@ -8,28 +8,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // =============================================================================
+// use maxflow to solve a special case of submodular function minimization problem, that is the submodular function is (di)graph cut function.
 #pragma once
-#include <core/graph.h>
+#include <algorithm>
+#include <lemon/adaptors.h>
+#include <boost/core/swap.hpp>
 #include <lemon/list_graph.h>
 #ifdef _DEBUG
 #include <lemon/lgf_writer.h>
 #include <fstream>
 #endif
+#include "core/graph/graph.h"
+#include "core/algorithms/sfm_algorithm.h"
 #include "preflow/mf_base.h"
-#include <lemon/adaptors.h>
-#include <boost/core/swap.hpp>
 namespace submodular{
 
 template <typename ValueType>
 class MF: public SFMAlgorithm<ValueType> {
 public:
-    using value_type = typename ValueTraits<ValueType>::value_type;
+    using value_type = ValueType;
 	typedef lemon::ListDigraph Digraph;
 	typedef typename Digraph::ArcMap<ValueType> ArcMap;
 	typedef typename lemon::FilterNodes<Digraph> SubDigraph;
 	typedef typename lemon::Preflow_RelabelDefaultTraits<SubDigraph, ArcMap> PreflowSubgraphTraits;
-    void Minimize(SubmodularOracle<ValueType>& F){}
-#ifdef USE_LEMON
     void Minimize(std::vector<value_type>& xl, value_type lambda_, Digraph* _g, ArcMap* _edge_map) {
         this->reporter_.SetNames(GetName(), "graph maximal flow");
 		int graph_size = xl.size();
@@ -85,7 +86,7 @@ public:
 		subgraph.disable(source_node);
 		subgraph.disable(sink_node);
 		stl::CSet _X;
-		std::copy(X.begin(), X.end(), _X.begin());
+		std::copy(X.begin(), X.end(), std::back_inserter(_X));
 		_X.AddElement(graph_size);
 		subgraph.enable(_g->nodeFromId(graph_size));
 		value_type minimum_value_2 = -lambda_ + get_cut_value(subgraph, *_edge_map, _X);
@@ -108,52 +109,6 @@ public:
 		subgraph.erase(sink_node);
         this->SetResults(minimum_value, X);
     }
-#else
-    void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl, value_type lambda_){
-        this->reporter_.SetNames(GetName(), sf->GetName());
-        //construct s-t graph
-        int graph_size = xl.size();
-        //sink node id is graph_size, source node id is graph_size+1
-        MaxflowGraph<ValueType> g;
-        int s = graph_size + 1, t = graph_size;
-        for (std::size_t i = 0; i <= graph_size + 1; ++i) {
-            g.AddNode(i);
-        }
-        typename MaxflowGraph<ValueType>::Node_s ss = g.GetNodeById(s), tt = g.GetNodeById(t);
-        value_type const_difference = lambda_;
-        for (int v = 0; v < graph_size; ++v) {
-            typename MaxflowGraph<ValueType>::Node_s vv = g.GetNodeById(v);
-            if(xl[v]<0)
-                g.AddSVArcPair(vv, ss, -xl[v], 0);
-            else {
-                g.AddVTArcPair(tt, vv, xl[v], 0);
-                const_difference += xl[v];
-            }
-            g.AddVTArcPair(tt, vv, sf->GetArcCap(t, v), 0);
-            for(int w = v+1; w < graph_size; w++)
-                g.AddArcPair(g.GetNodeById(w), vv, sf->GetArcCap(w, v), 0);
-        }        
-        g.MakeGraph(ss,tt);
-        g.FindMinCut();
-        
-        Set X = Set::MakeEmpty(graph_size);
-        for (int v = 0; v < graph_size; ++v) {
-            if(g.WhatSegment(v)==TermType::SINK)
-                X.AddElement(v);
-        }
-        value_type minimum_value = g.GetMaxFlowValue() - const_difference;
-#ifdef _DEBUG
-        value_type minimum_value_2 = sf->Call(X.Extend(1)) - lambda_;
-        for (int i : X.GetMembers())
-            minimum_value_2 -= xl[i];
-        if (std::abs(minimum_value - minimum_value_2) > 1e-5) {
-            std::cout << "maxflow value differs: " << minimum_value << " != " << minimum_value_2 << std::endl;
-            exit(0);
-        }
-#endif
-        this->SetResults(minimum_value, X);
-    }
-#endif
     std::string GetName() { return "maximal flow"; }
 	private:
 		lemon::Tolerance<ValueType> _tolerance;

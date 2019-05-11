@@ -1,9 +1,7 @@
 #pragma once
 #include <boost/python.hpp>
 
-#include "core/oracles/modular.h"
-#include "core/graph.h"
-#include "core/oracles/graph_cut.h"
+#include "core/graph/graph.h"
 #include "core/graph/info_cluster.h"
 
 namespace submodular {

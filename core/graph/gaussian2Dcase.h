@@ -3,8 +3,7 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
-#include "core/graph.h"
-#include "core/oracles/graph_cut.h"
+#include "core/graph/graph.h"
 #include "core/dt.h"
 #include "core/graph/info_cluster.h"
 #include "core/io_utility.h"

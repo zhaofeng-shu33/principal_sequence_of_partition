@@ -18,18 +18,19 @@
 #include <string>
 #include <lemon/list_graph.h>
 
-#include "core/reporter.h"
+#include "core/algorithms/reporter.h"
 
 namespace submodular {
 
 template <typename ValueType> class SFMAlgorithm;
 template <typename ValueType> class SFMAlgorithmWithReduction;
 
+
 // Base class of SFM algorithms
 template <typename ValueType>
 class SFMAlgorithm {
 public:
-  using value_type = typename ValueTraits<ValueType>::value_type;
+  using value_type = ValueType;
   typedef stl::CSet Set;
   SFMAlgorithm(): done_sfm_(false) {}
   virtual ~SFMAlgorithm(){}
@@ -42,8 +43,6 @@ public:
   // The minimum value (and a minimizer) should be stored in minimum_value (resp. minimizer_)
   // Some statistics should be reported as stats_.
   // NOTE: SubmodularOracle object F will possibly be modified by the algorithm.
-  virtual void Minimize(SubmodularOracle<ValueType>& F) = 0;
-  virtual void Minimize(SubmodularOracle<ValueType>* sf, std::vector<value_type>& xl, value_type lambda_) {}
   virtual void Minimize(std::vector<value_type>& xl, value_type lambda_, lemon::ListDigraph* _g, lemon::ListDigraph::ArcMap<ValueType>* _edge_map) {}
   virtual std::string GetName() = 0;
   
@@ -89,58 +88,6 @@ void SFMAlgorithm<ValueType>::SetResults(value_type minimum_value, const Set& mi
     done_sfm_ = true;
 }
 
-template <typename ValueType>
-class SFMAlgorithmWithReduction {
-public:
-  using value_type = typename ValueTraits<ValueType>::value_type;
-  typedef stl::CSet Set;
-  SFMAlgorithmWithReduction(): done_sfm_(false) {}
-
-  virtual void Minimize(ReducibleOracle<ValueType>& F) = 0;
-
-  virtual std::string GetName() = 0;
-
-  value_type GetMinimumValue();
-  Set GetMinimizer();
-  SFMReporter GetReporter();
-
-protected:
-  bool done_sfm_;
-  //value_type minimum_value_;
-  SFMReporter reporter_;
-  //Set minimizer_;
-  void ClearReports();
-  void SetResults(value_type minimum_value, const Set& minimizer);
-};
-
-template <typename ValueType>
-typename SFMAlgorithmWithReduction<ValueType>::value_type
-SFMAlgorithmWithReduction<ValueType>::GetMinimumValue() {
-  return static_cast<value_type>(reporter_.minimum_value_);
-}
-
-template <typename ValueType>
-stl::CSet SFMAlgorithmWithReduction<ValueType>::GetMinimizer() {
-  return reporter_.minimizer_;
-}
-
-template <typename ValueType>
-void SFMAlgorithmWithReduction<ValueType>::SetResults(value_type minimum_value, const stl::CSet& minimizer) {
-    //minimum_value_ = minimum_value;
-    //minimizer_ = minimizer;
-    reporter_.SetResults(static_cast<double>(minimum_value), minimizer);
-    done_sfm_ = true;
-}
-
-template <typename ValueType>
-SFMReporter SFMAlgorithmWithReduction<ValueType>::GetReporter() {
-  return reporter_;
-}
-
-template <typename ValueType>
-void SFMAlgorithmWithReduction<ValueType>::ClearReports() {
-  reporter_.Clear();
-}
 
 }
 

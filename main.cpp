@@ -3,13 +3,12 @@
 * \brief : accomplish real task by info-clustering technique
 */
 #include "config.h"
-
-
 #if USE_BOOST
 #include <boost/program_options.hpp>
 #endif
-#include "core/gaussian2Dcase.h"
+#include "core/graph/gaussian2Dcase.h"
 #include "core/pmf.h"
+
 void check_size(int size) {
     if (size % 4 != 0) {
         std::cout << "Node size must be multiplier of 4\n";

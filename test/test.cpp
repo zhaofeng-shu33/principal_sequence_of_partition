@@ -3,12 +3,12 @@
 
 // Graph tests
 #include "graph/test_graph.h"
+// Gaussian test
+#include "graph/test_gaussian.h"
 
 // Dilworth truncation tests
 #include "test_dt.h"
 
-// Gaussian test
-#include "test_gaussian.h"
 
 // maxflow test in dt case
 #if USE_LEMON

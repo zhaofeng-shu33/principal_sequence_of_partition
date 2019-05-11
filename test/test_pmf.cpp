@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <cmath>
 #include "core/pmf.h"
-#include "core/gaussian2Dcase.h"
+#include "core/graph/gaussian2Dcase.h"
 #include "test_utility.h"
 namespace parametric {
 TEST(PMF, EquationSolve) {

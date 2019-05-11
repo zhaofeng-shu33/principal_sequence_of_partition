@@ -1,11 +1,9 @@
 #pragma once
 #include "gtest/gtest.h"
-#include "core/graph.h"
+#include "core/graph/graph.h"
 #include "core/dt.h"
-#include "core/oracles/graph_cut.h"
-#include "core/set_utils.h"
-#include "core/gaussian2Dcase.h"
-#include "test_utility.h"
+#include "core/graph/gaussian2Dcase.h"
+#include "utility.h"
 namespace demo {
 
 TEST(Gaussian2D, GivenPoint) {

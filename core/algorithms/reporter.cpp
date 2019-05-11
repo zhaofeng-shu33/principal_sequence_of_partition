@@ -1,4 +1,4 @@
-#include "core/reporter.h"
+#include "core/algorithms/reporter.h"
 namespace submodular {
     void SFMReporter::Clear() {
   for (auto& kv: times_) {

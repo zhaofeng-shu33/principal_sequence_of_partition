@@ -1,5 +1,4 @@
-#include <iostream>
-#include <vector>
+#include "io_utility.h"
 namespace std {
     ostream& operator<<(ostream& os, const vector<int>& category) {
         os << '[';

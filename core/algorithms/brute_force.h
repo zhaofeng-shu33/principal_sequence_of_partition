@@ -14,9 +14,8 @@
 #define ALGORITHMS_BRUTE_FORCE_H
 
 #include <limits>
-#include "core/oracle.h"
-#include "core/sfm_algorithm.h"
-#include "core/graph.h"
+#include "core/algorithms/sfm_algorithm.h"
+#include "core/graph/graph.h"
 #include <lemon/list_graph.h>
 
 namespace submodular {
@@ -24,14 +23,13 @@ namespace submodular {
 template <typename ValueType>
 class BruteForce: public SFMAlgorithm<ValueType> {
 public:
-  using value_type = typename ValueTraits<ValueType>::value_type;
+  using value_type = ValueType;
   typedef lemon::ListDigraph Digraph;
   typedef typename Digraph::ArcMap<ValueType> ArcMap;
   BruteForce() = default;
 
   std::string GetName() { return "Brute Force"; }
 
-  void Minimize(SubmodularOracle<ValueType>& F);
   void Minimize(std::vector<ValueType>& xl, ValueType lambda_, Digraph* _g, ArcMap* _edge_map);
 };
 
@@ -63,33 +61,6 @@ void BruteForce<ValueType>::Minimize(std::vector<ValueType>& xl, ValueType lambd
 	this->SetResults(min_value, minimizer_set);
 }
 
-template <typename ValueType>
-void BruteForce<ValueType>::Minimize(SubmodularOracle<ValueType>& F) {
-  this->reporter_.SetNames(GetName(), F.GetName());
-  this->reporter_.EntryTimer(ReportKind::TOTAL);
-  this->reporter_.EntryTimer(ReportKind::ORACLE);
-  this->reporter_.EntryCounter(ReportKind::ORACLE);
-
-  this->reporter_.TimerStart(ReportKind::TOTAL);
-
-  value_type min_value = std::numeric_limits<value_type>::max();
-  auto n_ground = F.GetNGround();
-  Set minimizer(n_ground);
-
-  for (unsigned long i = 0; i < (1 << n_ground); ++i) {
-    Set X(n_ground, i);
-
-    auto new_value = F.Call(X, &(this->reporter_));
-
-    if (new_value < min_value) {
-      min_value = new_value;
-      minimizer = X;
-    }
-  }
-
-  this->reporter_.TimerStop(ReportKind::TOTAL);
-  this->SetResults(min_value, minimizer);
-}
 
 }
 

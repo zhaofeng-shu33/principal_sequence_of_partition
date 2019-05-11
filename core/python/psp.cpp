@@ -5,7 +5,7 @@
 #endif
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#include "core/gaussian2Dcase.h"
+#include "core/graph/gaussian2Dcase.h"
 #include "core/python/graph_cut_py.h"
 using namespace boost::python;
 template class std::vector<double>;
