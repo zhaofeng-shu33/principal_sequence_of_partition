@@ -101,7 +101,8 @@ if(USE_PYTHON)
     
     if(WIN32)
       # install debug type dll
-      install(FILES ${PROJECT_BINARY_DIR}/Debug/psp.dll DESTINATION ${PROJECT_SOURCE_DIR}/info_cluster RENAME psp.pyd)
+      set(DYNAMIC_LIB_SUFFIX pyd)
+      add_custom_command(TARGET psp POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:psp> ${PROJECT_SOURCE_DIR}/info_cluster/psp.${DYNAMIC_LIB_SUFFIX})
     endif()
     
     execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import site;print(site.getsitepackages()[-1],end='')" OUTPUT_VARIABLE PYTHON_SIDE_PACKAGES)
