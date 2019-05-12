@@ -12,7 +12,6 @@
 #pragma once
 #include <algorithm>
 #include <lemon/adaptors.h>
-#include <boost/core/swap.hpp>
 #include <lemon/list_graph.h>
 #ifdef _DEBUG
 #include <lemon/lgf_writer.h>

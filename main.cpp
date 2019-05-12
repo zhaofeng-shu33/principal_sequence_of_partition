@@ -38,7 +38,7 @@ int main(int argc, const char *argv[]){
         std::cout << desc << '\n';
         return 0;
     }
-#endif
+
     int size = vm["size"].as<int>();
     bool run_full = vm["full"].as<bool>();
     bool use_pdt = vm["pdt"].as<bool>();
@@ -49,23 +49,24 @@ int main(int argc, const char *argv[]){
         parametric::Partition p = gPDT->get_smallest_partition(4);
         std::cout << p;
         delete gPDT;
+		return 0;
     }
-    else {
-#if USE_BOOST
+
         submodular::InfoCluster* g2g = new demo::Gaussian2DGraph(size, _gamma);
 #else
-        demo::Gaussian2DGraph<double>* g2g = new demo::Gaussian2DGraph<double>(8);
+	bool run_full = true;
+    demo::Gaussian2DGraph* g2g = new demo::Gaussian2DGraph(8);
 #endif
-        stl::Partition p;
-        if (run_full) {
-            g2g->run();
-            p = g2g->get_smallest_partition(4);
-        }
-        else {
-            p = g2g->get_partition(4);
-        }
-        std::cout << p;
-        delete g2g;
+    stl::Partition p;
+    if (run_full) {
+        g2g->run();
+        p = g2g->get_smallest_partition(4);
     }
+    else {
+        p = g2g->get_partition(4);
+    }
+    std::cout << p;
+    delete g2g;
+    
     return 0;
 }
