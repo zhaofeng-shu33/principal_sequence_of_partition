@@ -47,7 +47,7 @@ int main(int argc, const char *argv[]){
         demo::Gaussian2DPDT* gPDT = new demo::Gaussian2DPDT(size, _gamma);
         gPDT->run();
         parametric::Partition p = gPDT->get_smallest_partition(4);
-        std::cout << p;
+        std::cout << p << std::endl;
         delete gPDT;
 		return 0;
     }
@@ -65,7 +65,7 @@ int main(int argc, const char *argv[]){
     else {
         p = g2g->get_partition(4);
     }
-    std::cout << p;
+    std::cout << p << std::endl;
     delete g2g;
     
     return 0;

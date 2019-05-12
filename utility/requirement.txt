@@ -1,8 +1,0 @@
-numpy
-matplotlib
-scikit-learn
-tabulate
-easydict
-codecov
-ete3
-networkx

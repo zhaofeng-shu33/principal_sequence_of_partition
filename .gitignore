@@ -5,7 +5,9 @@ info_cluster/*.pyd
 info_cluster.egg-info/
 **/build
 **/.DS_Store
-utility/debug/*
+**/debug
 utility/*.log
 **/__pycache__
 **/.vs
+# ignore unmature results
+experiment_1/*

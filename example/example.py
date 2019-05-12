@@ -8,3 +8,4 @@ if __name__ == '__main__':
     ic = InfoCluster(affinity='precomputed') # use precomputed graph structure
     ic.fit(g)
     ic.print_hierachical_tree()
+    print('depth: ', ic.get_tree_depth())

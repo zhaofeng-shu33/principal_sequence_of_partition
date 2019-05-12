@@ -27,6 +27,9 @@ class InfoCluster:
         self.affinity = affinity
         self.n_neighbors = n_neighbors     
         self.n_clusters = n_clusters
+        self.tree = Tree()
+        self.tree_depth = 0
+        
     def fit(self, X, use_pdt = False):
         '''Construct an affinity graph from X using rbf kernel function,
         then applies info clustering to this affinity graph.
@@ -43,6 +46,7 @@ class InfoCluster:
         
         self.critical_values = to_py_list(self.g.get_critical_values())
         self.partition_num_list = to_py_list(self.g.get_partitions())  
+        
     def fit_predict(self, X):
         return self.fit(X)
 
@@ -66,14 +70,34 @@ class InfoCluster:
             if(len(node_list_i)>1):
                 self._add_node(root_i, node_list_i, num_index+1)
                 
-    def get_hierachical_tree(self, root):
+    def _get_hierachical_tree(self):
         max_num = self.partition_num_list[-1]
         node_list = [ i for i in range(0, max_num)]
-        self._add_node(root, node_list, 1)
+        self._add_node(self.tree, node_list, 1)
+    
+    def _set_tree_depth(self, node, depth):
+        if(node.is_leaf()):
+            if(depth > self.tree_depth):
+                self.tree_depth = depth
+            return
+        for node_i in node.children: # depth first search
+            self._set_tree_depth(node_i, depth+1)
+            
+    def get_tree_depth(self):
+        if(self.tree.is_leaf()):
+            self._get_hierachical_tree()
+        if(self.tree_depth != 0):
+            return self.tree_depth
+        self._set_tree_depth(self.tree, 0)
+        return self.tree_depth
+        
     def print_hierachical_tree(self):
-        t = Tree()
-        self.get_hierachical_tree(t)
-        print(t)
+        '''print the hirechical tree of clustering result
+        '''
+        if(self.tree.is_leaf()):
+            self._get_hierachical_tree()
+        print(self.tree)
+        
     def get_category(self, i, X=None):
         '''get the clustering labels with the number of clusters no smaller than i
         Parameters

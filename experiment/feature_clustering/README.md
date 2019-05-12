@@ -1,7 +1,6 @@
 # Prerequisite
-To run the Python code in the directory, you need to install packages listed in `requirement.txt` and some other packages
-including 'oss2, info_cluster, pyyaml'. Since `requirement.txt` is used in travis ci, we only include build required packages in 
-`requirement.txt`.
+To run the Python code in the directory, you need to install packages listed in `requirement.txt`, the package
+'oss2' is optional but currently the package control is under progress, so you need to install optional package as well.
 
 To start refreshly, you need run
 ```
@@ -27,6 +26,7 @@ Download link is [parameter.json](http://data-visualization.leidenschaft.cn/rese
 If you are impatient, after downloading `parameter.json` and put it in `build/` directory. You can just run the `empircal_compare.py` without `fine_tuning`.
 
 ## Basic Plotting
-Plotting routines are provided to visualize the clustering result.
+Plotting routines are provided to visualize the clustering result in `plot_art` directory.
+You need to install matplotlib package before using it. (`requirement.txt` is not required)
 Usage: `python plot_art.py --show_pic`. 
 Notice that for the three circle plot is a little bit slow (1min above).
