@@ -49,7 +49,8 @@ install:
   - cd ..
   - python -c "import pathlib" 2>/dev/null || python -m pip install pathlib
   - python setup.py install
-  - python -c "import networkx" 2>/dev/null || python -m pip install -r ./utility/requirement.txt
+  - python -c "import networkx" 2>/dev/null || python -m pip install -r ./info_cluster/requirement.txt
+  - python -c "import codecov" 2>/dev/null || python -m pip install codecov  
 script:
 # used for testing
   - cd build
