@@ -4,3 +4,6 @@
 [submodule "preflow"]
 	path = preflow
 	url = https://github.com/zhaofeng-shu33/preflow
+[submodule "cmty"]
+	path = experiment/community_detection/cmty
+	url = https://github.com/zhaofeng-shu33/community
