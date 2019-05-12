@@ -25,7 +25,7 @@ import graphviz # for writing .gv file
 from sklearn.metrics import adjusted_rand_score
 
 from info_cluster import InfoCluster
-from GN import GN
+from cmty import GN
 
 n = 16
 k1 = 4 # inner
