@@ -56,9 +56,13 @@ class build_ext(build_ext_orig):
         ]
 
         os.chdir(str(build_temp))
-        self.spawn(['cmake', str(cwd)] + cmake_args)
+        if(os.environ.get('CMAKE')):
+            cmake_exe = os.environ['CMAKE']
+        else:
+            cmake_exe = 'cmake'
+        self.spawn([cmake_exe, str(cwd)] + cmake_args)
         if not self.dry_run:
-            self.spawn(['cmake', '--build', '.'] + build_args)
+            self.spawn([cmake_exe, '--build', '.'] + build_args)
         os.chdir(str(cwd))            
         # after building, rename and copy the file to the lib directory 
         if sys.platform == 'win32':

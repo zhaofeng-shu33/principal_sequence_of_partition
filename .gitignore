@@ -2,6 +2,8 @@ dist/*
 info_cluster/psp.so
 *.pyd
 info_cluster/*.pyd
+*.so
+info_cluster/*.so
 info_cluster.egg-info/
 **/build
 **/.DS_Store
