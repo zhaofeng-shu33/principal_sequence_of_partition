@@ -18,6 +18,9 @@ import random
 import argparse
 from datetime import datetime
 import pdb
+import logging
+import os
+import json
 
 import numpy as np
 import networkx as nx # for manipulating graph data-structure
@@ -27,6 +30,8 @@ from sklearn.metrics import adjusted_rand_score
 from info_cluster import InfoCluster
 from cmty import GN
 
+logging.basicConfig(filename=os.path.join('build', 'two_level.log'), level=logging.INFO, format='%(asctime)s %(message)s')
+
 n = 16
 k1 = 4 # inner
 k2 = 4 # outer
@@ -34,6 +39,7 @@ K = 18
 color_list = ['red', 'orange', 'green', 'purple']
 ground_truth_outer = []
 ground_truth_inner = []
+
 def modify_edge_weight(G, weight_method='triangle-power'):
     '''
         G: networkx like graph
@@ -64,7 +70,7 @@ def evaluate(num_times, alg):
               'recover_percentage': 0.0,
               'num_times': num_times
              }
-    print('eval ' + str(type(alg)))
+    logging.info('eval ' + str(type(alg)) + ' num_times=%d'%num_times)
     for i in range(num_times):
         G = construct(args.z_in_1, args.z_in_2, z_o)    
         modify_edge_weight(G, args.weight)
@@ -75,7 +81,9 @@ def evaluate(num_times, alg):
         report['inner_ari'] += inner_ari
         if(out_ari > 0.99 and inner_ari > 0.99):
             report['recover_percentage'] += 1.0
-        report['depth'] += alg.get_tree_depth()
+        depth = alg.get_tree_depth()
+        logging.info('round {0}: with o_ari={1}, i_ari={2} and depth={3}'.format(i, out_ari, inner_ari, depth))
+        report['depth'] += depth
     for k in report.keys():
         report[k] /= num_times
     return report
@@ -176,17 +184,17 @@ if __name__ == '__main__':
             methods.append(GN())
         for method in methods:
             report = evaluate(args.evaluate, method)
-            print(report)
+            logging.info('final report' + json.dumps(report))
     else:
         if(args.ic):           
             print('use info-clustering algorithm...')
-            ic = InfoCluster(affinity='precomputed')        
+            alg = InfoCluster(affinity='precomputed')        
             modify_edge_weight(G, args.weight)
-            ic.fit(G)
-            print(ic.partition_num_list)
         if(args.gn):
             print('use Girvan-Newman algorithm...')        
-            gn = GN()
-            gn.fit(G)
-            print(gn.partition_num_list)
-        
+            alg = GN()
+        else:
+            print('at least --ic or --gn should be provided')
+            exit(0)
+        alg.fit(G)
+        print(alg.partition_num_list)
