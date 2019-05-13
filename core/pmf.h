@@ -33,7 +33,7 @@ public:
     double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
 private:    
     void update_dig(double lambda);
-    void slice(Set& S, Set& T, const FlowMap& arcMap);
+    void slice(Set& S, Set& T, const FlowMap& arcMap, double lambda_1, double lambda_3);
 	//! modify flow given current dig_aM
 	void modify_flow(const FlowMap& flowMap, FlowMap& newFlowMap);
     inline Set get_min_cut_source_side(Preflow& pf);
