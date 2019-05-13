@@ -34,6 +34,9 @@ cmake ..
 ```
 If any error occurs, you should fix the dependencies first.
 
+### options
+use `-DUSE_CXX11_ABI=OFF` if your system boost library is built by g++ version <=4.8.
+
 ### with LEMON
 We provide a naive brute force search method to solve submodualr function minimization(SFM) problem. For set with more than 10 elements, it is impractical. We use graph maximal flow(MF) to solve the special SFM problem. MF requires [lemon](https://lemon.cs.elte.hu/trac/lemon) library, which is enabled by default.
 
