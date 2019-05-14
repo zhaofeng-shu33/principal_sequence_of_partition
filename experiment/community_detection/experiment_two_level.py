@@ -25,6 +25,7 @@ import json
 import numpy as np
 import networkx as nx # for manipulating graph data-structure
 import graphviz # for writing .gv file
+import matplotlib.pyplot as plt
 from sklearn.metrics import adjusted_rand_score
 from ete3 import TreeStyle, NodeStyle
 
@@ -42,7 +43,7 @@ shape_list = ['sphere', 'circle', 'sphere', 'sphere']
 ground_truth_outer = []
 ground_truth_inner = []
 
-def plot_clustering_tree(tree):
+def plot_clustering_tree(tree, alg_name):
     ts = TreeStyle()
     ts.rotation = 90
     for n in tree:
@@ -50,7 +51,7 @@ def plot_clustering_tree(tree):
         nstyle['fgcolor'] = color_list[n.macro]
         nstyle['shape'] = shape_list[n.micro]
         n.set_style(nstyle)
-    tree.render(os.path.join('build', 'tree.pdf'), tree_style=ts)
+    tree.render(os.path.join('build', 'tree.pdf'.replace('.pdf', '_' + alg_name + '.pdf')), tree_style=ts)
     
 def add_category_info(G, tree):
     for n in tree:
@@ -132,7 +133,22 @@ def construct(z_in_1, z_in_2, z_out):
                     if(random.random() <= p_2):
                         G.add_edge(i[0], j[0])
     return G    
-    
+
+def original_graph_plot(G, format='svg'):
+    '''plot the graph in random layout
+    '''
+    plt.clf()
+    node_color_list = []
+    marker_avail = ['o', '^', 's', 'D']
+    node_marker_list = []
+    for i in G.nodes(data=True):
+        macro_index = i[1]['macro']
+        micro_index = i[1]['micro']
+        node_color_list.append(color_list[macro_index])
+        node_marker_list.append(marker_avail[micro_index])
+    nx.draw_random(G, width=0.2, nodelist=G.node, node_color=node_color_list, node_size=100, style='dotted')
+    plt.savefig(fname=os.path.join('build', 'random_two_level.%s'%format))   
+        
 def graph_plot(G):
     '''
     generate the plot file which is the input of graphviz.
@@ -140,6 +156,7 @@ def graph_plot(G):
     '''
     global n, k1, k2
     time_str = datetime.now().strftime('%Y-%m-%d')
+
     g = graphviz.Graph(filename='two_level-%s.gv'%time_str, engine='neato') # g is used for plotting
     for i in G.nodes(data=True):
         macro_index = i[1]['macro']
@@ -158,7 +175,7 @@ def graph_plot(G):
             weight_value = 10
             edge_len = 0.5
         g.edge(str(i), str(j), weight=str(weight_value), penwidth="0.3", len=str(edge_len))    
-    g.save(directory='fig')    
+    g.save(directory='build')    
 
 class InfoClusterWrapper(InfoCluster):
     def __init__(self):
@@ -201,6 +218,7 @@ if __name__ == '__main__':
     G = construct(args.z_in_1, args.z_in_2, z_o)    
     if(args.save_graph):
         graph_plot(G)
+        original_graph_plot(G)
     methods = []
     if(args.alg.count('all')>0):
         args.alg = method_chocies
@@ -208,7 +226,7 @@ if __name__ == '__main__':
         methods.append(InfoClusterWrapper())
     if(args.alg.count('gn')>0):
         methods.append(GN())
-    else:
+    if(len(methods)==0):
         raise ValueError('unknown algorithm')
     
     if(args.evaluate > 0):
@@ -216,17 +234,18 @@ if __name__ == '__main__':
             report = evaluate(args.evaluate, method)
             logging.info('final report' + json.dumps(report))
     else:
-        for method in methods:
+        for i, method in enumerate(methods):
             report = {'outer_ari' : 0.0,
                       'inner_ari' : 0.0,
                       'depth': 0,
                       'recover_percentage': 0.0
-                      }        
-            print('running ' + args.alg)
+                      }       
+            alg_name = args.alg[i]
+            print('running ' + alg_name)
             out_ari, inner_ari, depth = evaluate_single(method, G)            
             print('out ari is', out_ari)
             print('inner ari is', inner_ari)
             print('tree depth is', depth)            
             if(args.save_tree):
                 add_category_info(G, method.tree)
-                plot_clustering_tree(method.tree)
+                plot_clustering_tree(method.tree, alg_name)
