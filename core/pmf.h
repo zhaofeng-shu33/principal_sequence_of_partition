@@ -5,7 +5,7 @@
 
 #include <lemon/list_graph.h>
 #include <unordered_set>
-#include "preflow/mf_base.h"
+#include <lemon/preflow.h>
 #include "set/set_stl.h"
 typedef std::pair<double, double> pair;
 namespace parametric{
@@ -16,7 +16,7 @@ typedef stl::Partition Partition;
 class PMF {
 public:
     using Set = stl::CSet;
-	typedef lemon::Preflow_Relabel<lemon::ListDigraph, ArcMap> Preflow;
+	typedef lemon::Preflow<lemon::ListDigraph, ArcMap> Preflow;
 	typedef Preflow::FlowMap FlowMap;
 	typedef Preflow::Elevator Elevator;
     PMF(lemon::ListDigraph& g, ArcMap& arcMap, std::size_t j, std::vector<pair>& y_lambda);
@@ -33,13 +33,15 @@ public:
     double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
 private:    
     void update_dig(double lambda);
-    void slice(Set& S, Set& T, bool isLeft);
+    void slice(Set& S, Set& T, const FlowMap& arcMap);
+	//! modify flow given current dig_aM
+	void modify_flow(const FlowMap& flowMap, FlowMap& newFlowMap);
     inline Set get_min_cut_source_side(Preflow& pf);
     double compute_lambda_eq_const(Set& S, Set& T);
     lemon::ListDigraph* g_ptr;
     ArcMap* aM;
     lemon::ListDigraph dig; //directed graph
-    ArcMap dig_aM; //digrected graph arcMap
+    ArcMap dig_aM; //directed graph arcMap
     std::vector<pair> _y_lambda;
     std::vector<double> sink_capacity;
     std::list<double> lambda_list;
