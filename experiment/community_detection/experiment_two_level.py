@@ -25,10 +25,11 @@ import json
 import numpy as np
 import networkx as nx # for manipulating graph data-structure
 import graphviz # for writing .gv file
-import matplotlib.pyplot as plt
 from sklearn.metrics import adjusted_rand_score
-from ete3 import TreeStyle, NodeStyle
-
+try:
+    from ete3 import TreeStyle, NodeStyle
+except ImportError:
+    pass
 from info_cluster import InfoCluster
 from cmty import GN
 
