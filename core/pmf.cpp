@@ -5,6 +5,11 @@
 #include <iostream>
 #include "core/pmf.h"
 #if _DEBUG
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <map>
+#include <boost/serialization/map.hpp>
+#include <fstream>
 #include <cassert>
 #endif
 
@@ -109,20 +114,35 @@ namespace parametric {
                 continue;
             dig.addArc(source_node, n);            
         }
-        // reset the source_node and sink_node
+
         Preflow pf(dig, dig_aM, source_node, sink_node);
         //find S_0 and T_0
         update_dig(0);
         pf.init();
         pf.startFirstPhase();
         pf.startSecondPhase();
+#if _DEBUG
+		if (_j == 1) {
+			std::ofstream s("map.oarchive");
+			boost::archive::binary_oarchive oa(s);
+			std::map<int, double> m;
+			for (lemon::ListDigraph::ArcIt a(dig); a != lemon::INVALID; ++a) {
+				int new_id = dig.id(a);
+				m[new_id] = dig_aM[a];
+			}
+			oa << m;
+			s.close();
+			Preflow pf_2(dig, dig_aM, source_node, sink_node);
+			bool is_succ = pf_2.init(pf.flowMap());
+		}
+#endif
         Set S_0 = get_min_cut_source_side(pf);
         Set T_0 = S_0.Complement(tilde_G_size);
         Set T_1 = Set::MakeEmpty(tilde_G_size);
         T_1.AddElement(_j);
         set_list.push_back(T_0);
         set_list.push_back(T_1);
-        slice(S_0, T_1, pf.flowMap());
+        slice(S_0, T_1, pf.flowMap(), 0, std::numeric_limits<double>::infinity());
     }
 
     void PMF::reset_j(std::size_t j) { 
@@ -134,9 +154,9 @@ namespace parametric {
 		for (lemon::ListDigraph::ArcIt arc(dig); arc != lemon::INVALID; ++arc) {
 			newFlowMap[arc] = flowMap[arc];
 		}
-		for (lemon::ListDigraph::OutArcIt e(dig, source_node); e != lemon::INVALID; ++e) {
-			newFlowMap[e] = dig_aM[e];
-		}
+		//for (lemon::ListDigraph::OutArcIt e(dig, source_node); e != lemon::INVALID; ++e) {
+		//	newFlowMap[e] = dig_aM[e];
+		//}
 		for (lemon::ListDigraph::InArcIt e(dig, sink_node); e != lemon::INVALID; ++e) {
 			if(flowMap[e] > dig_aM[e])
 				newFlowMap[e] = dig_aM[e];
@@ -149,15 +169,12 @@ namespace parametric {
             int i = dig.id(dig.target(arc));
             double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
             dig_aM[arc] = std::max<double>(0, -std::min<double>(a_i - 2 * lambda, b_i));
-
         }
+
         for (lemon::ListDigraph::InArcIt arc(dig, sink_node); arc != lemon::INVALID; ++arc) {
             int i = dig.id(dig.source(arc));
             double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
-            // get the arc from the original graph
-            lemon::ListDigraph::Arc o_arc = dig.arcFromId(dig.id(arc));
             dig_aM[arc] = sink_capacity[i] + std::max<double>(0, std::min<double>(a_i - 2 * lambda, b_i));
-
         }
     }
     void PMF::insert(double lambda) {
@@ -178,7 +195,7 @@ namespace parametric {
         }
         set_list.insert(set_list.end(), s);
     }
-    void PMF::slice(Set& S, Set& T, const FlowMap& flowMap) {
+    void PMF::slice(Set& S, Set& T, const FlowMap& flowMap, double lambda_1, double lambda_3) {
         // compute lambda_2
         double lambda_const = compute_lambda_eq_const(S, T);
         std::vector<pair> y_lambda_filter;
@@ -189,11 +206,20 @@ namespace parametric {
         }
         double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const);
         update_dig(lambda_2);
+		if (lambda_2 < lambda_1 || lambda_2 > lambda_3) {
+			throw std::logic_error("lambda value mismatch");
+		}
 		FlowMap newFlowMap(dig);
 		modify_flow(flowMap, newFlowMap);
         // do not use graph contraction
         Preflow pf_instance(dig, dig_aM, source_node, sink_node);
-        pf_instance.init(newFlowMap);
+		// pf_instance.init();
+		// bool isValid = true;
+        bool isValid = pf_instance.init(newFlowMap);
+#if _DEBUG
+		if (!isValid)
+			throw std::logic_error("not valid flow map to init.");
+#endif
         pf_instance.startFirstPhase();
         pf_instance.startSecondPhase();
         Set S_apostrophe = get_min_cut_source_side(pf_instance);
@@ -207,8 +233,8 @@ namespace parametric {
             Set S_Union = S.Union(S_apostrophe);
             Set T_Union = T.Union(T_apostrophe);
             insert_set(T_Union);
-            slice(S, T_Union, flowMap);
-            slice(S_Union, T, newFlowMap);
+            slice(S, T_Union, flowMap, lambda_1, lambda_2);
+            slice(S_Union, T, newFlowMap, lambda_2, lambda_3);
         }
         else {
             insert(lambda_2);

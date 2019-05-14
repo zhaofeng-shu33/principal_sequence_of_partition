@@ -25,11 +25,13 @@ import json
 import numpy as np
 import networkx as nx # for manipulating graph data-structure
 import graphviz # for writing .gv file
+import matplotlib.pyplot as plt
 from sklearn.metrics import adjusted_rand_score
 try:
     from ete3 import TreeStyle, NodeStyle
 except ImportError:
     pass
+
 from info_cluster import InfoCluster
 from cmty import GN
 
@@ -82,9 +84,12 @@ def evaluate(num_times, alg, z_in_1, z_in_2, z_o):
               'inner_ari' : 0.0,
               'depth': 0,
               'recover_percentage': 0.0,
-              'num_times': num_times
+              'num_times': num_times,
+              'z_in_1': z_in_1,
+              'z_in_2': z_in_2,
+              'z_o': z_o
              }
-    logging.info('eval ' + str(type(alg)) + ' num_times=%d'%num_times)
+    logging.info('eval ' + str(type(alg)) + ' num_times=%d, z_in_1=%f,z_in_2=%f, z_o=%f'%(num_times, z_in_1, z_in_2, z_o))
     for i in range(num_times):
         G = construct(z_in_1, z_in_2, z_o)    
         out_ari, inner_ari, depth = evaluate_single(alg, G)
