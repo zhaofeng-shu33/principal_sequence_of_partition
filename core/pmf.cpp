@@ -15,7 +15,6 @@
 
 namespace parametric {
     using Set = stl::CSet;
-	boost::archive::binary_iarchive;
     double PMF::compute_lambda(const std::vector<pair>& parameter_list, const double target_value) {
         // get all breakpoints from parameter_list and sort them from smallest to largest
         std::vector<double> turning_points;

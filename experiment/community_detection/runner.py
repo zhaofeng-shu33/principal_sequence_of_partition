@@ -31,7 +31,7 @@ def collect_z_in_2_evaluate(alg, z_in_1, z_o, z_in_2_min, z_in_2_max):
     
 if __name__ == '__main__':
     ic=InfoClusterWrapper()
-    report_list = collect_z_in_2_evaluate(ic, 14, 1, 2, 3)
-    f = open(os.path.join('build', 'collect_z_in_2_evaluate-14-1-2-3.pickle'), 'wb')
+    report_list = collect_z_o_evaluate(ic, 14, 2.5, 0.01,0.5)
+    f = open(os.path.join('build', 'collect_z_o_evaluate-14-2.5-0.01-0.5.pickle'), 'wb')
     pickle.dump(report_list, f)
     f.close()
