@@ -5,11 +5,6 @@
 #include <iostream>
 #include "core/pmf.h"
 #if _DEBUG
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <map>
-#include <boost/serialization/map.hpp>
-#include <fstream>
 #include <cassert>
 #endif
 
@@ -121,21 +116,7 @@ namespace parametric {
         pf.init();
         pf.startFirstPhase();
         pf.startSecondPhase();
-#if _DEBUG
-		if (_j == 1) {
-			std::ofstream s("map.oarchive");
-			boost::archive::binary_oarchive oa(s);
-			std::map<int, double> m;
-			for (lemon::ListDigraph::ArcIt a(dig); a != lemon::INVALID; ++a) {
-				int new_id = dig.id(a);
-				m[new_id] = dig_aM[a];
-			}
-			oa << m;
-			s.close();
-			Preflow pf_2(dig, dig_aM, source_node, sink_node);
-			bool is_succ = pf_2.init(pf.flowMap());
-		}
-#endif
+
         Set S_0 = get_min_cut_source_side(pf);
         Set T_0 = S_0.Complement(tilde_G_size);
         Set T_1 = Set::MakeEmpty(tilde_G_size);
@@ -154,9 +135,9 @@ namespace parametric {
 		for (lemon::ListDigraph::ArcIt arc(dig); arc != lemon::INVALID; ++arc) {
 			newFlowMap[arc] = flowMap[arc];
 		}
-		//for (lemon::ListDigraph::OutArcIt e(dig, source_node); e != lemon::INVALID; ++e) {
-		//	newFlowMap[e] = dig_aM[e];
-		//}
+		for (lemon::ListDigraph::OutArcIt e(dig, source_node); e != lemon::INVALID; ++e) {
+			newFlowMap[e] = dig_aM[e];
+		}
 		for (lemon::ListDigraph::InArcIt e(dig, sink_node); e != lemon::INVALID; ++e) {
 			if(flowMap[e] > dig_aM[e])
 				newFlowMap[e] = dig_aM[e];
