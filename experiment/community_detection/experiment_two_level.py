@@ -133,21 +133,6 @@ def construct(z_in_1, z_in_2, z_out):
                     if(random.random() <= p_2):
                         G.add_edge(i[0], j[0])
     return G    
-
-def original_graph_plot(G, format='svg'):
-    '''plot the graph in random layout
-    '''
-    plt.clf()
-    node_color_list = []
-    marker_avail = ['o', '^', 's', 'D']
-    node_marker_list = []
-    for i in G.nodes(data=True):
-        macro_index = i[1]['macro']
-        micro_index = i[1]['micro']
-        node_color_list.append(color_list[macro_index])
-        node_marker_list.append(marker_avail[micro_index])
-    nx.draw_random(G, width=0.2, nodelist=G.node, node_color=node_color_list, node_size=100, style='dotted')
-    plt.savefig(fname=os.path.join('build', 'random_two_level.%s'%format))   
         
 def graph_plot(G):
     '''
@@ -218,7 +203,6 @@ if __name__ == '__main__':
     G = construct(args.z_in_1, args.z_in_2, z_o)    
     if(args.save_graph):
         graph_plot(G)
-        original_graph_plot(G)
     methods = []
     if(args.alg.count('all')>0):
         args.alg = method_chocies
