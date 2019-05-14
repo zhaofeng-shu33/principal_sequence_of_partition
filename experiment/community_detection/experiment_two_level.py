@@ -24,7 +24,10 @@ import json
 
 import numpy as np
 import networkx as nx # for manipulating graph data-structure
-import graphviz # for writing .gv file
+try:
+    import graphviz # for writing .gv file
+except ImportError:
+    pass
 from sklearn.metrics import adjusted_rand_score
 try:
     from ete3 import TreeStyle, NodeStyle
@@ -185,7 +188,7 @@ class InfoClusterWrapper(InfoCluster):
                     if(G[i].get(n) is not None and G[j].get(n) is not None):
                         G[i][j]['weight'] += 1
                 G[i][j]['weight'] = G[i][j]['weight']
-        super().fit(G)
+        super().fit(G, use_pdt=True)
         
 if __name__ == '__main__':
     method_chocies = ['info-clustering', 'gn', 'all']
