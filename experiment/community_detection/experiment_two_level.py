@@ -66,10 +66,13 @@ def evaluate_single(alg, G):
     depth = alg.get_tree_depth()
     return (out_ari, inner_ari, depth)
     
-def evaluate(num_times, alg):
+def evaluate(num_times, alg, z_in_1, z_in_2, z_o):
     '''
         num_times: int
         alg: algorithm class
+        z_in_1: inter-micro-community node average degree     
+        z_in_2: intra-micro-community node average degree
+        z_o: intra-macro-community node average degree
         
         the evaluated alg is a class, and should provide fit method , which operates on similarity matrix
         and get_category(i) method, where i is the specified category.
@@ -82,7 +85,7 @@ def evaluate(num_times, alg):
              }
     logging.info('eval ' + str(type(alg)) + ' num_times=%d'%num_times)
     for i in range(num_times):
-        G = construct(args.z_in_1, args.z_in_2, z_o)    
+        G = construct(z_in_1, z_in_2, z_o)    
         out_ari, inner_ari, depth = evaluate_single(alg, G)
         report['outer_ari'] += out_ari
         report['inner_ari'] += inner_ari
@@ -215,7 +218,7 @@ if __name__ == '__main__':
     
     if(args.evaluate > 0):
         for method in methods:
-            report = evaluate(args.evaluate, method)
+            report = evaluate(args.evaluate, method, args.z_in_1, args.z_in_2, z_o)
             logging.info('final report' + json.dumps(report))
     else:
         for i, method in enumerate(methods):
