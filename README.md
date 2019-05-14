@@ -34,6 +34,9 @@ cmake ..
 ```
 If any error occurs, you should fix the dependencies first.
 
+### options
+use `-DUSE_CXX11_ABI=OFF` if your system boost library is built by g++ version <=4.8.
+
 ### with LEMON
 We provide a naive brute force search method to solve submodualr function minimization(SFM) problem. For set with more than 10 elements, it is impractical. We use graph maximal flow(MF) to solve the special SFM problem. MF requires [lemon](https://lemon.cs.elte.hu/trac/lemon) library, which is enabled by default.
 
@@ -52,7 +55,9 @@ Testing is disabled by default, which requires gtest library. To enable it, run 
 Disabled by default. The binding requires boost-python library. To enable it, run `cmake` with `-DUSE_PYTHON=ON`
 To make it independent of boost dynamic library, static linking should be enabled in CMAKE configuration.
 To package the library, use `python setup.py bdist_wheel`.
-Install the package by `pip install info_cluster`, below is the prebuild
+Install the package by `pip install --user info_cluster`. If your system cmake is called cmake3, you can use
+CMAKE=cmake3 pip install --user info_cluster`.
+Below is the prebuild
 binary packages:
 
 | Platform | py3.6 | py3.7 |

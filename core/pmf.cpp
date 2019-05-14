@@ -122,13 +122,27 @@ namespace parametric {
         T_1.AddElement(_j);
         set_list.push_back(T_0);
         set_list.push_back(T_1);
-        slice(S_0, T_1, true);
+        slice(S_0, T_1, pf.flowMap());
     }
+
     void PMF::reset_j(std::size_t j) { 
         _j = j; 
         set_list.clear();
-        lambda_list.clear();
-    }
+        lambda_list.clear();    
+	}
+	void PMF::modify_flow(const FlowMap& flowMap, FlowMap& newFlowMap){
+		for (lemon::ListDigraph::ArcIt arc(dig); arc != lemon::INVALID; ++arc) {
+			newFlowMap[arc] = flowMap[arc];
+		}
+		for (lemon::ListDigraph::OutArcIt e(dig, source_node); e != lemon::INVALID; ++e) {
+			newFlowMap[e] = dig_aM[e];
+		}
+		for (lemon::ListDigraph::InArcIt e(dig, sink_node); e != lemon::INVALID; ++e) {
+			if(flowMap[e] > dig_aM[e])
+				newFlowMap[e] = dig_aM[e];
+		}
+	}
+
     void PMF::update_dig(double lambda) {
         for (lemon::ListDigraph::OutArcIt arc(dig, source_node); arc != lemon::INVALID; ++arc) {
             // get the next node id
@@ -164,7 +178,7 @@ namespace parametric {
         }
         set_list.insert(set_list.end(), s);
     }
-    void PMF::slice(Set& S, Set& T, bool isLeft) {
+    void PMF::slice(Set& S, Set& T, const FlowMap& flowMap) {
         // compute lambda_2
         double lambda_const = compute_lambda_eq_const(S, T);
         std::vector<pair> y_lambda_filter;
@@ -175,9 +189,11 @@ namespace parametric {
         }
         double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const);
         update_dig(lambda_2);
+		FlowMap newFlowMap(dig);
+		modify_flow(flowMap, newFlowMap);
         // do not use graph contraction
         Preflow pf_instance(dig, dig_aM, source_node, sink_node);
-        pf_instance.init();
+        pf_instance.init(newFlowMap);
         pf_instance.startFirstPhase();
         pf_instance.startSecondPhase();
         Set S_apostrophe = get_min_cut_source_side(pf_instance);
@@ -191,8 +207,8 @@ namespace parametric {
             Set S_Union = S.Union(S_apostrophe);
             Set T_Union = T.Union(T_apostrophe);
             insert_set(T_Union);
-            slice(S, T_Union, false);
-            slice(S_Union, T, true);
+            slice(S, T_Union, flowMap);
+            slice(S_Union, T, newFlowMap);
         }
         else {
             insert(lambda_2);
