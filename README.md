@@ -55,7 +55,9 @@ Testing is disabled by default, which requires gtest library. To enable it, run 
 Disabled by default. The binding requires boost-python library. To enable it, run `cmake` with `-DUSE_PYTHON=ON`
 To make it independent of boost dynamic library, static linking should be enabled in CMAKE configuration.
 To package the library, use `python setup.py bdist_wheel`.
-Install the package by `pip install info_cluster`, below is the prebuild
+Install the package by `pip install --user info_cluster`. If your system cmake is called cmake3, you can use
+CMAKE=cmake3 pip install --user info_cluster`.
+Below is the prebuild
 binary packages:
 
 | Platform | py3.6 | py3.7 |
