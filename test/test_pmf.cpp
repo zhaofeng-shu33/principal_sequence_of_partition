@@ -37,6 +37,11 @@ TEST(PMF, EquationSolve) {
     double lambda_10 = pmf.compute_lambda(parameter_list, -0.1);
     EXPECT_DOUBLE_EQ(lambda_10, 0.136);
 
+	// test left value
+	parameter_list.pop_back();
+	parameter_list[0] = std::make_pair(1,-1);
+	double lambda_11 = pmf.compute_lambda(parameter_list, -1, -0.25);
+	EXPECT_DOUBLE_EQ(lambda_11, -0.25);
 }
 TEST(PMF, insert_set) {
     using Set = stl::CSet;

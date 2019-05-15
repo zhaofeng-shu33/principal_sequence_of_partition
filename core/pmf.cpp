@@ -11,7 +11,7 @@
 
 namespace parametric {
     using Set = stl::CSet;
-    double PMF::compute_lambda(const std::vector<pair>& parameter_list, const double target_value, double left_point = INFINITY) {
+    double PMF::compute_lambda(const std::vector<pair>& parameter_list, const double target_value, double left_point) {
         // get all breakpoints from parameter_list and sort them from smallest to largest
         std::vector<double> turning_points;
         int infinity_count = 0;
