@@ -24,7 +24,10 @@ import json
 
 import numpy as np
 import networkx as nx # for manipulating graph data-structure
-import graphviz # for writing .gv file
+try:
+    import graphviz # for writing .gv file
+except ImportError:
+    pass
 from sklearn.metrics import adjusted_rand_score
 try:
     from ete3 import TreeStyle, NodeStyle

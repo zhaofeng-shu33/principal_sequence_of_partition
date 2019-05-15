@@ -15,7 +15,7 @@ import numpy as np
 
 
 from info_cluster import InfoCluster
-import schema
+
 color_list = ['#3FF711', 'r', 'g', 'm','y','k','c','#00FF00']
 marker_list = ['o', 'v', 's', '*', '+', 'x', 'D', '1']
 MAX_CAT = len(color_list)
@@ -138,7 +138,7 @@ def plot_inner(index, grach_cluster_object, fileName):
         ax.set_title('$\lambda = %.2f$' % lambda_list[index])
     if(SHOW_PIC):
         plt.show()
-    plt.savefig(os.path.join(schema.BUILD_DIR, fileName))
+    plt.savefig(os.path.join('build', fileName))
     
 def cal_time(func):
     '''
