@@ -150,7 +150,13 @@ namespace parametric {
             // get the next node id
             int i = dig.id(dig.target(arc));
             double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
-            dig_aM[arc] = std::max<double>(0, -std::min<double>(a_i - 2 * lambda, b_i));
+			double candidate = std::min<double>(a_i - 2 * lambda, b_i);
+			if (candidate < 0)
+				dig_aM[arc] = -candidate;
+			else if (sink_capacity[i] < tolerance.epsilon()) {
+				dig.addArc(dig.target(arc), sink_node);
+			}
+
         }
 
         for (lemon::ListDigraph::InArcIt arc(dig, sink_node); arc != lemon::INVALID; ++arc) {
