@@ -105,6 +105,9 @@ For more detail, see [experiment](utility/README.md).
 
 ## Parametric Dilworth Truncation(pdt) implementation
 We provide another alternative implementation, which can be used similar to **PyGraph**.
+You shold apply a patch [preflow.patch](./preflow.patch) to `preflow.h`, which belongs to lemon library 1.3.1, see
+[#625](https://lemon.cs.elte.hu/trac/lemon/ticket/625).
+
 ```Python
 import psp
 g = psp.PyGraphPDT(3, [(0,1,1),(1,2,1),(0,2,5)]) # index started from zero, similarity is 5 for vertex 0 and 2

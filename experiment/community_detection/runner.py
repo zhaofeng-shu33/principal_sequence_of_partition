@@ -7,7 +7,7 @@ import argparse
 import pdb
 
 import numpy as np
-import datetime
+from datetime import datetime
 
 from experiment_two_level import evaluate, InfoClusterWrapper
 

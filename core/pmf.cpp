@@ -3,6 +3,7 @@
 #include <lemon/list_graph.h>
 #include <cmath>
 #include <iostream>
+#include <sstream>
 #include "core/pmf.h"
 #if _DEBUG
 #include <cassert>
@@ -188,7 +189,12 @@ namespace parametric {
         double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const);
         update_dig(lambda_2);
 		if (lambda_2 < lambda_1 || lambda_2 > lambda_3) {
-			throw std::logic_error("lambda value mismatch");
+#if _DEBUG
+			std::stringstream ss;
+			ss << "lambda value mismatch " << lambda_1 << ' ' << lambda_2 << ' ' << lambda_3;
+			throw std::logic_error(ss.str());
+#endif
+			return;
 		}
 		FlowMap newFlowMap(dig);
 		modify_flow(flowMap, newFlowMap);
