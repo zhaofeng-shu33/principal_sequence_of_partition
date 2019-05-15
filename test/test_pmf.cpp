@@ -268,6 +268,38 @@ namespace demo {
             EXPECT_EQ(p, *partition_it);
             partition_it++;
         }
-
     }
+	TEST(ThreePointComplete, PDT) {
+		std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
+		edges.push_back(std::make_tuple(0, 1, 1.0));
+		edges.push_back(std::make_tuple(0, 2, 1.0));
+		edges.push_back(std::make_tuple(1, 2, 5.0));
+		parametric::PDT* pdt = parametric::make_pdt(3, edges);
+		pdt->run();
+		std::list<double> lambda_list = pdt->get_lambda_list();
+		std::list<parametric::Partition> partition_list = pdt->get_partition_list();
+		std::list<double>::iterator it = lambda_list.begin();
+		EXPECT_DOUBLE_EQ(*it, 2);
+		it++;
+		EXPECT_DOUBLE_EQ(*it, 5);
+
+		EXPECT_EQ(lambda_list.size(), 2);
+		EXPECT_EQ(partition_list.size(), 5);
+
+		stl::Partition p = stl::Partition::makeDense(3);
+		
+		std::list<parametric::Partition>::iterator it_p = partition_list.begin();
+		EXPECT_EQ(*it_p, p);
+
+		it_p++;
+		p.clear();
+		p.AddElement(stl::CSet(std::string("011")));
+		p.AddElement(stl::CSet(std::string("100")));
+		EXPECT_EQ(*it_p, p);
+
+		p = stl::Partition::makeFine(3);
+		it_p++;
+		EXPECT_EQ(*it_p, p);
+
+	}
 }
