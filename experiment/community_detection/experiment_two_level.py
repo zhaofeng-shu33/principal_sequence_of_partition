@@ -47,7 +47,12 @@ color_list = ['red', 'orange', 'green', 'purple']
 shape_list = ['sphere', 'circle', 'sphere', 'sphere']
 ground_truth_outer = []
 ground_truth_inner = []
-
+for t in range(k2):
+    for i in range(k1):
+        for j in range(n):
+            ground_truth_outer.append(t)
+            ground_truth_inner.append(i+k2*t)
+            
 def plot_clustering_tree(tree, alg_name):
     ts = TreeStyle()
     ts.rotation = 90
@@ -66,9 +71,15 @@ def add_category_info(G, tree):
 
 def evaluate_single(alg, G):
     alg.fit(G)
-    out_ari = adjusted_rand_score(ground_truth_outer, alg.get_category(k2))
-    inner_ari = adjusted_rand_score(ground_truth_inner, alg.get_category(k2 * k1))
-    depth = alg.get_tree_depth()
+    try:
+        out_ari = adjusted_rand_score(ground_truth_outer, alg.get_category(k2))
+        inner_ari = adjusted_rand_score(ground_truth_inner, alg.get_category(k2 * k1))
+    except ValueError:
+        pdb.set_trace()
+    try:
+        depth = alg.get_tree_depth()
+    except IndexError:
+        pdb.set_trace()
     return (out_ari, inner_ari, depth)
     
 def evaluate(num_times, alg, z_in_1, z_in_2, z_o):
@@ -126,9 +137,6 @@ def construct(z_in_1, z_in_2, z_out):
         for i in range(k1):
             for j in range(n):
                 G.add_node(cnt, macro=t, micro=i)
-                if(len(ground_truth_inner) != n*k1*k2):
-                    ground_truth_outer.append(t)
-                    ground_truth_inner.append(i+k2*t)
                 cnt += 1
     for i in G.nodes(data=True):
         for j in G.nodes(data=True):
@@ -195,6 +203,7 @@ if __name__ == '__main__':
     method_chocies = ['info-clustering', 'gn', 'all']
     parser = argparse.ArgumentParser()
     parser.add_argument('--save_graph', default=False, type=bool, nargs='?', const=True, help='whether to save the .gv file') 
+    parser.add_argument('--load_graph', help='use gml file to initialize the graph')     
     parser.add_argument('--save_tree', default=False, type=bool, nargs='?', const=True, help='whether to save the .nhx file after clustering')     
     parser.add_argument('--alg', default='all', choices=method_chocies, help='which algorithm to run', nargs='+')
     parser.add_argument('--weight', default='triangle-power', help='for info-clustering method, the edge weight shold be used. This parameters'
@@ -212,7 +221,10 @@ if __name__ == '__main__':
         z_o = K - args.z_in_1 - args.z_in_2
     else:
         z_o = args.z_o
-    G = construct(args.z_in_1, args.z_in_2, z_o)    
+    if(args.load_graph):
+        G = nx.read_gml(os.path.join('build', args.load_graph))
+    else:
+        G = construct(args.z_in_1, args.z_in_2, z_o)    
     if(args.save_graph):
         graph_plot(G)
     methods = []

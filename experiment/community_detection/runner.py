@@ -34,7 +34,10 @@ def collect_z_in_2_evaluate(alg, z_in_1, z_o, z_in_2_min, z_in_2_max):
 
 def save_to_file(report_list, prefix, *argv):
     time_str = datetime.now().strftime('%Y-%m-%d')
-    filename = prefix + '-' + time_str + '-' + argv.join('-') + '.pickle'
+    filename_middle = ''
+    for i in argv:
+        filename_middle += '-' + str(i)
+    filename = prefix + '-' + time_str + filename_middle + '.pickle'
     
     f = open(os.path.join('build', filename), 'wb')
     pickle.dump(report_list, f)
