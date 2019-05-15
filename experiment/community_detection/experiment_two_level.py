@@ -83,10 +83,6 @@ def evaluate(num_times, alg, z_in_1, z_in_2, z_o):
               'inner_ari' : 0.0,
               'depth': 0,
               'recover_percentage': 0.0,
-              'num_times': num_times,
-              'z_in_1': z_in_1,
-              'z_in_2': z_in_2,
-              'z_o': z_o
              }
     logging.info('eval ' + str(type(alg)) + ' num_times=%d, z_in_1=%f,z_in_2=%f, z_o=%f'%(num_times, z_in_1, z_in_2, z_o))
     for i in range(num_times):
@@ -101,6 +97,11 @@ def evaluate(num_times, alg, z_in_1, z_in_2, z_o):
         
     for k in report.keys():
         report[k] /= num_times
+    report.update({
+                'num_times': num_times,
+                'z_in_1': z_in_1,
+                'z_in_2': z_in_2,
+                'z_o': z_o})
     return report
     
 def construct(z_in_1, z_in_2, z_out):
