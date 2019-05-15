@@ -189,12 +189,15 @@ namespace parametric {
         double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const);
         update_dig(lambda_2);
 		if (lambda_2 < lambda_1 || lambda_2 > lambda_3) {
-#if _DEBUG
 			std::stringstream ss;
 			ss << "lambda value mismatch " << lambda_1 << ' ' << lambda_2 << ' ' << lambda_3;
+#if _DEBUG
 			throw std::logic_error(ss.str());
-#endif
+#else
+			std::cout << ss.str() << std::endl;
+			insert(lambda_2);
 			return;
+#endif
 		}
 		FlowMap newFlowMap(dig);
 		modify_flow(flowMap, newFlowMap);
