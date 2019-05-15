@@ -110,10 +110,10 @@ namespace parametric {
                 continue;
             dig.addArc(source_node, n);            
         }
-
+		double init_lambda = -0.1;
         Preflow pf(dig, dig_aM, source_node, sink_node);
         //find S_0 and T_0
-        update_dig(0);
+        update_dig(init_lambda);
         pf.init();
         pf.startFirstPhase();
         pf.startSecondPhase();
@@ -124,7 +124,7 @@ namespace parametric {
         T_1.AddElement(_j);
         set_list.push_back(T_0);
         set_list.push_back(T_1);
-        slice(S_0, T_1, pf.flowMap(), 0, std::numeric_limits<double>::infinity());
+        slice(S_0, T_1, pf.flowMap(), init_lambda, std::numeric_limits<double>::infinity());
     }
 
     void PMF::reset_j(std::size_t j) { 
@@ -267,7 +267,7 @@ namespace parametric {
         Lambda_list.push_back(INFINITY);
     }
     void PDT::run() {
-        _y_lambda.resize(_g->maxNodeId() + 1, pair(0, INFINITY));
+        _y_lambda.resize(lemon::countNodes(*_g), pair(0, INFINITY));
         for (int j = 0; j < _y_lambda.size(); j++) {
             pmf.reset_y_lambda(_y_lambda);
             pmf.reset_j(j);
