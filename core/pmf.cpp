@@ -11,7 +11,7 @@
 
 namespace parametric {
     using Set = stl::CSet;
-    double PMF::compute_lambda(const std::vector<pair>& parameter_list, const double target_value, double left_point) {
+    double PMF::compute_lambda(const std::vector<pair>& parameter_list, const double target_value) {
         // get all breakpoints from parameter_list and sort them from smallest to largest
         std::vector<double> turning_points;
         int infinity_count = 0;
@@ -51,8 +51,8 @@ namespace parametric {
         }
 
 		if (!tolerance.different(target_value, sum)) {
-			if (infinity_count == 0 && last_tp > left_point)
-				return left_point;
+			if (infinity_count == 0)
+				return -INFINITY;
 			return last_tp;
 		}
         // compute values at the other breakpoints
@@ -197,9 +197,11 @@ namespace parametric {
                 continue;
             y_lambda_filter.push_back(_y_lambda[i]);
         }
-        double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const, lambda_1);
+        double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const);
+		if (lambda_2 == -INFINITY)
+			return;
 		if (lambda_2 == lambda_1) {
-			insert(lambda_3);
+			insert(lambda_2);
 			return;
 		}
         update_dig(lambda_2);
