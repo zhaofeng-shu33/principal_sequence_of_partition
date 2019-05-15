@@ -11,7 +11,7 @@
 
 namespace parametric {
     using Set = stl::CSet;
-    double PMF::compute_lambda(const std::vector<pair>& parameter_list, const double target_value) {
+    double PMF::compute_lambda(const std::vector<pair>& parameter_list, const double target_value, double left_point = INFINITY) {
         // get all breakpoints from parameter_list and sort them from smallest to largest
         std::vector<double> turning_points;
         int infinity_count = 0;
@@ -50,8 +50,11 @@ namespace parametric {
                 return (target_value - intersept) / (slope);
         }
 
-        if (!tolerance.different(target_value, sum))
-            return last_tp;
+		if (!tolerance.different(target_value, sum)) {
+			if (infinity_count == 0 && last_tp > left_point)
+				return left_point;
+			return last_tp;
+		}
         // compute values at the other breakpoints
         for (double& tp : turning_points) {
             sum += slope * (tp - last_tp);
@@ -82,6 +85,7 @@ namespace parametric {
     void PMF::run() {
         //set sink_capacity
         int a = g_ptr->maxNodeId();
+		std::fill(sink_capacity.begin(), sink_capacity.end(), 0);
         if (a != -1 && _j <= a) {
             for (lemon::ListDigraph::InArcIt arc(*g_ptr, g_ptr->nodeFromId(_j)); arc != lemon::INVALID; ++arc) {
                 int i = g_ptr->id(g_ptr->source(arc));
@@ -184,6 +188,7 @@ namespace parametric {
         set_list.insert(set_list.end(), s);
     }
     void PMF::slice(Set& S, Set& T, const FlowMap& flowMap, double lambda_1, double lambda_3) {
+
         // compute lambda_2
         double lambda_const = compute_lambda_eq_const(S, T);
         std::vector<pair> y_lambda_filter;
@@ -192,7 +197,11 @@ namespace parametric {
                 continue;
             y_lambda_filter.push_back(_y_lambda[i]);
         }
-        double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const);
+        double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const, lambda_1);
+		if (lambda_2 == lambda_1) {
+			insert(lambda_3);
+			return;
+		}
         update_dig(lambda_2);
 		if (lambda_2 < lambda_1 || lambda_2 > lambda_3) {
 			std::stringstream ss;
@@ -321,20 +330,16 @@ namespace parametric {
                     std::reverse_iterator<std::list<double>::iterator> last_it = Lambda_list_apostrophe.rbegin();
                     *last_it = std::min(*d_i, *d_k);
                 }
-                if (*d_i < *d_k) {
+				double d_i_v = *d_i, d_k_v = *d_k;
+                if (d_i_v <= d_k_v) {
                     i++;
                     d_i++;
                     p_it++;
                 }
-                else if (*d_i >= *d_k) {
+                if (d_i_v >= d_k_v) {
                     k++;
                     d_k++;
                     s_it++;
-                }
-                else {
-                    i++;
-                    d_i++;
-                    p_it++;
                 }
             }
             Lambda_list = Lambda_list_apostrophe;

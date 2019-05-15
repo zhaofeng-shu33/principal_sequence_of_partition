@@ -333,4 +333,36 @@ namespace demo {
 		it_p++;
 		EXPECT_EQ(*it_p, p);
 	}
+
+	TEST(FourPointNotComplete, PDT) {
+		std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
+		edges.push_back(std::make_tuple(0, 1, 1.0));
+		edges.push_back(std::make_tuple(2, 3, 1.0));
+		parametric::PDT* pdt = parametric::make_pdt(4, edges);
+		pdt->run();
+		std::list<double> lambda_list = pdt->get_lambda_list();
+		std::list<parametric::Partition> partition_list = pdt->get_partition_list();
+		std::list<double>::iterator it = lambda_list.begin();
+		EXPECT_DOUBLE_EQ(*it, 0);
+		it++;
+		EXPECT_DOUBLE_EQ(*it, 1);
+
+		EXPECT_EQ(lambda_list.size(), 3);  // the last value is infinity
+		EXPECT_EQ(partition_list.size(), 3);
+
+		stl::Partition p = stl::Partition::makeDense(4);
+
+		std::list<parametric::Partition>::iterator it_p = partition_list.begin();
+		EXPECT_EQ(*it_p, p);
+
+		it_p++;
+		p.clear();
+		p.AddElement(stl::CSet(std::string("1100")));
+		p.AddElement(stl::CSet(std::string("0011")));
+		EXPECT_EQ(*it_p, p);
+
+		p = stl::Partition::makeFine(4);
+		it_p++;
+		EXPECT_EQ(*it_p, p);
+	}
 }
