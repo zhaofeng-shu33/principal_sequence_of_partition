@@ -51,8 +51,8 @@ namespace parametric {
         }
 
 		if (!tolerance.different(target_value, sum)) {
-			if (infinity_count == 0)
-				return -INFINITY;
+			//if (infinity_count == 0)
+			//	return -INFINITY;
 			return last_tp;
 		}
         // compute values at the other breakpoints
@@ -112,7 +112,10 @@ namespace parametric {
         for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
             if (n == sink_node || n == source_node)
                 continue;
-            dig.addArc(source_node, n);            
+            dig.addArc(source_node, n);  
+			if (sink_capacity[dig.id(n)] < tolerance.epsilon()) {
+				dig.addArc(n, sink_node);
+			}
         }
 		double init_lambda = -0.1;
         Preflow pf(dig, dig_aM, source_node, sink_node);
@@ -157,9 +160,6 @@ namespace parametric {
 			double candidate = std::min<double>(a_i - 2 * lambda, b_i);
 			if (candidate < 0)
 				dig_aM[arc] = -candidate;
-			else if (sink_capacity[i] < tolerance.epsilon()) {
-				dig.addArc(dig.target(arc), sink_node);
-			}
 
         }
 
@@ -216,6 +216,9 @@ namespace parametric {
 			return;
 #endif
 		}
+		// compute original value
+		double original_flow_value = compute_cut(dig, dig_aM, S);
+
 		FlowMap newFlowMap(dig);
 		modify_flow(flowMap, newFlowMap);
         // do not use graph contraction
@@ -229,9 +232,10 @@ namespace parametric {
 #endif
         pf_instance.startFirstPhase();
         pf_instance.startSecondPhase();
+		double new_flow_value = pf_instance.flowValue();
         Set S_apostrophe = get_min_cut_source_side(pf_instance);
         Set T_apostrophe = S_apostrophe.Complement(tilde_G_size);
-        if(S_apostrophe != S && T_apostrophe != T){
+        if(S_apostrophe != S && T_apostrophe != T && new_flow_value < original_flow_value){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
 #if _DEBUG
             assert(S.IsSubSet(S_apostrophe));
