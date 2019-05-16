@@ -196,11 +196,7 @@ namespace parametric {
             y_lambda_filter.push_back(_y_lambda[i]);
         }
         double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const);
-		if (!tolerance.different(lambda_2, lambda_1)) {
-			insert(lambda_2);
-			return;
-		}
-		else if (!tolerance.different(lambda_2, lambda_3)) {
+		if (!tolerance.different(lambda_2, lambda_1) || !tolerance.different(lambda_2, lambda_3)) {
 			insert(lambda_2);
 			return;
 		}

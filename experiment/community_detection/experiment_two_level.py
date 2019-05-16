@@ -98,6 +98,7 @@ def evaluate(num_times, alg, z_in_1, z_in_2, z_o):
               'depth': 0,
               'recover_percentage': 0.0,
              }
+    assert(z_in_1 > z_in_2 and z_in_2 > z_o)
     logging.info('eval ' + str(type(alg)) + ' num_times=%d, z_in_1=%f,z_in_2=%f, z_o=%f'%(num_times, z_in_1, z_in_2, z_o))
     for i in range(num_times):
         G = construct(z_in_1, z_in_2, z_o)    
@@ -161,7 +162,7 @@ def graph_plot(G):
     '''
     global n, k1, k2
     time_str = datetime.now().strftime('%Y-%m-%d')
-
+    nx.write_gml(G, os.path.join('build', 'two_level-%s.gml'%time_str))
     g = graphviz.Graph(filename='two_level-%s.gv'%time_str, engine='neato') # g is used for plotting
     for i in G.nodes(data=True):
         macro_index = i[1]['macro']

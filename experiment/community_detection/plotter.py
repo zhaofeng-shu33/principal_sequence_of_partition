@@ -24,7 +24,14 @@ def plot_ari(filename, plot_title=''):
     plt.plot(x_data, inner_ari_data, label='micro')
     plt.xlabel(x_title)
     plt.ylabel('ari')
-    plt.title('Comparision of Algorithm at z = , z = ')
+    if(x_title == 'z_o'):
+        title_str = 'z_in_1 = %.2f, z_in_2 = %.2f' % (data[0]['z_in_1'], data[0]['z_in_2'])
+    elif(x_title == 'z_in_1'):
+        title_str = 'z_in_2 = %.2f, z_o = %.2f' % (data[0]['z_in_2'], data[0]['z_o'])
+    else:
+        title_str = 'z_in_1 = %.2f, z_o = %.2f' % (data[0]['z_in_1'], data[0]['z_o'])
+       
+    plt.title('Comparision of Algorithm at ' + title_str)
     plt.legend()
     plt.savefig(os.path.join('build', filename.replace('pickle','svg')))    
     plt.show()
