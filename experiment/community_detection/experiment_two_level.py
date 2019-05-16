@@ -197,7 +197,7 @@ class InfoClusterWrapper(InfoCluster):
                     if(G[i].get(n) is not None and G[j].get(n) is not None):
                         G[i][j]['weight'] += 1
                 G[i][j]['weight'] = G[i][j]['weight']
-        super().fit(G, use_pdt=False)
+        super().fit(G, use_pdt=True)
         
 if __name__ == '__main__':
     method_chocies = ['info-clustering', 'gn', 'all']

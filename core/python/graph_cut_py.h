@@ -3,7 +3,7 @@
 
 #include "core/graph/graph.h"
 #include "core/graph/info_cluster.h"
-
+#include <lemon/tolerance.h>
 namespace submodular {
     class PyGraph : public InfoCluster {
     public:
@@ -39,7 +39,8 @@ namespace parametric {
                 int source_node_id = boost::python::extract<int>(pt[0]);
                 int target_node_id = boost::python::extract<int>(pt[1]);
                 double capacity = boost::python::extract<double>(pt[2]);
-
+				if (capacity < _tolerance.epsilon())
+					continue;
                 lemon::ListDigraph::Node s = g.nodeFromId(source_node_id);
                 lemon::ListDigraph::Node t = g.nodeFromId(target_node_id);
                 lemon::ListDigraph::Arc a1 = g.addArc(s, t);
@@ -85,6 +86,7 @@ namespace parametric {
     private:
         lemon::ListDigraph g;
         lemon::ListDigraph::ArcMap<double> arcMap;
+		lemon::Tolerance<double> _tolerance;
         int num_points;
         //! form conversion
         std::vector<int> to_category(Partition& partition) {
