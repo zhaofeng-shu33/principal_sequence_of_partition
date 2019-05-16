@@ -11,29 +11,15 @@ import matplotlib.pyplot as plt
 def plot_ari(filename, plot_title=''):
     f = open(os.path.join('build', filename), 'rb')
     data = pickle.load(f)
-    is_old_format = True
-    if(type(data[0][0]) == float):
-        is_old_format = False
-    if(is_old_format):
-        if data[0][0] != data[1][0]:
-            x_title = 'z_in_1'
-        elif data[0][1] != data[1][1]:
-            x_title = 'z_in_2'
-        else:
-            x_title = 'z_o'
-        x_data = [i[3][x_title] for i in data]
-        outer_ari_data = [i[3]['outer_ari'] for i in data]
-        inner_ari_data = [i[3]['inner_ari'] for i in data]        
+    if data[0]['z_in_1'] != data[1]['z_in_1']:
+        x_title = 'z_in_1'
+    elif data[0]['z_in_2'] != data[1]['z_in_2']:
+        x_title = 'z_in_2'
     else:
-        if data[0]['z_in_1'] != data[1]['z_in_1']:
-            x_title = 'z_in_1'
-        elif data[0]['z_in_2'] != data[1]['z_in_2']:
-            x_title = 'z_in_2'
-        else:
-            x_title = 'z_o'
-        x_data = [i[x_title] for i in data]
-        outer_ari_data = [i['outer_ari'] for i in data]
-        inner_ari_data = [i['inner_ari'] for i in data]
+        x_title = 'z_o'
+    x_data = [i[x_title] for i in data]
+    outer_ari_data = [i['outer_ari'] for i in data]
+    inner_ari_data = [i['inner_ari'] for i in data]
     plt.plot(x_data, outer_ari_data, label='macro')
     plt.plot(x_data, inner_ari_data, label='micro')
     plt.xlabel(x_title)
