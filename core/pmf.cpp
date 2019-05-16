@@ -200,6 +200,10 @@ namespace parametric {
 			insert(lambda_2);
 			return;
 		}
+		else if (!tolerance.different(lambda_2, lambda_3)) {
+			insert(lambda_2);
+			return;
+		}
         update_dig(lambda_2);
 		if (lambda_2 < lambda_1 || lambda_2 > lambda_3) {
 			std::stringstream ss;
