@@ -204,13 +204,7 @@ namespace parametric {
 		if (lambda_2 < lambda_1 || lambda_2 > lambda_3) {
 			std::stringstream ss;
 			ss << "lambda value mismatch " << lambda_1 << ' ' << lambda_2 << ' ' << lambda_3;
-#if _DEBUG
 			throw std::logic_error(ss.str());
-#else
-			std::cout << ss.str() << std::endl;
-			insert(lambda_2);
-			return;
-#endif
 		}
 		// compute original value
 		double original_flow_value = compute_cut(dig, dig_aM, S);
@@ -231,7 +225,7 @@ namespace parametric {
 		double new_flow_value = pf_instance.flowValue();
         Set S_apostrophe = get_min_cut_source_side(pf_instance);
         Set T_apostrophe = S_apostrophe.Complement(tilde_G_size);
-        if(S_apostrophe != S && T_apostrophe != T && new_flow_value < original_flow_value){
+        if(S_apostrophe != S && T_apostrophe != T && new_flow_value < original_flow_value - tolerance.epsilon()){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
 #if _DEBUG
             assert(S.IsSubSet(S_apostrophe));

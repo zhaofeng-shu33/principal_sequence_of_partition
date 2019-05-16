@@ -101,7 +101,7 @@ def evaluate(num_times, alg, z_in_1, z_in_2, z_o):
     assert(z_in_1 > z_in_2 and z_in_2 > z_o)
     logging.info('eval ' + str(type(alg)) + ' num_times=%d, z_in_1=%f,z_in_2=%f, z_o=%f'%(num_times, z_in_1, z_in_2, z_o))
     for i in range(num_times):
-        G = construct(z_in_1, z_in_2, z_o)    
+        G = construct(z_in_1, z_in_2, z_o)
         out_ari, inner_ari, depth = evaluate_single(alg, G)
         report['outer_ari'] += out_ari
         report['inner_ari'] += inner_ari
