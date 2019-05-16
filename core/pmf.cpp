@@ -231,11 +231,9 @@ namespace parametric {
             assert(S.IsSubSet(S_apostrophe));
             assert(T.IsSubSet(T_apostrophe));
 #endif
-            Set S_Union = S.Union(S_apostrophe);
-            Set T_Union = T.Union(T_apostrophe);
-            insert_set(T_Union);
-            slice(S, T_Union, flowMap, lambda_1, lambda_2);
-            slice(S_Union, T, newFlowMap, lambda_2, lambda_3);
+            insert_set(T_apostrophe);
+            slice(S, T_apostrophe, flowMap, lambda_1, lambda_2);
+            slice(S_apostrophe, T, newFlowMap, lambda_2, lambda_3);
         }
         else {
             insert(lambda_2);
