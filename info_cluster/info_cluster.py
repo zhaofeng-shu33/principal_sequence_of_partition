@@ -39,6 +39,7 @@ class InfoCluster:
             if affinity='precomputed', X is networkx like object or affinity matrix(upper triangle)
            
         '''
+        self.tree = Tree() # clear the tree
         if(self.n_clusters is not None and use_pdt == False):
             return self.get_category(self.n_clusters, X)
         self._init_g(X, use_pdt)

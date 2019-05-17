@@ -46,7 +46,8 @@ K = 18
 color_list = ['red', 'orange', 'green', 'purple']
 shape_list = ['sphere', 'circle', 'sphere', 'sphere']
 
-ground_truth_tree = Tree()
+st = open('ground_truth.txt').read()
+ground_truth_tree = Tree(st)
 # construct
             
 def plot_clustering_tree(tree, alg_name, cutting=0):
@@ -103,7 +104,8 @@ def add_category_info(G, tree):
 
 def evaluate_single(alg, G):
     alg.fit(G)
-    res = alg.tree.compare(ground_truth_tree)
+    alg._get_hierachical_tree()
+    res = alg.tree.compare(ground_truth_tree, unrooted=True)
     return res['norm_rf']
     
 def evaluate(num_times, alg, z_in_1, z_in_2, z_o):
@@ -216,7 +218,7 @@ class InfoClusterWrapper(InfoCluster):
         try:
             super().fit(G, use_pdt=True)
         except RuntimeError as e:
-            print(e.what())
+            print(e)
             # dump the graph
             print('internal error of the pdt algorithm, graph dumped to build/graph_dump.gml')
             nx.write_gml(_G, os.path.join('build', 'graph_dump.gml'))
