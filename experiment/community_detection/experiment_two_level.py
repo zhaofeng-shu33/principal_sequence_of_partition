@@ -28,7 +28,7 @@ try:
     import graphviz # for writing .gv file
 except ImportError:
     pass
-from sklearn.metrics import adjusted_rand_score
+
 try:
     from ete3 import TreeStyle, NodeStyle, Tree
 except ImportError:
@@ -45,13 +45,9 @@ k2 = 4 # outer
 K = 18
 color_list = ['red', 'orange', 'green', 'purple']
 shape_list = ['sphere', 'circle', 'sphere', 'sphere']
-ground_truth_outer = []
-ground_truth_inner = []
-for t in range(k2):
-    for i in range(k1):
-        for j in range(n):
-            ground_truth_outer.append(t)
-            ground_truth_inner.append(i+k2*t)
+
+ground_truth_tree = Tree()
+# construct
             
 def plot_clustering_tree(tree, alg_name, cutting=0):
     '''if cutting=True, merge the n nodes at leaf nodes with the same parent.
@@ -107,16 +103,8 @@ def add_category_info(G, tree):
 
 def evaluate_single(alg, G):
     alg.fit(G)
-    try:
-        out_ari = adjusted_rand_score(ground_truth_outer, alg.get_category(k2))
-        inner_ari = adjusted_rand_score(ground_truth_inner, alg.get_category(k2 * k1))
-    except ValueError:
-        pdb.set_trace()
-    try:
-        depth = alg.get_tree_depth()
-    except IndexError:
-        pdb.set_trace()
-    return (out_ari, inner_ari, depth)
+    res = alg.tree.compare(ground_truth_tree)
+    return res['norm_rf']
     
 def evaluate(num_times, alg, z_in_1, z_in_2, z_o):
     '''
@@ -129,25 +117,16 @@ def evaluate(num_times, alg, z_in_1, z_in_2, z_o):
         the evaluated alg is a class, and should provide fit method , which operates on similarity matrix
         and get_category(i) method, where i is the specified category.
     '''
-    report = {'outer_ari' : 0.0,
-              'inner_ari' : 0.0,
-              'depth': 0,
-              'recover_percentage': 0.0,
+    report = {'norm_rf' : 0,
              }
     assert(z_in_1 > z_in_2 and z_in_2 > z_o)
     logging.info('eval ' + str(type(alg)) + ' num_times=%d, z_in_1=%f,z_in_2=%f, z_o=%f'%(num_times, z_in_1, z_in_2, z_o))
     for i in range(num_times):
         G = construct(z_in_1, z_in_2, z_o)
-        out_ari, inner_ari, depth = evaluate_single(alg, G)
-        report['outer_ari'] += out_ari
-        report['inner_ari'] += inner_ari
-        if(out_ari > 0.99 and inner_ari > 0.99):
-            report['recover_percentage'] += 1.0    
-        logging.info('round {0}: with o_ari={1}, i_ari={2} and depth={3}'.format(i, out_ari, inner_ari, depth))
-        report['depth'] += depth
-        
-    for k in report.keys():
-        report[k] /= num_times
+        norm_rf = evaluate_single(alg, G)
+        logging.info('round {0}: with norm_rf={1}'.format(i, norm_rf))
+        report['norm_rf'] += norm_rf
+    report['norm_rf'] /= num_times
     report.update({
                 'num_times': num_times,
                 'z_in_1': z_in_1,
@@ -293,10 +272,8 @@ if __name__ == '__main__':
                       }       
             alg_name = args.alg[i]
             print('running ' + alg_name)
-            out_ari, inner_ari, depth = evaluate_single(method, G)            
-            print('out ari is', out_ari)
-            print('inner ari is', inner_ari)
-            print('tree depth is', depth)            
+            dis = evaluate_single(method, G)            
+            print('tree distance is', dis)            
             if(args.save_tree):
                 add_category_info(G, method.tree)
                 plot_clustering_tree(method.tree, alg_name, args.save_tree - 1)
