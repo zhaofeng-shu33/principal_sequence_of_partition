@@ -30,7 +30,7 @@ except ImportError:
     pass
 from sklearn.metrics import adjusted_rand_score
 try:
-    from ete3 import TreeStyle, NodeStyle
+    from ete3 import TreeStyle, NodeStyle, Tree
 except ImportError:
     pass
 
@@ -53,15 +53,51 @@ for t in range(k2):
             ground_truth_outer.append(t)
             ground_truth_inner.append(i+k2*t)
             
-def plot_clustering_tree(tree, alg_name):
+def plot_clustering_tree(tree, alg_name, cutting=0):
+    '''if cutting=True, merge the n nodes at leaf nodes with the same parent.
+    '''
+    global n,k1
+    if(cutting):
+        tree_inner = tree.copy()
+        cnt = 0
+        delete_tree_node_list = []
+        for _n in tree_inner:
+            try:
+                _n.category
+            except AttributeError:
+                _n.add_features(category=cnt)
+                for i in _n.get_sisters():
+                    if not(i.is_leaf()):
+                        continue
+                    try:
+                        i.category
+                    except AttributeError:
+                        i.add_features(category=cnt)
+                        delete_tree_node_list.append(i)
+                cnt += 1
+        for _n in delete_tree_node_list:
+            _n.delete()
+        # rename the tree node
+        tree_inner = Tree(tree_inner.write(features=[]))
+        for _n in tree_inner:
+            macro_index = int(_n.name) // (n * k1)
+            micro_index = (int(_n.name) - macro_index * n * k1) // n 
+            _n.macro = macro_index
+            _n.micro = micro_index
+            _n.name = str(_n.category)
+    else: 
+        tree_inner = tree
+        
     ts = TreeStyle()
     ts.rotation = 90
-    for n in tree:
+    ts.show_scale = False
+    for _n in tree_inner:
         nstyle = NodeStyle()
-        nstyle['fgcolor'] = color_list[n.macro]
-        nstyle['shape'] = shape_list[n.micro]
-        n.set_style(nstyle)
-    tree.render(os.path.join('build', 'tree.pdf'.replace('.pdf', '_' + alg_name + '.pdf')), tree_style=ts)
+        nstyle['fgcolor'] = color_list[int(_n.macro)]
+        nstyle['shape'] = shape_list[int(_n.micro)]
+        _n.set_style(nstyle)
+    time_str = datetime.now().strftime('%Y-%m-%d-')    
+    tree_inner.render(os.path.join('build', time_str + 'tree.pdf'.replace('.pdf', '_' + alg_name + '.pdf')), tree_style=ts)
     
 def add_category_info(G, tree):
     for n in tree:
@@ -198,14 +234,20 @@ class InfoClusterWrapper(InfoCluster):
                     if(G[i].get(n) is not None and G[j].get(n) is not None):
                         G[i][j]['weight'] += 1
                 G[i][j]['weight'] = G[i][j]['weight']
-        super().fit(G, use_pdt=True)
-        
+        try:
+            super().fit(G, use_pdt=True)
+        except RuntimeError as e:
+            print(e.what())
+            # dump the graph
+            print('internal error of the pdt algorithm, graph dumped to build/graph_dump.gml')
+            nx.write_gml(_G, os.path.join('build', 'graph_dump.gml'))
+            
 if __name__ == '__main__':
     method_chocies = ['info-clustering', 'gn', 'all']
     parser = argparse.ArgumentParser()
     parser.add_argument('--save_graph', default=False, type=bool, nargs='?', const=True, help='whether to save the .gv file') 
     parser.add_argument('--load_graph', help='use gml file to initialize the graph')     
-    parser.add_argument('--save_tree', default=False, type=bool, nargs='?', const=True, help='whether to save the .nhx file after clustering')     
+    parser.add_argument('--save_tree', default=0, type=int, nargs='?', const=1, help='whether to save the clustering tree pdf file after clustering, =0 not save, =1 save original, =2 save simplified')     
     parser.add_argument('--alg', default='all', choices=method_chocies, help='which algorithm to run', nargs='+')
     parser.add_argument('--weight', default='triangle-power', help='for info-clustering method, the edge weight shold be used. This parameters'
         ' specifies how to modify the edge weight.')    
@@ -257,4 +299,4 @@ if __name__ == '__main__':
             print('tree depth is', depth)            
             if(args.save_tree):
                 add_category_info(G, method.tree)
-                plot_clustering_tree(method.tree, alg_name)
+                plot_clustering_tree(method.tree, alg_name, args.save_tree - 1)
