@@ -18,12 +18,10 @@ def plot_ari(filename, plot_title=''):
     else:
         x_title = 'z_o'
     x_data = [i[x_title] for i in data]
-    outer_ari_data = [i['outer_ari'] for i in data]
-    inner_ari_data = [i['inner_ari'] for i in data]
-    plt.plot(x_data, outer_ari_data, label='macro')
-    plt.plot(x_data, inner_ari_data, label='micro')
+    distance_data = [i['norm_rf'] for i in data]
+    plt.plot(x_data, distance_data, label='info-clustering')
     plt.xlabel(x_title)
-    plt.ylabel('ari')
+    plt.ylabel('norm rf')
     if(x_title == 'z_o'):
         title_str = 'z_in_1 = %.2f, z_in_2 = %.2f' % (data[0]['z_in_1'], data[0]['z_in_2'])
     elif(x_title == 'z_in_1'):
