@@ -29,8 +29,9 @@ try:
 except ImportError:
     pass
 
+from ete3 import Tree
 try:
-    from ete3 import TreeStyle, NodeStyle, Tree
+    from ete3 import TreeStyle, NodeStyle
 except ImportError:
     pass
 

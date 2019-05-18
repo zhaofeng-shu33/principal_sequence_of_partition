@@ -9,6 +9,7 @@ import pdb
 import numpy as np
 from datetime import datetime
 
+from cmty import GN
 from experiment_two_level import evaluate, InfoClusterWrapper
 
 NUM_TIMES = 5
@@ -56,11 +57,13 @@ def save_to_file(report_list, prefix, *argv):
     f.close()
     
 if __name__ == '__main__':
+    method_choices = ['info-clustering', 'gn']
     parser = argparse.ArgumentParser()
     mode_choices = ['z_in_1', 'z_in_2', 'z_o']
     parser.add_argument('--debug', default=False, type=bool, nargs='?', const=True, help='whether to enter debug mode')
     parser.add_argument('--num_of_times', default=NUM_TIMES, type=int, help='number of times to average each evaluate')
     parser.add_argument('--mode', default='z_in_1', choices=mode_choices, help='in which mode to generate plotting data')    
+    parser.add_argument('--alg', default='info-clustering', help='which algorithm to use', choices=method_choices)
     parser.add_argument('d1', type=float, help='first input value')    
     parser.add_argument('d2', type=float, help='second input value')    
     parser.add_argument('d3', type=float, help='third input value')    
@@ -69,12 +72,16 @@ if __name__ == '__main__':
     if(args.debug):
         pdb.set_trace()
     NUM_TIMES = args.num_of_times
-    ic=InfoClusterWrapper()
+    if(args.alg == 'info-clustering'):
+        alg = InfoClusterWrapper()
+    elif(args.alg == 'gn'):
+        alg = GN()
+
     if(args.mode == 'z_in_1'):
-        report_list = collect_z_in_1_evaluate(ic, args.d1, args.d2, args.d3, args.d4)
+        report_list = collect_z_in_1_evaluate(alg, args.d1, args.d2, args.d3, args.d4)
     elif(args.mode == 'z_in_2'):
-        report_list = collect_z_in_2_evaluate(ic, args.d1, args.d2, args.d3, args.d4)
+        report_list = collect_z_in_2_evaluate(alg, args.d1, args.d2, args.d3, args.d4)
     else:
-        report_list = collect_z_o_evaluate(ic, args.d1, args.d2, args.d3, args.d4)
+        report_list = collect_z_o_evaluate(alg, args.d1, args.d2, args.d3, args.d4)
         
-    save_to_file(report_list, args.mode, NUM_TIMES, args.d1, args.d2, args.d3, args.d4)
+    save_to_file(report_list, args.mode, NUM_TIMES, args.alg, args.d1, args.d2, args.d3, args.d4)
