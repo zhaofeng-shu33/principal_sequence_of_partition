@@ -104,8 +104,7 @@ def add_category_info(G, tree):
         n.add_features(macro=macro_index, micro=micro_index)
 
 def evaluate_single(alg, G):
-    alg.fit(G)
-    alg._get_hierachical_tree()
+    alg.fit(G)    
     res = alg.tree.compare(ground_truth_tree, unrooted=True)
     return res['norm_rf']
     
@@ -172,6 +171,18 @@ def construct(z_in_1, z_in_2, z_out):
                     if(random.random() <= p_2):
                         G.add_edge(i[0], j[0])
     return G    
+
+def write_gml_wrapper(G, filename, ignore_attr=False):
+    if(ignore_attr):
+        _G = nx.Graph()
+        for edge in G.edges():
+            i,j = edge
+            _G.add_edge(i,j)
+            
+        # remove the attribute of _G
+    else:
+        _G = G
+    nx.write_gml(_G, filename)
         
 def graph_plot(G):
     '''
@@ -180,7 +191,7 @@ def graph_plot(G):
     '''
     global n, k1, k2
     time_str = datetime.now().strftime('%Y-%m-%d')
-    nx.write_gml(G, os.path.join('build', 'two_level-%s.gml'%time_str))
+    nx.write_gml_wrapper(G, os.path.join('build', 'two_level-%s.gml'%time_str))
     g = graphviz.Graph(filename='two_level-%s.gv'%time_str, engine='neato') # g is used for plotting
     for i in G.nodes(data=True):
         macro_index = i[1]['macro']
