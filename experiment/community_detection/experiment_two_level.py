@@ -77,14 +77,20 @@ def plot_clustering_tree(tree, alg_name, cutting=0):
             _n.delete()
         # rename the tree node
         tree_inner = Tree(tree_inner.write(features=[]))
-        for _n in tree_inner:
+    else: 
+        tree_inner = tree
+
+    for _n in tree_inner:
+        try:
+            _n.macro
+            break
+        except AttributeError:        
             macro_index = int(_n.name) // (n * k1)
             micro_index = (int(_n.name) - macro_index * n * k1) // n 
             _n.macro = macro_index
             _n.micro = micro_index
-            _n.name = str(_n.category)
-    else: 
-        tree_inner = tree
+            if(len(_n.name)>3):
+                _n.name = str(_n.category)
         
     ts = TreeStyle()
     ts.rotation = 90
