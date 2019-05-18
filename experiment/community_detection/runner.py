@@ -77,7 +77,7 @@ if __name__ == '__main__':
         alg = InfoClusterWrapper()
     elif(args.alg == 'gn'):
         alg = GN()
-    elif(args.alg == 'BHCD'):
+    elif(args.alg == 'bhcd'):
         alg = BHCD()
     if(args.mode == 'z_in_1'):
         report_list = collect_z_in_1_evaluate(alg, args.d1, args.d2, args.d3, args.d4)
