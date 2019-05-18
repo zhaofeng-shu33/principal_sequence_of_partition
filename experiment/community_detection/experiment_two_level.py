@@ -37,6 +37,7 @@ except ImportError:
 
 from info_cluster import InfoCluster
 from cmty import GN
+from bhcd import BHCD
 
 logging.basicConfig(filename=os.path.join('build', 'two_level.log'), level=logging.INFO, format='%(asctime)s %(message)s')
 
@@ -236,7 +237,7 @@ class InfoClusterWrapper(InfoCluster):
             nx.write_gml(_G, os.path.join('build', 'graph_dump.gml'))
             
 if __name__ == '__main__':
-    method_chocies = ['info-clustering', 'gn', 'all']
+    method_chocies = ['info-clustering', 'gn', 'bhcd', 'all']
     parser = argparse.ArgumentParser()
     parser.add_argument('--save_graph', default=False, type=bool, nargs='?', const=True, help='whether to save the .gv file') 
     parser.add_argument('--load_graph', help='use gml file to initialize the graph')     
@@ -270,6 +271,8 @@ if __name__ == '__main__':
         methods.append(InfoClusterWrapper())
     if(args.alg.count('gn')>0):
         methods.append(GN())
+    if(args.alg.count('bhcd')>0):
+        methods.append(BHCD())
     if(len(methods)==0):
         raise ValueError('unknown algorithm')
     
@@ -279,11 +282,6 @@ if __name__ == '__main__':
             logging.info('final report' + json.dumps(report))
     else:
         for i, method in enumerate(methods):
-            report = {'outer_ari' : 0.0,
-                      'inner_ari' : 0.0,
-                      'depth': 0,
-                      'recover_percentage': 0.0
-                      }       
             alg_name = args.alg[i]
             print('running ' + alg_name)
             dis = evaluate_single(method, G)            
