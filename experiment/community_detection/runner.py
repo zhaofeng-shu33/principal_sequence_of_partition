@@ -10,6 +10,7 @@ import numpy as np
 from datetime import datetime
 
 from cmty import GN
+from bhcd import BHCD
 from experiment_two_level import evaluate, InfoClusterWrapper
 
 NUM_TIMES = 5
@@ -57,7 +58,7 @@ def save_to_file(report_list, prefix, *argv):
     f.close()
     
 if __name__ == '__main__':
-    method_choices = ['info-clustering', 'gn']
+    method_choices = ['info-clustering', 'gn', 'bhcd']
     parser = argparse.ArgumentParser()
     mode_choices = ['z_in_1', 'z_in_2', 'z_o']
     parser.add_argument('--debug', default=False, type=bool, nargs='?', const=True, help='whether to enter debug mode')
@@ -76,7 +77,8 @@ if __name__ == '__main__':
         alg = InfoClusterWrapper()
     elif(args.alg == 'gn'):
         alg = GN()
-
+    elif(args.alg == 'BHCD'):
+        alg = BHCD()
     if(args.mode == 'z_in_1'):
         report_list = collect_z_in_1_evaluate(alg, args.d1, args.d2, args.d3, args.d4)
     elif(args.mode == 'z_in_2'):
