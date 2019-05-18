@@ -30,7 +30,7 @@ class InfoCluster:
         self.tree = Tree()
         self.tree_depth = 0
         
-    def fit(self, X, use_pdt = False):
+    def fit(self, X, use_pdt = False, initialize_tree = True):
         '''Construct an affinity graph from X using rbf kernel function,
         then applies info clustering to this affinity graph.
         Parameters
@@ -46,9 +46,11 @@ class InfoCluster:
         
         self.critical_values = to_py_list(self.g.get_critical_values())
         self.partition_num_list = to_py_list(self.g.get_partitions())  
-        
+        if(initialize_tree and self.tree.is_leaf()):
+            self._get_hierachical_tree()  
+            
     def fit_predict(self, X):
-        return self.fit(X)
+        self.fit(X)
 
     def _add_node(self, root, node_list, num_index):
         label_list = self.get_category(self.partition_num_list[num_index])
