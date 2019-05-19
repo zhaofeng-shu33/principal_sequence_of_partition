@@ -29,13 +29,15 @@ try:
 except ImportError:
     pass
 
+from ete3 import Tree
 try:
-    from ete3 import TreeStyle, NodeStyle, Tree
+    from ete3 import TreeStyle, NodeStyle
 except ImportError:
     pass
 
 from info_cluster import InfoCluster
 from cmty import GN
+from bhcd import BHCD
 
 logging.basicConfig(filename=os.path.join('build', 'two_level.log'), level=logging.INFO, format='%(asctime)s %(message)s')
 
@@ -76,14 +78,20 @@ def plot_clustering_tree(tree, alg_name, cutting=0):
             _n.delete()
         # rename the tree node
         tree_inner = Tree(tree_inner.write(features=[]))
-        for _n in tree_inner:
+    else: 
+        tree_inner = tree
+
+    for _n in tree_inner:
+        try:
+            _n.macro
+            break
+        except AttributeError:        
             macro_index = int(_n.name) // (n * k1)
             micro_index = (int(_n.name) - macro_index * n * k1) // n 
             _n.macro = macro_index
             _n.micro = micro_index
-            _n.name = str(_n.category)
-    else: 
-        tree_inner = tree
+            if(len(_n.name)>3):
+                _n.name = str(_n.category)
         
     ts = TreeStyle()
     ts.rotation = 90
@@ -103,8 +111,7 @@ def add_category_info(G, tree):
         n.add_features(macro=macro_index, micro=micro_index)
 
 def evaluate_single(alg, G):
-    alg.fit(G)
-    alg._get_hierachical_tree()
+    alg.fit(G)    
     res = alg.tree.compare(ground_truth_tree, unrooted=True)
     return res['norm_rf']
     
@@ -171,6 +178,18 @@ def construct(z_in_1, z_in_2, z_out):
                     if(random.random() <= p_2):
                         G.add_edge(i[0], j[0])
     return G    
+
+def write_gml_wrapper(G, filename, ignore_attr=False):
+    if(ignore_attr):
+        _G = nx.Graph()
+        for edge in G.edges():
+            i,j = edge
+            _G.add_edge(i,j)
+            
+        # remove the attribute of _G
+    else:
+        _G = G
+    nx.write_gml(_G, filename)
         
 def graph_plot(G):
     '''
@@ -179,7 +198,7 @@ def graph_plot(G):
     '''
     global n, k1, k2
     time_str = datetime.now().strftime('%Y-%m-%d')
-    nx.write_gml(G, os.path.join('build', 'two_level-%s.gml'%time_str))
+    nx.write_gml_wrapper(G, os.path.join('build', 'two_level-%s.gml'%time_str))
     g = graphviz.Graph(filename='two_level-%s.gv'%time_str, engine='neato') # g is used for plotting
     for i in G.nodes(data=True):
         macro_index = i[1]['macro']
@@ -224,7 +243,7 @@ class InfoClusterWrapper(InfoCluster):
             nx.write_gml(_G, os.path.join('build', 'graph_dump.gml'))
             
 if __name__ == '__main__':
-    method_chocies = ['info-clustering', 'gn', 'all']
+    method_chocies = ['info-clustering', 'gn', 'bhcd', 'all']
     parser = argparse.ArgumentParser()
     parser.add_argument('--save_graph', default=False, type=bool, nargs='?', const=True, help='whether to save the .gv file') 
     parser.add_argument('--load_graph', help='use gml file to initialize the graph')     
@@ -258,6 +277,8 @@ if __name__ == '__main__':
         methods.append(InfoClusterWrapper())
     if(args.alg.count('gn')>0):
         methods.append(GN())
+    if(args.alg.count('bhcd')>0):
+        methods.append(BHCD())
     if(len(methods)==0):
         raise ValueError('unknown algorithm')
     
@@ -267,11 +288,6 @@ if __name__ == '__main__':
             logging.info('final report' + json.dumps(report))
     else:
         for i, method in enumerate(methods):
-            report = {'outer_ari' : 0.0,
-                      'inner_ari' : 0.0,
-                      'depth': 0,
-                      'recover_percentage': 0.0
-                      }       
             alg_name = args.alg[i]
             print('running ' + alg_name)
             dis = evaluate_single(method, G)            
