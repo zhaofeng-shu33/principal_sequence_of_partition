@@ -32,7 +32,7 @@ namespace parametric {
         std::sort(turning_points.begin(), turning_points.end());
         // compute values at the first breakpoint
         double last_tp = turning_points[0];
-        double slope = -infinity_count * 2;
+        int slope = -infinity_count * 2;
 
         double sum = 0;
         double intersept = 0;
