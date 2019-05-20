@@ -1,6 +1,0 @@
-matplotlib
-oss2
-tabulate
-easydict
-pyyaml
-info_cluster

@@ -4,7 +4,8 @@ matrix:
   - os: linux
     dist: xenial
     sudo: required
-    python: "3.6"
+    language: python
+    python: '3.5'
     addons:
       apt:
         sources:
@@ -14,7 +15,7 @@ matrix:
     cache:
       - directories:
         - /usr/src/gtest
-      - pip
+      - pip3
   #- os: osx
     
 before_install:
@@ -61,6 +62,4 @@ script:
   - python -c "from info_cluster import psp;print(psp.__version__)"
   - python -c "from info_cluster import InfoCluster"
   - coverage run ../test/python/graph_cut_py_test.py
-  - cd ../example
-  - coverage run example.py
   - codecov
