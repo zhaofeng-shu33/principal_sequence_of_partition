@@ -35,8 +35,8 @@ def plot_ari(filename, plot_title=''):
         other_alg = 'info-clustering'
         
     x_data = [i[x_title] for i in data]
-    outer_ari_data = [i['norm_rf'] for i in data]
-    plt.plot(x_data, outer_ari_data, label=alg)
+    distance_data = [i['norm_rf'] for i in data]
+    plt.plot(x_data, distance_data, label=alg)
     data_2 = load_other_data(filename, alg, other_alg)
     if(data_2):
         plt.plot(x_data, data_2, label=other_alg)
