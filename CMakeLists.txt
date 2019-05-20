@@ -61,13 +61,12 @@ if(USE_LEMON)
 endif()    
 
 if(USE_PYTHON)
+    if("$ENV{APPVEYOR}" AND WIN32) # appveyor tries to find py37, in which vcpkg(2018.11) doesnot support
+        set(Python3_ROOT_DIR C:/Python36-x64)
+    endif()
+
     find_package(Python3 COMPONENTS Interpreter Development)
     
-    if("$ENV{APPVEYOR}" AND WIN32)
-        set(PYTHON_EXECUTABLE C:/Python36-x64/python.exe)
-        set(PYTHON_VERSION_MAJOR 3)
-        set(PYTHON_VERSION_MINOR 6)
-    endif()
     
     if(WIN32)
         find_package(Boost REQUIRED python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR})

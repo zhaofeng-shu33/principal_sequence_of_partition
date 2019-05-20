@@ -4,7 +4,6 @@ matrix:
   - os: linux
     dist: xenial
     sudo: required
-    python: "3.6"
     addons:
       apt:
         sources:
@@ -14,7 +13,7 @@ matrix:
     cache:
       - directories:
         - /usr/src/gtest
-      - pip
+      - pip3
   #- os: osx
     
 before_install:
@@ -48,18 +47,18 @@ before_install:
 install:
   - make
   - cd ..
-  - python -c "import pathlib" 2>/dev/null || python -m pip install pathlib
-  - python setup.py install
-  - python -c "import networkx" 2>/dev/null || python -m pip install -r ./info_cluster/requirement.txt
-  - python -c "import codecov" 2>/dev/null || python -m pip install codecov  
+  - python3 -c "import pathlib" 2>/dev/null || python3 -m pip install pathlib
+  - python3 setup.py install
+  - python3 -c "import networkx" 2>/dev/null || python3 -m pip install -r ./info_cluster/requirement.txt
+  - python3 -c "import codecov" 2>/dev/null || python3 -m pip install codecov  
 script:
 # used for testing
   - cd build
   - test/TestAll
   - test/test_pmf
   - set/test_set
-  - python -c "from info_cluster import psp;print(psp.__version__)"
-  - python -c "from info_cluster import InfoCluster"
+  - python3 -c "from info_cluster import psp;print(psp.__version__)"
+  - python3 -c "from info_cluster import InfoCluster"
   - coverage run ../test/python/graph_cut_py_test.py
   - cd ../example
   - coverage run example.py
