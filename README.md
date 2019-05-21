@@ -96,12 +96,6 @@ g.run() # use maximal flow algorithm to classify them
 print(g.get_critical_values()) # [2,5]
 print(g.get_category(2)) # get the result which has at least 2 categories, which is [1,0,1]
 ```    
-## Further experiment
-In the directory utility, we make two simple experiments. The first is `plot_art.py`, 
-which plots the clustering results for two artificial datasets.
-The second one is `empirical_compare.py`, which tests the info-clustering algorithm on 5 datasets
-and compare the results with *kmeans*, *affinity propagation*, *spectral clustering* and *agglomerative clustering*.
-For more detail, see [experiment](utility/README.md).
 
 ## Parametric Dilworth Truncation(pdt) implementation
 We provide another alternative implementation, which can be used similar to **PyGraph**.
