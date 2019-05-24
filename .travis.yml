@@ -10,8 +10,11 @@ matrix:
       apt:
         sources:
           - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:zhaofeng-shu33/liblemon'
         packages:
           - g++-6
+          - liblemon-dev
+          - liblemon1.3.1
     cache:
       - directories:
         - /usr/src/gtest
