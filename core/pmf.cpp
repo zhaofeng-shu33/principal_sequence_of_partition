@@ -6,9 +6,6 @@
 #include <sstream>
 #include "core/graph/graph.h"
 #include "core/pmf.h"
-#if _DEBUG
-#include <cassert>
-#endif
 
 namespace parametric {
     using Set = stl::CSet;
@@ -156,6 +153,7 @@ namespace parametric {
             int i = dig.id(dig.target(arc));
             double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
 			double candidate = std::min<double>(a_i - lambda, b_i);
+			dig_aM[arc] = 0;
 			if (candidate < 0)
 				dig_aM[arc] = -candidate;
 
@@ -186,18 +184,19 @@ namespace parametric {
         set_list.insert(set_list.end(), s);
     }
     void PMF::slice(Set& T_l, Set& T_r, const FlowMap& flowMap, double lambda_1, double lambda_3) {
-		if (true) {
+#if _DEBUG
+
 			update_dig(lambda_1);
 			double value_1 = submodular::get_cut_value(dig, dig_aM, T_r) - submodular::get_cut_value(dig, dig_aM, T_l);
-			if (value_1 < 0) {
+			if (value_1 < -1 * tolerance.epsilon()) {
 				throw std::logic_error("value 1");
 			}
 			update_dig(lambda_3);
 			double value_2 = submodular::get_cut_value(dig, dig_aM, T_r) - submodular::get_cut_value(dig, dig_aM, T_l);
-			if (value_2 > 0) {
+			if (value_2 > tolerance.epsilon()) {
 				throw std::logic_error("value 2");
 			}
-		}
+#endif
 
         // compute lambda_2
         double lambda_const = compute_lambda_eq_const(T_l, T_r);
@@ -235,9 +234,11 @@ namespace parametric {
         pf_instance.startSecondPhase();
 		double new_flow_value = pf_instance.flowValue();
         Set T_apostrophe = get_min_cut_sink_side(pf_instance);
+#if _DEBUG
 		if (!T_apostrophe.IsSubSet(T_l) || !T_r.IsSubSet(T_apostrophe)) {
 			throw std::logic_error("not subset");
 		}
+#endif
         if(T_apostrophe != T_r && new_flow_value < original_flow_value - tolerance.epsilon()){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
             insert_set(T_apostrophe);

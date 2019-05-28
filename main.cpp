@@ -3,6 +3,7 @@
 * \brief : accomplish real task by info-clustering technique
 */
 #include "config.h"
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <boost/program_options.hpp>
