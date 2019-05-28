@@ -10,8 +10,11 @@ matrix:
       apt:
         sources:
           - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:zhaofeng-shu33/liblemon'
         packages:
           - g++-6
+          - liblemon-dev
+          - liblemon1.3.1
     cache:
       - directories:
         - /usr/src/gtest
@@ -30,21 +33,6 @@ before_install:
   - popd
   - mkdir build
   - cd build
-  # build and install liblemon
-  - wget http://lemon.cs.elte.hu/pub/sources/lemon-1.3.1.zip
-  - unzip lemon-1.3.1.zip -d ./  
-  - cd lemon-1.3.1
-  - patch lemon/preflow.h ../../preflow.patch
-  - echo "SET_TARGET_PROPERTIES(lemon PROPERTIES COMPILE_FLAGS \"-fPIC\")" >> lemon/CMakeLists.txt
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make
-  - sudo make install
-  - pushd /usr/local/share/lemon/cmake
-  - sudo mv LEMONConfig.cmake lemonConfig.cmake
-  - popd
-  - cd ../..  
   - cmake -DENABLE_TESTING=ON -DUSE_PYTHON=ON -DUSE_LEMON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_BOOST_OPTION=ON -DCMAKE_BUILD_TYPE=Release ../ 
 install:
   - make
