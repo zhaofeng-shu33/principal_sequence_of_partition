@@ -186,6 +186,18 @@ namespace parametric {
         set_list.insert(set_list.end(), s);
     }
     void PMF::slice(Set& T_l, Set& T_r, const FlowMap& flowMap, double lambda_1, double lambda_3) {
+		if (true) {
+			update_dig(lambda_1);
+			double value_1 = submodular::get_cut_value(dig, dig_aM, T_r) - submodular::get_cut_value(dig, dig_aM, T_l);
+			if (value_1 < 0) {
+				throw std::logic_error("value 1");
+			}
+			update_dig(lambda_3);
+			double value_2 = submodular::get_cut_value(dig, dig_aM, T_r) - submodular::get_cut_value(dig, dig_aM, T_l);
+			if (value_2 > 0) {
+				throw std::logic_error("value 2");
+			}
+		}
 
         // compute lambda_2
         double lambda_const = compute_lambda_eq_const(T_l, T_r);
@@ -223,11 +235,11 @@ namespace parametric {
         pf_instance.startSecondPhase();
 		double new_flow_value = pf_instance.flowValue();
         Set T_apostrophe = get_min_cut_sink_side(pf_instance);
+		if (!T_apostrophe.IsSubSet(T_l) || !T_r.IsSubSet(T_apostrophe)) {
+			throw std::logic_error("not subset");
+		}
         if(T_apostrophe != T_r && new_flow_value < original_flow_value - tolerance.epsilon()){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
-#if _DEBUG
-            assert(T_apostrophe.IsSubSet(T_l));
-#endif
             insert_set(T_apostrophe);
             slice(T_l, T_apostrophe, flowMap, lambda_1, lambda_2);
             slice(T_apostrophe, T_r, newFlowMap, lambda_2, lambda_3);
