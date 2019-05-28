@@ -73,13 +73,13 @@ namespace parametric {
         sink_capacity.resize(_y_lambda.size());
 
     }
-    Set PMF::get_min_cut_source_side(Preflow& pf) {
-        Set s = Set::MakeEmpty(tilde_G_size);
+    Set PMF::get_min_cut_sink_side(Preflow& pf) {
+        Set t = Set::MakeEmpty(tilde_G_size);
         for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
-            if (pf.minCut(n))
-                s.AddElement(dig.id(n));
+            if (!pf.minCut(n))
+                t.AddElement(dig.id(n));
         }
-        return s;
+        return t;
     }
     void PMF::run() {
         //set sink_capacity
@@ -124,13 +124,12 @@ namespace parametric {
         pf.startFirstPhase();
         pf.startSecondPhase();
 
-        Set S_0 = get_min_cut_source_side(pf);
-        Set T_0 = S_0.Complement(tilde_G_size);
+        Set T_0 = get_min_cut_sink_side(pf);
         Set T_1 = Set::MakeEmpty(tilde_G_size);
         T_1.AddElement(_j);
         set_list.push_back(T_0);
         set_list.push_back(T_1);
-        slice(S_0, T_1, pf.flowMap(), init_lambda, std::numeric_limits<double>::infinity());
+        slice(T_0, T_1, pf.flowMap(), init_lambda, std::numeric_limits<double>::infinity());
     }
 
     void PMF::reset_j(std::size_t j) { 
@@ -186,17 +185,16 @@ namespace parametric {
         }
         set_list.insert(set_list.end(), s);
     }
-    void PMF::slice(Set& S, Set& T, const FlowMap& flowMap, double lambda_1, double lambda_3) {
+    void PMF::slice(Set& T_l, Set& T_r, const FlowMap& flowMap, double lambda_1, double lambda_3) {
 
         // compute lambda_2
-        double lambda_const = compute_lambda_eq_const(S, T);
+        double lambda_const = compute_lambda_eq_const(T_l, T_r);
         std::vector<pair> y_lambda_filter;
         for (int i = 0; i < tilde_G_size - 1; i++) {
-            if (S.HasElement(i) || T.HasElement(i))
-                continue;
-            y_lambda_filter.push_back(_y_lambda[i]);
+            if (T_l.HasElement(i) && !T_r.HasElement(i))
+	            y_lambda_filter.push_back(_y_lambda[i]);
         }
-        double lambda_2 = compute_lambda(y_lambda_filter, -lambda_const);
+        double lambda_2 = compute_lambda(y_lambda_filter, lambda_const);
 		if (!tolerance.different(lambda_2, lambda_1) || !tolerance.different(lambda_2, lambda_3)) {
 			insert(lambda_2);
 			return;
@@ -208,7 +206,7 @@ namespace parametric {
 			throw std::logic_error(ss.str());
 		}
 		// compute original value
-		double original_flow_value = compute_cut(dig, dig_aM, S);
+		double original_flow_value = submodular::get_cut_value(dig, dig_aM, T_r);
 
 		FlowMap newFlowMap(dig);
 		modify_flow(flowMap, newFlowMap);
@@ -224,26 +222,24 @@ namespace parametric {
         pf_instance.startFirstPhase();
         pf_instance.startSecondPhase();
 		double new_flow_value = pf_instance.flowValue();
-        Set S_apostrophe = get_min_cut_source_side(pf_instance);
-        Set T_apostrophe = S_apostrophe.Complement(tilde_G_size);
-        if(S_apostrophe != S && T_apostrophe != T && new_flow_value < original_flow_value - tolerance.epsilon()){
+        Set T_apostrophe = get_min_cut_sink_side(pf_instance);
+        if(T_apostrophe != T_r && new_flow_value < original_flow_value - tolerance.epsilon()){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
 #if _DEBUG
-            assert(S.IsSubSet(S_apostrophe));
-            assert(T.IsSubSet(T_apostrophe));
+            assert(T_apostrophe.IsSubSet(T_l));
 #endif
             insert_set(T_apostrophe);
-            slice(S, T_apostrophe, flowMap, lambda_1, lambda_2);
-            slice(S_apostrophe, T, newFlowMap, lambda_2, lambda_3);
+            slice(T_l, T_apostrophe, flowMap, lambda_1, lambda_2);
+            slice(T_apostrophe, T_r, newFlowMap, lambda_2, lambda_3);
         }
         else {
             insert(lambda_2);
         }
     }
-    double PMF::compute_lambda_eq_const(Set& S, Set& T) {
+    double PMF::compute_lambda_eq_const(Set& T_l, Set& T_r) {
         // compute the target value from original graph
-        double target_value = submodular::get_cut_value(*g_ptr, *aM, T);
-        target_value -= compute_cut(*g_ptr, *aM, S);
+        double target_value = submodular::get_cut_value(*g_ptr, *aM, T_l);
+        target_value -= submodular::get_cut_value(*g_ptr, *aM, T_r);
         return target_value;
     }
     PDT::PDT(const PDT& another_pdt): _y_lambda(another_pdt._y_lambda),

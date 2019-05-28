@@ -36,7 +36,7 @@ private:
     void slice(Set& S, Set& T, const FlowMap& arcMap, double lambda_1, double lambda_3);
 	//! modify flow given current dig_aM
 	void modify_flow(const FlowMap& flowMap, FlowMap& newFlowMap);
-    inline Set get_min_cut_source_side(Preflow& pf);
+    inline Set get_min_cut_sink_side(Preflow& pf);
     double compute_lambda_eq_const(Set& S, Set& T);
     lemon::ListDigraph* g_ptr;
     ArcMap* aM;
@@ -74,17 +74,5 @@ private:
 };
 PDT* make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges);
 
-//! compute the graph cut with S as source side
-template<typename DiGraph, typename ValueType = double>
-ValueType compute_cut(const DiGraph& g, const typename DiGraph::template ArcMap<ValueType>& map, stl::CSet& S) {
-    ValueType target_value = 0;
-    stl::CSet S_Complement = S.Complement(g.maxNodeId() + 1);
-    for (size_t i : S_Complement) {
-        for (lemon::ListDigraph::InArcIt arc(g, g.nodeFromId(i)); arc != lemon::INVALID; ++arc) {
-            if (S.HasElement(g.id(g.source(arc))))
-                target_value += map[arc];
-        }
-    }
-    return target_value;
-}
+
 }

@@ -163,13 +163,13 @@ TEST(PMF, ComputeCut) {
     aM[a1] = 1;
     aM[a2] = 2;
     aM[a3] = 4;
-    stl::CSet s;
-    s.AddElement(0);
-    EXPECT_DOUBLE_EQ(compute_cut(g, aM, s), 5);
-    s.AddElement(1);
-    EXPECT_DOUBLE_EQ(compute_cut(g, aM, s), 6);
-    s.AddElement(2);
-    EXPECT_DOUBLE_EQ(compute_cut(g, aM, s), 0);
+    stl::CSet t;
+    t.AddElement(2);
+    EXPECT_DOUBLE_EQ(submodular::get_cut_value(g, aM, t), 6);
+    t.AddElement(1);
+    EXPECT_DOUBLE_EQ(submodular::get_cut_value(g, aM, t), 5);
+    t.AddElement(0);
+    EXPECT_DOUBLE_EQ(submodular::get_cut_value(g, aM, t), 0);
 }
 }
 namespace demo {
@@ -216,7 +216,6 @@ namespace demo {
             aM[a2] = std::get<2>(edge_tuple);
         }
         stl::CSet s(std::string("00001111"));
-        double cut_value = parametric::compute_cut(g, aM, s);
         std::vector<pair> parameter_list;
         for(int i = 0; i < 8; i++)
             parameter_list.push_back(std::make_pair(0, -0.0286));
@@ -224,7 +223,7 @@ namespace demo {
         parameter_list[1] = std::make_pair(0.909, INFINITY);
 
         parametric::PMF pmf(g, aM, 2, parameter_list);
-        pmf.run();
+        pmf.run(); 
     }
     TEST(GivenPoint8, PDT) {
         double a[8][2] = { {3.1, 3.2},
