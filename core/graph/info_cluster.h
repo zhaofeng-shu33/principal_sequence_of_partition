@@ -1,6 +1,8 @@
 #pragma once
 #include <lemon/list_graph.h>
 #include "core/graph/graph.h"
+#include "core/dt.h"
+
 namespace submodular {
     class InfoCluster {
     public:
