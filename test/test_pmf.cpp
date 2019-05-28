@@ -12,36 +12,32 @@ TEST(PMF, EquationSolve) {
     lemon::ListDigraph g;
     lemon::ListDigraph::ArcMap<double> aM(g);
     PMF pmf(g, aM, 0, y_lambda);
-    double lambda_1 = pmf.compute_lambda(parameter_list, -1.0);
+    double lambda_1 = pmf.compute_lambda(parameter_list, -0.5);
     EXPECT_DOUBLE_EQ(lambda_1, 0.5);
-    double lambda_2 = pmf.compute_lambda(parameter_list, -6.0);
-    EXPECT_DOUBLE_EQ(lambda_2, 2);
+    double lambda_2 = pmf.compute_lambda(parameter_list, -3.0);
+    EXPECT_DOUBLE_EQ(lambda_2, 2.5);
     EXPECT_THROW(pmf.compute_lambda(parameter_list, 1), std::range_error);
     // double lambda_4 = pmf.compute_lambda(parameter_list, 0);
     // EXPECT_DOUBLE_EQ(lambda_4, 0);
-    double lambda_5 = pmf.compute_lambda(parameter_list, -2);
+    double lambda_5 = pmf.compute_lambda(parameter_list, -1);
     EXPECT_DOUBLE_EQ(lambda_5, 1);
     parameter_list[0].first = 0;
-    double lambda_6 = pmf.compute_lambda(parameter_list, -2); // slope = -4 for lambda > 0
-    EXPECT_DOUBLE_EQ(lambda_6, 0.5);
+    double lambda_6 = pmf.compute_lambda(parameter_list, -2); // slope = -2 for lambda > 0
+    EXPECT_DOUBLE_EQ(lambda_6, 1);
     parameter_list[0].second = INFINITY;
     double lambda_7 = pmf.compute_lambda(parameter_list, 2);
-    EXPECT_DOUBLE_EQ(lambda_7, -1);
+    EXPECT_DOUBLE_EQ(lambda_7, -2);
     double lambda_8 = pmf.compute_lambda(parameter_list, -2);
-    EXPECT_DOUBLE_EQ(lambda_8, 0.5);
+    EXPECT_DOUBLE_EQ(lambda_8, 1);
     parameter_list[1].second = INFINITY;
     double lambda_9 = pmf.compute_lambda(parameter_list, 2);
-    EXPECT_DOUBLE_EQ(lambda_9, -0.5);
-    parameter_list[0] = std::make_pair(0.909, INFINITY);
-    parameter_list[1] = std::make_pair(0.99, -0.737);
-    double lambda_10 = pmf.compute_lambda(parameter_list, -0.1);
-    EXPECT_DOUBLE_EQ(lambda_10, 0.136);
+    EXPECT_DOUBLE_EQ(lambda_9, -1);
 
 	// test left value
 	parameter_list.pop_back();
 	parameter_list[0] = std::make_pair(1,-1);
 	double lambda_11 = pmf.compute_lambda(parameter_list, -1);
-	EXPECT_DOUBLE_EQ(lambda_11, 1);
+	EXPECT_DOUBLE_EQ(lambda_11, 2);
 }
 TEST(PMF, insert_set) {
     using Set = stl::CSet;
@@ -94,19 +90,13 @@ TEST(PMF, PMClass) {
     lemon::ListDigraph::Node n3 = g.addNode();
 
     lemon::ListDigraph::Arc a1 = g.addArc(n1, n2);
-    lemon::ListDigraph::Arc a2 = g.addArc(n2, n1);
     lemon::ListDigraph::Arc a3 = g.addArc(n1, n3);
-    lemon::ListDigraph::Arc a4 = g.addArc(n3, n1);
     lemon::ListDigraph::Arc a5 = g.addArc(n2, n3);
-    lemon::ListDigraph::Arc a6 = g.addArc(n3, n2);
 
     lemon::ListDigraph::ArcMap<double> aM(g);
     aM[a1] = 1;
-    aM[a2] = 1;
     aM[a3] = 5;
-    aM[a4] = 5;
     aM[a5] = 1;
-    aM[a6] = 1;
     PMF pmf(g, aM, 2, parameter_list);
     pmf.run();
 
@@ -118,6 +108,13 @@ TEST(PMF, PMClass) {
     EXPECT_EQ(*it, Set(std::string("101"))); // { 0, 2 }
     it++;
     EXPECT_EQ(*it, Set(std::string("001"))); // { 2 }
+
+	std::list<double> lambda_list = pmf.get_lambda_list();
+	EXPECT_EQ(lambda_list.size(), 2);
+	std::list<double>::iterator it_2 = lambda_list.begin();
+	EXPECT_DOUBLE_EQ(*it_2, 1);
+	it_2++;
+	EXPECT_DOUBLE_EQ(*it_2, 5);
 
     pmf.reset_j(0);
     pmf.run();
@@ -133,19 +130,13 @@ TEST(PDT, RUN) {
     lemon::ListDigraph::Node n3 = g.addNode();
 
     lemon::ListDigraph::Arc a1 = g.addArc(n1, n2);
-    lemon::ListDigraph::Arc a2 = g.addArc(n2, n1);
     lemon::ListDigraph::Arc a3 = g.addArc(n1, n3);
-    lemon::ListDigraph::Arc a4 = g.addArc(n3, n1);
     lemon::ListDigraph::Arc a5 = g.addArc(n2, n3);
-    lemon::ListDigraph::Arc a6 = g.addArc(n3, n2);
 
     lemon::ListDigraph::ArcMap<double> aM(g);
     aM[a1] = 1;
-    aM[a2] = 1;
     aM[a3] = 5;
-    aM[a4] = 5;
     aM[a5] = 1;
-    aM[a6] = 1;
     PDT pdt(g, aM);
     pdt.run();
     std::list<double> lambda_list = pdt.get_lambda_list();

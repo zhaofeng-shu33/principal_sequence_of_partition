@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <sstream>
+#include "core/graph/graph.h"
 #include "core/pmf.h"
 #if _DEBUG
 #include <cassert>
@@ -17,7 +18,7 @@ namespace parametric {
         int infinity_count = 0;
         for (const pair& p : parameter_list) {
             if (p.second != INFINITY)
-                turning_points.push_back((p.first - p.second) / 2);
+                turning_points.push_back(p.first - p.second);
             else
                 infinity_count++;
         }
@@ -27,17 +28,17 @@ namespace parametric {
                 return (a + b.first);
             }
             );
-            return intersept / (2 * parameter_list.size());
+            return intersept / parameter_list.size();
         }
         std::sort(turning_points.begin(), turning_points.end());
         // compute values at the first breakpoint
         double last_tp = turning_points[0];
-        int slope = -infinity_count * 2;
+        int slope = -infinity_count ;
 
         double sum = 0;
         double intersept = 0;
         for (const pair& p : parameter_list) {
-            sum += std::min(p.first - 2 * last_tp, p.second);
+            sum += std::min(p.first - last_tp, p.second);
             if (p.second == INFINITY)
                 intersept += p.first;
             else
@@ -59,7 +60,7 @@ namespace parametric {
             if (sum <= target_value) {
                 return (target_value - sum) / slope + tp;
             }
-            slope -= 2;
+            slope -= 1;
             last_tp = tp;
         }
         return (target_value - sum) / slope + last_tp;
@@ -155,7 +156,7 @@ namespace parametric {
             // get the next node id
             int i = dig.id(dig.target(arc));
             double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
-			double candidate = std::min<double>(a_i - 2 * lambda, b_i);
+			double candidate = std::min<double>(a_i - lambda, b_i);
 			if (candidate < 0)
 				dig_aM[arc] = -candidate;
 
@@ -164,7 +165,7 @@ namespace parametric {
         for (lemon::ListDigraph::InArcIt arc(dig, sink_node); arc != lemon::INVALID; ++arc) {
             int i = dig.id(dig.source(arc));
             double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
-            dig_aM[arc] = sink_capacity[i] + std::max<double>(0, std::min<double>(a_i - 2 * lambda, b_i));
+            dig_aM[arc] = sink_capacity[i] + std::max<double>(0, std::min<double>(a_i - lambda, b_i));
         }
     }
     void PMF::insert(double lambda) {
@@ -241,7 +242,7 @@ namespace parametric {
     }
     double PMF::compute_lambda_eq_const(Set& S, Set& T) {
         // compute the target value from original graph
-        double target_value = compute_cut(*g_ptr, *aM, T);
+        double target_value = submodular::get_cut_value(*g_ptr, *aM, T);
         target_value -= compute_cut(*g_ptr, *aM, S);
         return target_value;
     }
@@ -261,9 +262,7 @@ namespace parametric {
             lemon::ListDigraph::Node s = g->nodeFromId(std::get<0>(edge_tuple));
             lemon::ListDigraph::Node t = g->nodeFromId(std::get<1>(edge_tuple));
             lemon::ListDigraph::Arc a1 = g->addArc(s, t);
-            lemon::ListDigraph::Arc a2 = g->addArc(t, s);
             (*aM)[a1] = std::get<2>(edge_tuple);
-            (*aM)[a2] = std::get<2>(edge_tuple);
         }
         PDT* pdt = new PDT(*g, *aM);
         return pdt;
@@ -281,18 +280,18 @@ namespace parametric {
             pmf.reset_y_lambda(_y_lambda);
             pmf.reset_j(j);
             pmf.run();
-            std::list<Set> s_list = pmf.get_set_list();
+            std::list<Set> t_list = pmf.get_set_list();
             std::list<double> lambda_list = pmf.get_lambda_list();
             for (int u = 0; u < _y_lambda.size(); u++) {
                 if (u == j) {
-                    stl::CSet s;
-                    s.AddElement(j);
-                    _y_lambda[j] = pair(compute_cut(*_g, *_arcMap, s), INFINITY);
+                    stl::CSet t;
+                    t.AddElement(j);
+                    _y_lambda[j] = pair(submodular::get_cut_value(*_g, *_arcMap, t), INFINITY);
                 }
                 else {
                     int i = -1;
                     std::list<double>::iterator lambda_it = lambda_list.begin();
-                    for (Set& s : s_list) {
+                    for (Set& s : t_list) {
                         if (s.HasElement(u)) {
                             i++;
                             lambda_it++;
@@ -300,8 +299,8 @@ namespace parametric {
                     }
                     if (i != -1) {
                         lambda_it--;
-                        if (*lambda_it > (_y_lambda[u].first - _y_lambda[u].second) / 2)
-                            _y_lambda[u] = std::make_pair(_y_lambda[u].first, _y_lambda[u].first - 2 * (*lambda_it));
+                        if (*lambda_it > (_y_lambda[u].first - _y_lambda[u].second) )
+                            _y_lambda[u] = std::make_pair(_y_lambda[u].first, _y_lambda[u].first - (*lambda_it));
                     }
                 }
             }
@@ -310,11 +309,11 @@ namespace parametric {
             lambda_list.push_back(INFINITY);
             int i = 0, k = 0;
             std::list<Partition>::iterator p_it = partition_list.begin();
-            std::list<Set>::iterator s_it = s_list.begin();
+            std::list<Set>::iterator t_it = t_list.begin();
             std::list<double>::iterator d_i = Lambda_list.begin(), d_k = lambda_list.begin();
             Partition Q;
             while (i < Lambda_list.size() && k < lambda_list.size()) {
-                Partition Q_apostrophe = p_it->expand(*s_it);
+                Partition Q_apostrophe = p_it->expand(*t_it);
                 if (Q_apostrophe != Q) {
                     Q = Q_apostrophe;
                     partition_list_apostrophe.push_back(Q);
@@ -333,7 +332,7 @@ namespace parametric {
                 if (d_i_v >= d_k_v) {
                     k++;
                     d_k++;
-                    s_it++;
+                    t_it++;
                 }
             }
             Lambda_list = Lambda_list_apostrophe;
