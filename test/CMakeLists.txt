@@ -4,11 +4,6 @@ include_directories(${GTEST_INCLUDE_DIR})
 add_executable(TestAll test.cpp)
 target_link_libraries(TestAll ic_static)
 
-add_executable(test_pmf test_pmf.cpp)
-target_link_libraries(test_pmf pmf)
-target_link_libraries(test_pmf set_stl)
-target_link_libraries(test_pmf ic_static)
-target_link_libraries(test_pmf ${LEMON_LIBRARY})
 
 if(UNIX AND "${CMAKE_BUILD_TYPE}" STREQUAL "")
 set(CMAKE_BUILD_TYPE "Release")
@@ -20,15 +15,11 @@ if(WIN32)
 target_link_libraries(TestAll debug ${GTEST_MAIN_LIBRARY_DEBUG} debug ${GTEST_LIBRARY_DEBUG})
 target_link_libraries(TestAll optimized ${GTEST_MAIN_LIBRARY} optimized ${GTEST_LIBRARY})
 target_link_libraries(TestAll set_stl)
-target_link_libraries(test_pmf debug ${GTEST_MAIN_LIBRARY_DEBUG} debug ${GTEST_LIBRARY_DEBUG})
-target_link_libraries(test_pmf optimized ${GTEST_MAIN_LIBRARY} optimized ${GTEST_LIBRARY})
-
 endif()
 
 if(UNIX)
 target_link_libraries(TestAll ${GTEST_MAIN_LIBRARY} ${GTEST_LIBRARY} pthread)
 target_link_libraries(TestAll set_stl)
-target_link_libraries(test_pmf ${GTEST_MAIN_LIBRARY} ${GTEST_LIBRARY} pthread)
 endif()
 
 if(USE_LEMON)

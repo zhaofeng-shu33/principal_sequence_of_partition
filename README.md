@@ -14,14 +14,12 @@ Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to co
 ## Dependencies
 
 * LEMON (required)
-* boost (boost-program-options is highly recommanded for the executable program while python binding requires boost-python)
-* gtest (optional)
+* boost 
+	* static lib of info-clustering does not require boost library
+	* boost-program-options is required to build the executable program 
+	* boost-python is required to build the python-binding
+* gtest (optional, used in unit-test)
 
-<!--
-We provide a way to compile without any dependencies (you can get an executable). But this method uses brute force search and has limited command line argument
-parsing capacity. To quickly try this way, invoke cmake with `-DUSE_LEMON=OFF -DUSE_BOOST_OPTION=OFF`.
-You can use your operating system package manager to install the above dependencies.
--->
 
 It is tested you need g++ version >= 6.0 to compile the source code.
 
@@ -37,8 +35,7 @@ If any error occurs, you should fix the dependencies first.
 ### options
 use `-DUSE_CXX11_ABI=OFF` if your system boost library is built by g++ version <=4.8.
 
-### with LEMON
-We provide a naive brute force search method to solve submodualr function minimization(SFM) problem. For set with more than 10 elements, it is impractical. We use graph maximal flow(MF) to solve the special SFM problem. MF requires [lemon](https://lemon.cs.elte.hu/trac/lemon) library, which is enabled by default.
+We provide a naive brute force search method to solve submodular function minimization(SFM) problem. For set with more than 10 elements, it is impractical. We use graph maximal flow(MF) to solve the special SFM problem. MF requires [lemon](https://lemon.cs.elte.hu/trac/lemon) library, which is enabled by default.
 
 This library is included in Ubuntu from 18.04, see [liblemon-dev](https://packages.ubuntu.com/bionic/liblemon-dev).
 
@@ -49,6 +46,8 @@ Disabled by default, to use it invoke cmake with `-DUSE_PYTHON=ON`.
 ### with GTest
 Testing is disabled by default, which requires gtest library. To enable it, run `cmake` with `-DENABLE_TESTING=ON`
 
+## Windows
+On Windows platform, [vcpkg](https://github.com/microsoft/vcpkg) is required to fix the dependencies.
 
 # Python binding
 [![PyPI](https://img.shields.io/pypi/v/info_cluster.svg)](https://pypi.org/project/info_cluster)
