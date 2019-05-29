@@ -9,7 +9,11 @@ install:
     copy x64-windows-v141.cmake C:\Tools\vcpkg\triplets\
 
     IF NOT EXIST "C:\Tools\vcpkg\installed\x64-windows-v141\include\boost\version.hpp" vcpkg install gtest:x64-windows-v141 boost-program-options:x64-windows-v141 boost-python:x64-windows-v141 liblemon:x64-windows-v141
-
+    
+    curl https://gitee.com/freewind201301/appveyor-patch-liblemon/raw/master/preflow.h -o preflow.h
+    
+    copy preflow.h /Y C:\Tools\vcpkg\installed\x64-windows-v141\include\lemon\
+    
 cache: C:\Tools\vcpkg\installed\x64-windows-v141
 before_build:
 - cmd: >-
