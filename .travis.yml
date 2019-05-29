@@ -16,7 +16,7 @@ matrix:
           - g++-6
           - liblemon-dev
           - liblemon1.3.1
-          - libgtest-dev_1.7.0-4ubuntu3
+          - libgtest-dev
     cache:
       - directories:
         - /usr/src/gtest
