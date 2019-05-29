@@ -7,14 +7,13 @@ matrix:
     addons:
       apt:
         sources:
-          - ubuntu-toolchain-r-test
           - sourceline: 'ppa:zhaofeng-shu33/liblemon'
           - sourceline: 'ppa:zhaofeng-shu33/gtest'
         packages:
-          - g++-6
           - liblemon-dev
           - liblemon1.3.1
           - libgtest-dev
+          - libboost-all-dev
     cache:
       - directories:
         - /usr/src/gtest
@@ -23,11 +22,11 @@ matrix:
     
 before_install:
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gsl boost-python; fi 
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libboost-all-dev; fi
+  # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install ; fi
   # build and install gtest library manually  
   - mkdir build
   - cd build
-  - cmake -DENABLE_TESTING=ON -DCMAKE_CXX_COMPILER=g++-6 -DCMAKE_BUILD_TYPE=Release ../ 
+  - cmake -DENABLE_TESTING=ON -DCMAKE_BUILD_TYPE=Release ../ 
 install:
   - make
 script:
