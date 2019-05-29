@@ -11,6 +11,10 @@ option(USE_CXX11_ABI "USE GLIB CXX11 ABI" ON)
 
 message(${CMAKE_SYSTEM})
 
+if(UNIX AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions("-D_DEBUG")
+endif()
+
 if(NOT USE_CXX11_ABI)
     add_definitions("-D_GLIBCXX_USE_CXX11_ABI=0")
 endif()
@@ -61,7 +65,7 @@ if(USE_LEMON)
 endif()    
 
 if(USE_PYTHON)
-    if("$ENV{APPVEYOR}" AND WIN32) # appveyor tries to find py37, in which vcpkg(2018.11) doesnot support
+    if("$ENV{APPVEYOR}" AND WIN32) # appveyor tries to find py37, in which vcpkg(2018.11) does not support
         set(Python3_ROOT_DIR C:/Python36-x64)
     endif()
 
