@@ -12,8 +12,6 @@ TEST_F(Graph4PointTest, MFCompare) {
     submodular::BruteForce<double> solver1;
     solver1.Minimize(xl, 1 + 2 / 3.0, &g, &edge_map);
     EXPECT_DOUBLE_EQ(solver2.GetMinimumValue(), solver1.GetMinimumValue());
-    std::cout << solver2.GetReporter() << std::endl;
-    std::cout << solver1.GetReporter() << std::endl;
 }
 
 TEST_F(Graph4PointTest, MFDT) {

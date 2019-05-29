@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-set(ic_lib io_utility.cpp algorithms/reporter.cpp pmf.cpp dt.cpp)
+set(ic_lib io_utility.cpp pmf.cpp dt.cpp)
 
 add_library(ic_static ${ic_lib})
 

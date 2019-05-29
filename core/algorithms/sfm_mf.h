@@ -31,7 +31,6 @@ public:
 	typedef typename lemon::FilterNodes<Digraph> SubDigraph;
 	typedef typename lemon::PreflowDefaultTraits<SubDigraph, ArcMap> PreflowSubgraphTraits;
     void Minimize(std::vector<value_type>& xl, value_type lambda_, Digraph* _g, ArcMap* _edge_map) {
-        this->reporter_.SetNames(GetName(), "graph maximal flow");
 		int graph_size = xl.size();
 
 		lemon::ListDigraph::NodeMap<bool> node_filter(*_g);

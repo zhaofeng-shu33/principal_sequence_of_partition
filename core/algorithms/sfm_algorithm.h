@@ -17,8 +17,7 @@
 #include <utility>
 #include <string>
 #include <lemon/list_graph.h>
-
-#include "core/algorithms/reporter.h"
+#include "set/set_stl.h"
 
 namespace submodular {
 
@@ -34,11 +33,7 @@ public:
   typedef stl::CSet Set;
   SFMAlgorithm(): done_sfm_(false) {}
   virtual ~SFMAlgorithm(){}
-  //explicit SFMAlgorithm(const SFMReporter& reporter): reporter_(reporter), done_sfm_(false) {}
-  //explicit SFMAlgorithm(SFMReporter&& reporter): reporter(std::move(reporter)), done_sfm(false) {}
-  void SetReporter(const SFMReporter& reporter) { reporter_ = reporter; }
-  void SetReporter(SFMReporter&& reporter) { reporter_ = std::move(reporter); }
-
+  
   // Perform SFM algorithm.
   // The minimum value (and a minimizer) should be stored in minimum_value (resp. minimizer_)
   // Some statistics should be reported as stats_.
@@ -47,44 +42,35 @@ public:
   virtual std::string GetName() = 0;
   
   value_type GetMinimumValue();
-  Set GetMinimizer();
-  SFMReporter GetReporter();
+  stl::CSet GetMinimizer();
 
 protected:
   bool done_sfm_;
-  SFMReporter reporter_;
   //value_type minimum_value_;
   //Set minimizer_;
-  void ClearReports();
+  stl::CSet minimizer_;
+  value_type minimum_value_;
   void SetResults(value_type minimum_value, const Set& minimizer);
 };
 
 template <typename ValueType>
 typename SFMAlgorithm<ValueType>::value_type
 SFMAlgorithm<ValueType>::GetMinimumValue() {
-  return static_cast<value_type>(reporter_.minimum_value_);
+  return minimum_value_;
 }
 
 template <typename ValueType>
 stl::CSet SFMAlgorithm<ValueType>::GetMinimizer() {
-  return reporter_.minimizer_;
+  return minimizer_;
 }
 
-template <typename ValueType>
-SFMReporter SFMAlgorithm<ValueType>::GetReporter() {
-  return reporter_;
-}
-
-template <typename ValueType>
-void SFMAlgorithm<ValueType>::ClearReports() {
-  reporter_.Clear();
-}
 
 template <typename ValueType>
 void SFMAlgorithm<ValueType>::SetResults(value_type minimum_value, const Set& minimizer) {
     //minimum_value_ = minimum_value;
     //minimizer_ = minimizer;
-    reporter_.SetResults(static_cast<double>(minimum_value), minimizer);
+	minimizer_ = minimizer;
+	minimum_value_ = minimum_value;
     done_sfm_ = true;
 }
 
