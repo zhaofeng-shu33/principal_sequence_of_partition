@@ -64,7 +64,7 @@ TEST(Gaussian2D, GivenPoint8) {
 
 // This test is used to verify that MaxFlow algorithm works
 TEST_F(Graph4PointTest, TwoCase) {
-    submodular::PSP<double> psp_class(&g, &edge_map);
+    submodular::PSP psp_class(&g, &edge_map);
     psp_class.run();
     std::vector<double> gamma_list = psp_class.Get_critical_values();
     std::vector<stl::Partition> psp_list = psp_class.Get_psp();

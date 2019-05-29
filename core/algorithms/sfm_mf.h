@@ -13,13 +13,13 @@
 #include <algorithm>
 #include <lemon/adaptors.h>
 #include <lemon/list_graph.h>
+#include <lemon/preflow.h>
 #ifdef _DEBUG
 #include <lemon/lgf_writer.h>
 #include <fstream>
 #endif
 #include "core/graph/graph.h"
 #include "core/algorithms/sfm_algorithm.h"
-#include "preflow/mf_base.h"
 namespace submodular{
 
 template <typename ValueType>
@@ -29,7 +29,7 @@ public:
 	typedef lemon::ListDigraph Digraph;
 	typedef typename Digraph::ArcMap<ValueType> ArcMap;
 	typedef typename lemon::FilterNodes<Digraph> SubDigraph;
-	typedef typename lemon::Preflow_RelabelDefaultTraits<SubDigraph, ArcMap> PreflowSubgraphTraits;
+	typedef typename lemon::PreflowDefaultTraits<SubDigraph, ArcMap> PreflowSubgraphTraits;
     void Minimize(std::vector<value_type>& xl, value_type lambda_, Digraph* _g, ArcMap* _edge_map) {
         this->reporter_.SetNames(GetName(), "graph maximal flow");
 		int graph_size = xl.size();
@@ -71,7 +71,7 @@ public:
         }
 		subgraph.enable(source_node);
 		subgraph.enable(sink_node);
-        lemon::Preflow_Relabel<Digraph, ArcMap, PreflowSubgraphTraits> pf(subgraph, *_edge_map, source_node, sink_node);
+        lemon::Preflow<Digraph, ArcMap, PreflowSubgraphTraits> pf(subgraph, *_edge_map, source_node, sink_node);
         pf.run();
         value_type minimum_value = pf.flowValue() - const_difference;
 		stl::CSet X;

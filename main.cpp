@@ -63,7 +63,7 @@ int main(int argc, const char *argv[]){
 	else{
 		std::vector<double> critical_values;
 		std::vector<stl::Partition> partition_list;
-		submodular::PSP<double> psp_class(&digraph, &cap);
+		submodular::PSP psp_class(&digraph, &cap);
 		psp_class.run();
 		critical_values = psp_class.Get_critical_values();
 		partition_list = psp_class.Get_psp();

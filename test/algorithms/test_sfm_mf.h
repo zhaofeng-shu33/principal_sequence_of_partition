@@ -17,7 +17,7 @@ TEST_F(Graph4PointTest, MFCompare) {
 }
 
 TEST_F(Graph4PointTest, MFDT) {
-    submodular::DilworthTruncation<double> dt(5 / 3.0 + 0.1, &g, &edge_map);
+    submodular::DilworthTruncation dt(5 / 3.0 + 0.1, &g, &edge_map);
     dt.Run(true);//BruteForce
     double min_value = dt.Get_min_value();
     stl::Partition P_apostrophe = dt.Get_min_partition();
@@ -39,7 +39,7 @@ TEST(FourPointNotComplete, MFDT) {
 	lemon::ListDigraph::Arc a2 = g.addArc(n3, n4);
 	arc_map[a1] = 1;
 	arc_map[a2] = 1;
-	submodular::DilworthTruncation<double> dt(0.1, &g, &arc_map);
+	submodular::DilworthTruncation dt(0.1, &g, &arc_map);
 	dt.Run(false);
 	double min_value = dt.Get_min_value();
 	stl::Partition P_apostrophe = dt.Get_min_partition();
