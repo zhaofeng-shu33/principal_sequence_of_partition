@@ -1,0 +1,33 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+configuration: Release
+platform: x64
+environment:
+  VCPKG_ROOT: C:\Tools\vcpkg
+install:
+- cmd: >-
+    copy x64-windows-v141.cmake C:\Tools\vcpkg\triplets\
+
+    IF NOT EXIST "C:\Tools\vcpkg\installed\x64-windows-v141\include\boost\version.hpp" vcpkg install gtest:x64-windows-v141 boost-program-options:x64-windows-v141 boost-python:x64-windows-v141 liblemon:x64-windows-v141
+
+cache: C:\Tools\vcpkg\installed\x64-windows-v141
+before_build:
+- cmd: >-
+    git submodule init
+
+    git submodule update
+
+    mkdir build
+
+    cd build
+
+    cmake -G "Visual Studio 15 2017 Win64" -DVCPKG_TARGET_TRIPLET=x64-windows-v141 -DCMAKE_TOOLCHAIN_FILE=C:\Tools\vcpkg\scripts\buildsystems\vcpkg.cmake -DENABLE_TESTING=ON ..\
+build:
+  project: build\ALL_BUILD.vcxproj
+  verbosity: minimal
+test_script:
+- cmd: >-
+    .\test\Release\TestAll.exe
+
+    .\set\Release\test_set.exe
+
