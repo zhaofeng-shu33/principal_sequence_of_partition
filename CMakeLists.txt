@@ -1,10 +1,9 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.5)
 
 project(sfm LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set (PSP_VERSION_MAJOR 1.3 CACHE STRING "PSP version")
-option(USE_PYTHON "USE Python Library" OFF)
 option(USE_LEMON "USE LEMMON Library" ON)
 option(USE_BOOST_OPTION "USE BOOST OPTION Library" ON)
 option(USE_CXX11_ABI "USE GLIB CXX11 ABI" ON)
