@@ -70,6 +70,7 @@ add_subdirectory(set)
 add_subdirectory(core)
 target_link_libraries(main ic_static)
 target_link_libraries(main set_stl)
+target_link_libraries(main ${LEMON_LIBRARY})
 
 if(ENABLE_TESTING)
   find_package(GTest REQUIRED)
