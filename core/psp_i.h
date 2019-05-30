@@ -5,7 +5,7 @@ namespace psp {
 	class DilworthTruncation {
 	public:
 		typedef lemon::FilterNodes<lemon::ListDigraph> Digraph;
-		typedef typename Digraph::ArcMap<double> ArcMap;
+		typedef typename lemon::ListDigraph::ArcMap<double> ArcMap;
 
 		DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map);
 		double get_min_value();
@@ -13,9 +13,11 @@ namespace psp {
 		double evaluate(stl::Partition& partition);
 		void run();
 	private:
+		void minimize(std::vector<double>& xl, double lambda_);
 		Digraph* _g;
 		ArcMap* _edge_map;
 		double min_value;
+		stl::CSet Tl;
 		stl::Partition _partition;
 		double lambda_;
 		int node_size;
@@ -38,5 +40,6 @@ namespace psp {
 		ArcMap tree_edge_map;
 		Digraph* _g;
 		ArcMap* _edge_map;
+		lemon::Tolerance<double> _tolerance;
 	};
 }

@@ -18,7 +18,7 @@ namespace submodular {
     public:
 		typedef lemon::ListDigraph Digraph;
 		typedef typename Digraph::ArcMap<double> ArcMap;
-        
+
         DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map);
         double Get_min_value();
         stl::Partition& Get_min_partition();

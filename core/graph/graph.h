@@ -107,6 +107,15 @@ namespace submodular {
 			target_value += get_cut_value(g, arc_map, _s);
 		return target_value;
 	}
+
+	template <typename T>
+	T get_partition_value(lemon::FilterNodes<lemon::ListDigraph>& g, lemon::ListDigraph::ArcMap<T>& arc_map, const stl::Partition _partition) {
+		T target_value = 0;
+		for (const stl::CSet& _s : _partition)
+			target_value += get_cut_value(g, arc_map, _s);
+		return target_value;
+	}
+
 }
 
 #endif
