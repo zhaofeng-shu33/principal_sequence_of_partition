@@ -4,196 +4,61 @@
 **/
 #include <lemon/list_graph.h>
 #include "config.h"
-#include "core/algorithms/brute_force.h"
 #if USE_LEMON
-#include "core/algorithms/sfm_mf.h"
+#include "core/sfm_mf.h"
 #include "core/graph/graph.h"
 #include "set/set_stl.h"
 #endif
 namespace submodular {
-
- 
  
     /**
     *   compute the solution to \min_{P} h_{\gamma}(P)
     */
-    template <typename ValueType>
     class DilworthTruncation {
     public:
-        using value_type = ValueType;
 		typedef lemon::ListDigraph Digraph;
-		typedef typename Digraph::ArcMap<ValueType> ArcMap;
-        DilworthTruncation(value_type lambda, Digraph* g, ArcMap* edge_map):
-            lambda_(lambda), min_value(0), _g(g), _edge_map(edge_map)
-        {
-			NodeSize = lemon::countNodes(*_g);
-        }
-        value_type Get_min_value() {
-            return min_value;
-        }
-        stl::Partition& Get_min_partition(){
-            return _partition;
-        }
-        value_type evaluate(stl::Partition& partition) {
-			value_type result = get_partition_value(*_g, *_edge_map, partition);
-            return result - lambda_ * partition.Cardinality();
-        }
-
-        void Run(bool bruteForce = false) {
-            min_value = 0;
-			_partition.clear();
-            std::vector<value_type> xl;
-            value_type alpha_l = 0;
-            SFMAlgorithm<ValueType>* solver2;
-            if(bruteForce)
-                solver2 = new BruteForce<ValueType>;
-            else{
-#if USE_LEMON
-                solver2 = new MF<value_type>;
-#else
-#pragma message("No lemon lib used, only BruteForce algorithm provided.")
-                solver2 = new BruteForce<ValueType>;
-#endif
-            }
-            for (int i = 0; i < NodeSize; i++) {
-                solver2->Minimize(xl, lambda_, _g, _edge_map);
-	            alpha_l = solver2->GetMinimumValue();
-	            stl::CSet Tl = solver2->GetMinimizer();
-				Tl.AddElement(i);
-				_partition = _partition.expand(Tl);
-	            xl.push_back(alpha_l);
-            }
-            for (auto it = xl.begin(); it != xl.end(); it++) {
-                min_value += *it;
-            }
-#ifdef _DEBUG            
-			value_type min_value_check = evaluate(_partition);
-            if (std::abs(min_value - min_value_check) > 1e-4) {
-                std::cout << "min_value_check error: " << std::endl;
-                std::cout << min_value << std::endl;
-                std::cout << min_value_check << std::endl;
-                exit(-1);
-            }
-#endif
-            delete solver2;
-        }
+		typedef typename Digraph::ArcMap<double> ArcMap;
+        
+        DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map);
+        double Get_min_value();
+        stl::Partition& Get_min_partition();
+        double evaluate(stl::Partition& partition);
+        void Run(bool bruteForce = false);
     private:
 		Digraph* _g;
 		ArcMap* _edge_map;
-        value_type min_value;
+        double min_value;
         stl::Partition _partition;
-        value_type lambda_;
+        double lambda_;
         int NodeSize;
     };
 
     /**
     * computing principal sequence of partition for given submodular function
     */
-    template <typename ValueType>
     class PSP {
     public:
-        using value_type = ValueType;
 		typedef lemon::ListDigraph Digraph;
-		typedef typename Digraph::ArcMap<ValueType> ArcMap;
-        PSP(Digraph* g, ArcMap* edge_map ) : _g(g), _edge_map(edge_map)
-        {
-			NodeSize = lemon::countNodes(*_g);
-            critical_values.resize(NodeSize);
-            psp.resize(NodeSize);
-        }
+		typedef typename Digraph::ArcMap<double> ArcMap;
+        PSP(Digraph* g, ArcMap* edge_map );
         //! evaluate and find the finest partition with $\abs{\P} > \texttt{partition_num}$
-		stl::Partition split(stl::Partition& Q, stl::Partition& P, int partition_num, bool bruteForce = false)
-        {
-            if (Q.Cardinality() == P.Cardinality()) {
-                throw std::logic_error("Q and P have the same size");
-            }
-            value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.Cardinality() - Q.Cardinality());
-            value_type h_apostrophe = (P.Cardinality() * evaluate(Q) - Q.Cardinality() * evaluate(P)) / (P.Cardinality() - Q.Cardinality());
-            DilworthTruncation<value_type> dt(gamma_apostrophe, _g, _edge_map);
-            dt.Run(bruteForce);
-            value_type min_value = dt.Get_min_value();
-			stl::Partition P_apostrophe = dt.Get_min_partition();
-            if (min_value > h_apostrophe - 1e-4) {
-                return P;
-            }
-            else {
-                if (P_apostrophe.Cardinality() == partition_num) {
-                    return P_apostrophe;
-                }
-                else if (P_apostrophe.Cardinality() < partition_num) {
-                    return split(P_apostrophe, P, partition_num, bruteForce);
-                }
-                else {
-                    return split(Q, P_apostrophe, partition_num, bruteForce);
-                }
-            }
-        }
+		stl::Partition split(stl::Partition& Q, stl::Partition& P, int partition_num, bool bruteForce = false);
+        
         //! |Q| < |P|
-        void split(stl::Partition& Q, stl::Partition& P, bool bruteForce = false) {
-            if (Q.Cardinality() == P.Cardinality()) {
-                throw std::logic_error("Q and P have the same size");
-            }
-            value_type gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.Cardinality() - Q.Cardinality());
-            value_type h_apostrophe = (P.Cardinality() * evaluate(Q) - Q.Cardinality() * evaluate(P)) / (P.Cardinality() - Q.Cardinality());
-            DilworthTruncation<value_type> dt(gamma_apostrophe, _g, _edge_map);
-            dt.Run(bruteForce);
-            value_type min_value = dt.Get_min_value();
-			stl::Partition P_apostrophe = dt.Get_min_partition();
-            if (min_value > h_apostrophe-1e-4) {
-                critical_values[Q.Cardinality() - 1] = gamma_apostrophe;
-            }
-            else {                
-                psp[P_apostrophe.Cardinality() - 1] = P_apostrophe;
-                try{
-                    split(Q, P_apostrophe, bruteForce);
-                    split(P_apostrophe, P, bruteForce);
-                }
-                catch (std::exception e) {
-					std::cout << e.what() << std::endl;
-					value_type q_value = dt.evaluate(Q);
-					value_type p_a_value = dt.evaluate(P_apostrophe);
-					value_type p_value = dt.evaluate(P);
-					std::cout << Q.Cardinality() << " at " << Q << " = " << q_value << std::endl;
-					std::cout << P_apostrophe.Cardinality() << " at " << P_apostrophe << " = " << p_a_value << std::endl;
-					std::cout << P.Cardinality() << " at " << P << " = " << p_value << std::endl;
+        void split(stl::Partition& Q, stl::Partition& P, bool bruteForce = false);
 
-                    std::cout << "h: " << h_apostrophe << std::endl;
-                    std::cout << "min_value: " << min_value << std::endl;
-                    exit(-1);
-                }
-            }
-        }
-
-		stl::Partition run(int partition_num, bool bruteForce = false) {
-			stl::CSet V = stl::CSet::MakeDense(NodeSize);
-			stl::Partition Q, P;
-            Q.AddElement(V);
-			P = stl::Partition::makeFine(NodeSize);
-			return split(Q, P, partition_num, bruteForce);
-        }
-        void run(bool bruteForce = false) {
-			stl::CSet V = stl::CSet::MakeDense(NodeSize);
-            stl::Partition Q, P;
-            Q.AddElement(V);
-            P = stl::Partition::makeFine(NodeSize);
-            psp[0] = Q;
-            psp[P.Cardinality()-1] = P;
-            split(Q, P, bruteForce);
-        }
-        std::vector<value_type>& Get_critical_values() {
-            return critical_values;
-        }
-        std::vector<stl::Partition>& Get_psp() {
-            return psp;
-        }
+		stl::Partition run(int partition_num, bool bruteForce = false);
+        
+        void run(bool bruteForce = false);
+        
+        std::vector<double>& Get_critical_values();
+        std::vector<stl::Partition>& Get_psp();
     private:
         //! evalute the submodular function at the given partition
-        value_type evaluate(const stl::Partition& P) {
-			return get_partition_value(*_g, *_edge_map, P);
-        }
+        double evaluate(const stl::Partition& P);
 
         int NodeSize;
-        std::vector<value_type> critical_values;
+        std::vector<double> critical_values;
         std::vector<stl::Partition> psp;
 		Digraph* _g;
 		ArcMap* _edge_map;

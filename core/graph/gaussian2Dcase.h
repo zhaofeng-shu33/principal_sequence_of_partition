@@ -82,10 +82,13 @@ namespace demo {
             for (std::tuple<std::size_t, std::size_t, double>& edge_tuple : elt) {
                 lemon::ListDigraph::Node s = g.nodeFromId(std::get<0>(edge_tuple));
                 lemon::ListDigraph::Node t = g.nodeFromId(std::get<1>(edge_tuple));
+				double capacity = std::get<2>(edge_tuple);
+				if (capacity < _tolerance.epsilon())
+					continue;
                 lemon::ListDigraph::Arc a1 = g.addArc(s, t);
                 lemon::ListDigraph::Arc a2 = g.addArc(t, s);
-                arcMap[a1] = std::get<2>(edge_tuple);
-                arcMap[a2] = std::get<2>(edge_tuple);
+                arcMap[a1] = capacity;
+                arcMap[a2] = capacity;
             }
             delete gb;
         }
@@ -101,6 +104,7 @@ namespace demo {
     private:
         lemon::ListDigraph g;
         lemon::ListDigraph::ArcMap<double> arcMap;
+		lemon::Tolerance<double> _tolerance;
         int num_points;
     };
 }

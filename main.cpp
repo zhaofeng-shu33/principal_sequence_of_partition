@@ -3,34 +3,21 @@
 * \brief : accomplish real task by info-clustering technique
 */
 #include "config.h"
-#if USE_BOOST
+#include <string>
+#include <fstream>
+#include <sstream>
 #include <boost/program_options.hpp>
-#endif
-#include "core/graph/gaussian2Dcase.h"
+#include <lemon/lgf_reader.h>
+#include "core/dt.h"
 #include "core/pmf.h"
 
-void check_size(int size) {
-    if (size % 4 != 0) {
-        std::cout << "Node size must be multiplier of 4\n";
-        exit(0);
-    }
-}
-void check_positive(double gamma) {
-    if (gamma <= 0) {
-        std::cout << "gamma must be positive number";
-        exit(0);
-    }
-}
-//! To be finished
 int main(int argc, const char *argv[]){
-#if USE_BOOST
     boost::program_options::options_description desc;
-    desc.add_options()
-        ("help,h", "Show this help screen")
-        ("full", boost::program_options::value<bool>()->default_value(true))
-        ("pdt", boost::program_options::value<bool>()->default_value(false), "whether to use parametric Dilworth truncation")
-        ("gamma", boost::program_options::value<double>()->default_value(0.5)->notifier(check_positive))
-        ("size", boost::program_options::value<int>()->default_value(8)->notifier(check_size), "total number of points to be classified, must be multiplier of 4");
+	desc.add_options()
+		("help,h", "Show this help screen")
+		("graph", boost::program_options::value<std::string>(), "input graph file, currently only lgf format is supported")
+		("result", boost::program_options::value<std::string>(), "result file")
+		("pdt", boost::program_options::value<bool>()->default_value(true), "whether to use parametric Dilworth truncation");
     boost::program_options::variables_map vm;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
     boost::program_options::notify(vm);
@@ -39,34 +26,57 @@ int main(int argc, const char *argv[]){
         return 0;
     }
 
-    int size = vm["size"].as<int>();
-    bool run_full = vm["full"].as<bool>();
-    bool use_pdt = vm["pdt"].as<bool>();
-    double _gamma = vm["gamma"].as<double>();
-    if (use_pdt) {
-        demo::Gaussian2DPDT* gPDT = new demo::Gaussian2DPDT(size, _gamma);
-        gPDT->run();
-        parametric::Partition p = gPDT->get_smallest_partition(4);
-        std::cout << p << std::endl;
-        delete gPDT;
-		return 0;
-    }
+	typedef lemon::ListDigraph Digraph;
+	typedef double T;
+	typedef Digraph::ArcMap<T> ArcMap;
+	typedef Digraph::Node Node;
+	typedef Digraph::NodeIt NodeIt;
 
-        submodular::InfoCluster* g2g = new demo::Gaussian2DGraph(size, _gamma);
-#else
-	bool run_full = true;
-    demo::Gaussian2DGraph* g2g = new demo::Gaussian2DGraph(8);
-#endif
-    stl::Partition p;
-    if (run_full) {
-        g2g->run();
-        p = g2g->get_smallest_partition(4);
+	Digraph digraph;
+	ArcMap cap(digraph);
+
+    bool use_pdt = vm["pdt"].as<bool>();
+    std::string graph_filename = vm["graph"].as<std::string>();
+	std::string result_filename = vm["result"].as<std::string>();
+	std::ifstream fin(graph_filename);
+
+	lemon::digraphReader(digraph, fin)
+		.arcMap("capacity", cap).run();
+
+	std::stringstream result;
+
+    if (use_pdt) {
+		std::list<double> critical_values;
+		std::list<stl::Partition> partition_list;
+		parametric::PDT pmf(digraph, cap);
+		pmf.run();
+		critical_values = pmf.get_lambda_list();
+		partition_list = pmf.get_partition_list();
+		std::list<stl::Partition>::iterator it_2 = partition_list.begin();
+		result << *it_2 << std::endl;
+		for (std::list<double>::iterator it_1 = critical_values.begin(); *it_1 != INFINITY; it_1++) {
+			it_2++;
+			result << *it_1 << std::endl;
+			result << *it_2 << std::endl;
+		}
     }
-    else {
-        p = g2g->get_partition(4);
-    }
-    std::cout << p << std::endl;
-    delete g2g;
-    
+	else{
+		std::vector<double> critical_values;
+		std::vector<stl::Partition> partition_list;
+		submodular::PSP psp_class(&digraph, &cap);
+		psp_class.run();
+		critical_values = psp_class.Get_critical_values();
+		partition_list = psp_class.Get_psp();
+		for (int i = 0; i < partition_list.size()-1; i++) {
+			if (partition_list[i].Cardinality() > 0) {
+				result << partition_list[i] << std::endl;
+				result << critical_values[i] << std::endl;
+			}
+		}
+		result << partition_list[partition_list.size() - 1] << std::endl;
+	}
+	std::ofstream fout(result_filename);
+	fout << result.str();
+	fout.close();
     return 0;
 }

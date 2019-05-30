@@ -68,7 +68,7 @@ namespace submodular {
 	}
 
 
-
+	//! get incut value
 	template <typename T>
 	T get_cut_value(lemon::ListDigraph& g, lemon::ListDigraph::ArcMap<T>& arc_map, const stl::CSet _set) {
 		T target_value = 0;

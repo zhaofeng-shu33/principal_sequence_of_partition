@@ -1,5 +1,0 @@
-numpy
-scikit-learn
-ete3
-six
-networkx

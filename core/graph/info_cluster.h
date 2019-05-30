@@ -1,6 +1,8 @@
 #pragma once
 #include <lemon/list_graph.h>
 #include "core/graph/graph.h"
+#include "core/dt.h"
+
 namespace submodular {
     class InfoCluster {
     public:
@@ -24,18 +26,18 @@ namespace submodular {
             return to_category(p);
         }
 		stl::Partition get_partition(int pn) {
-            PSP<double> psp_class(g, edge_map);
+            PSP psp_class(g, edge_map);
 			stl::Partition p = psp_class.run(pn);
             return p;
         }
         void run() {
-            PSP<double> psp_class(g, edge_map);
+            PSP psp_class(g, edge_map);
             psp_class.run(false);
             gamma_list = psp_class.Get_critical_values();
             psp_list = psp_class.Get_psp();
         }
         void run_bruteForce() {
-            PSP<double> psp_class(g, edge_map);
+            PSP psp_class(g, edge_map);
             psp_class.run(true);
             gamma_list = psp_class.Get_critical_values();
             psp_list = psp_class.Get_psp();

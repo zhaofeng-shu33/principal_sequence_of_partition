@@ -1,23 +1,21 @@
 #pragma once
 #include <gtest/gtest.h>
-#include "core/algorithms/sfm_mf.h"
+#include "core/sfm_mf.h"
 #include "test/utility.h"
 #include "core/graph/gaussian2Dcase.h"
 namespace demo {
 
 TEST_F(Graph4PointTest, MFCompare) {
     std::vector<double> xl({ -1 - 2 / 3.0,-2 / 3.0,-1 / 6.0 });
-    submodular::MF<double> solver2;
+    submodular::MF solver2;
     solver2.Minimize(xl, 5 / 3.0, &g, &edge_map);
-    submodular::BruteForce<double> solver1;
+    submodular::BruteForce solver1;
     solver1.Minimize(xl, 1 + 2 / 3.0, &g, &edge_map);
     EXPECT_DOUBLE_EQ(solver2.GetMinimumValue(), solver1.GetMinimumValue());
-    std::cout << solver2.GetReporter() << std::endl;
-    std::cout << solver1.GetReporter() << std::endl;
 }
 
 TEST_F(Graph4PointTest, MFDT) {
-    submodular::DilworthTruncation<double> dt(5 / 3.0 + 0.1, &g, &edge_map);
+    submodular::DilworthTruncation dt(5 / 3.0 + 0.1, &g, &edge_map);
     dt.Run(true);//BruteForce
     double min_value = dt.Get_min_value();
     stl::Partition P_apostrophe = dt.Get_min_partition();
@@ -39,7 +37,7 @@ TEST(FourPointNotComplete, MFDT) {
 	lemon::ListDigraph::Arc a2 = g.addArc(n3, n4);
 	arc_map[a1] = 1;
 	arc_map[a2] = 1;
-	submodular::DilworthTruncation<double> dt(0.1, &g, &arc_map);
+	submodular::DilworthTruncation dt(0.1, &g, &arc_map);
 	dt.Run(false);
 	double min_value = dt.Get_min_value();
 	stl::Partition P_apostrophe = dt.Get_min_partition();

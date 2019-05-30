@@ -1,66 +1,34 @@
-language: python
+language: cpp
 matrix:
   include: 
   - os: linux
     dist: xenial
     sudo: required
-    python: "3.6"
     addons:
       apt:
         sources:
-          - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:zhaofeng-shu33/liblemon'
+          - sourceline: 'ppa:zhaofeng-shu33/gtest'
         packages:
-          - g++-6
+          - liblemon-dev
+          - liblemon1.3.1
+          - libgtest-dev
+          - libboost-all-dev
     cache:
       - directories:
         - /usr/src/gtest
-      - pip
+      - pip3
   #- os: osx
     
 before_install:
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gsl boost-python; fi 
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libgtest-dev libboost-all-dev; fi
+  # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install ; fi
   # build and install gtest library manually  
-  - pushd /usr/src/gtest
-  - sudo chmod -R a+w ./
-  - cmake ./
-  - make
-  - sudo ln -s -t /usr/lib /usr/src/gtest/libgtest.a /usr/src/gtest/libgtest_main.a
-  - popd
   - mkdir build
   - cd build
-  # build and install liblemon
-  - wget http://lemon.cs.elte.hu/pub/sources/lemon-1.3.1.zip
-  - unzip lemon-1.3.1.zip -d ./  
-  - cd lemon-1.3.1
-  - patch lemon/preflow.h ../../preflow.patch
-  - echo "SET_TARGET_PROPERTIES(lemon PROPERTIES COMPILE_FLAGS \"-fPIC\")" >> lemon/CMakeLists.txt
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make
-  - sudo make install
-  - pushd /usr/local/share/lemon/cmake
-  - sudo mv LEMONConfig.cmake lemonConfig.cmake
-  - popd
-  - cd ../..  
-  - cmake -DENABLE_TESTING=ON -DUSE_PYTHON=ON -DUSE_LEMON=ON -DCMAKE_CXX_COMPILER=g++-6 -DUSE_BOOST_OPTION=ON -DCMAKE_BUILD_TYPE=Release ../ 
+  - cmake -DENABLE_TESTING=ON -DCMAKE_BUILD_TYPE=Release ../ 
 install:
   - make
-  - cd ..
-  - python -c "import pathlib" 2>/dev/null || python -m pip install pathlib
-  - python setup.py install
-  - python -c "import networkx" 2>/dev/null || python -m pip install -r ./info_cluster/requirement.txt
-  - python -c "import codecov" 2>/dev/null || python -m pip install codecov  
 script:
 # used for testing
-  - cd build
   - test/TestAll
-  - test/test_pmf
-  - set/test_set
-  - python -c "from info_cluster import psp;print(psp.__version__)"
-  - python -c "from info_cluster import InfoCluster"
-  - coverage run ../test/python/graph_cut_py_test.py
-  - cd ../example
-  - coverage run example.py
-  - codecov
