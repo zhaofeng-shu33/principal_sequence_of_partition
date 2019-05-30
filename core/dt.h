@@ -4,9 +4,8 @@
 **/
 #include <lemon/list_graph.h>
 #include "config.h"
-#include "core/algorithms/brute_force.h"
 #if USE_LEMON
-#include "core/algorithms/sfm_mf.h"
+#include "core/sfm_mf.h"
 #include "core/graph/graph.h"
 #include "set/set_stl.h"
 #endif

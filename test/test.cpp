@@ -6,9 +6,6 @@
 // Gaussian test
 #include "graph/test_gaussian.h"
 
-// Dilworth truncation tests
-#include "test_dt.h"
-
 #include "test_pmf.h"
 
 // maxflow test in dt case

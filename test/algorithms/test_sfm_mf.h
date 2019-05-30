@@ -1,15 +1,15 @@
 #pragma once
 #include <gtest/gtest.h>
-#include "core/algorithms/sfm_mf.h"
+#include "core/sfm_mf.h"
 #include "test/utility.h"
 #include "core/graph/gaussian2Dcase.h"
 namespace demo {
 
 TEST_F(Graph4PointTest, MFCompare) {
     std::vector<double> xl({ -1 - 2 / 3.0,-2 / 3.0,-1 / 6.0 });
-    submodular::MF<double> solver2;
+    submodular::MF solver2;
     solver2.Minimize(xl, 5 / 3.0, &g, &edge_map);
-    submodular::BruteForce<double> solver1;
+    submodular::BruteForce solver1;
     solver1.Minimize(xl, 1 + 2 / 3.0, &g, &edge_map);
     EXPECT_DOUBLE_EQ(solver2.GetMinimumValue(), solver1.GetMinimumValue());
 }

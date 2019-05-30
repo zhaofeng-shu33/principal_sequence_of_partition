@@ -18,12 +18,12 @@ namespace submodular {
         _partition.clear();
         std::vector<double> xl;
         double alpha_l = 0;
-        SFMAlgorithm<double>* solver2;
+        SFMAlgorithm* solver2;
         if(bruteForce)
-            solver2 = new BruteForce<double>;
+            solver2 = new BruteForce;
         else{
 #if USE_LEMON
-            solver2 = new MF<double>;
+            solver2 = new MF;
 #else
 #pragma message("No lemon lib used, only BruteForce algorithm provided.")
             solver2 = new BruteForce<double>;
