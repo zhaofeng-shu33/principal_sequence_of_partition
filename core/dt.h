@@ -40,7 +40,7 @@ namespace submodular {
     public:
 		typedef lemon::ListDigraph Digraph;
 		typedef typename Digraph::ArcMap<double> ArcMap;
-        PSP(Digraph* g, ArcMap* edge_map );
+        PSP(Digraph* g, ArcMap* edge_map);
         //! evaluate and find the finest partition with $\abs{\P} > \texttt{partition_num}$
 		stl::Partition split(stl::Partition& Q, stl::Partition& P, int partition_num, bool bruteForce = false);
         

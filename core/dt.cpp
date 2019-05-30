@@ -26,7 +26,7 @@ namespace submodular {
             solver2 = new MF;
 #else
 #pragma message("No lemon lib used, only BruteForce algorithm provided.")
-            solver2 = new BruteForce<double>;
+            solver2 = new BruteForce;
 #endif
         }
         for (int i = 0; i < NodeSize; i++) {
