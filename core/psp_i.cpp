@@ -33,7 +33,7 @@ namespace psp {
 				arc = _g->addArc(source_node, enabled_nodes[i]);
 				(*_edge_map)[arc] = -xl[i];
 			}
-			double sink_cost = std::max<double>(0, xl[i]) + sink_node_cost_map[i];
+			double sink_cost = std::max<double>(0, xl[i]) + sink_node_cost_map[_g->id(enabled_nodes[i])];
 			if (sink_cost > 0) {
 				arc = _g->addArc(enabled_nodes[i], sink_node);
 				(*_edge_map)[arc] = sink_cost;
@@ -80,7 +80,7 @@ namespace psp {
 		for (int i = 0; i < node_size; i++) {
 			minimize(xl);
 			alpha_l = min_value;
-			Tl.AddElement(i);
+			Tl.AddElement(_g->id(enabled_nodes[i]));
 			_partition = _partition.expand(Tl);
 			xl.push_back(alpha_l);
 		}
@@ -89,8 +89,17 @@ namespace psp {
 			min_value += *it;
 		}
 #ifdef _DEBUG 
+		for (Node n : enabled_nodes) {
+			_g->enable(n);
+		}
 		double min_value_check = evaluate(_partition);
 		if (std::abs(min_value - min_value_check) > 1e-4) {
+			std::cout << "num of nodes " << lemon::countNodes(*_g) << std::endl;
+			for (Digraph::ArcIt a(*_g); a != lemon::INVALID; ++a) {
+				std::cout << _g->id(_g->source(a)) << ' ' << _g->id(_g->target(a)) << std::endl;
+			}
+			for (Digraph::ArcIt a(*_g); a != lemon::INVALID; ++a)
+				std::cout << (*_edge_map)[a] << std::endl;
 			std::stringstream ss;
 			ss << "min_value_check error: " << min_value << ' ' << min_value_check;
 			throw std::logic_error(ss.str());
@@ -118,6 +127,12 @@ namespace psp {
 			K.push_back(s);
 		}
 		split(0);
+		std::priority_queue<std::pair<int, double>> q;
+		Digraph::OutArcIt a(*_g, root);
+		q.push(std::make_pair(0, (*_edge_map)[a]));
+		while (!q.empty()) {
+			break;
+		}
 	}
 	void PSP::contract(const stl::CSet& S, int i) {
 		// we don't use _g->contract function since it can not handle multiple arcs within two nodes
@@ -170,7 +185,7 @@ namespace psp {
 				(*_edge_map)[a] = val.second;
 			}
 			else {
-			    Arc a = _g->addArc(_S, _g->nodeFromId(val.first));
+			    Arc a = _g->addArc(_g->nodeFromId(val.first), _S);
 				(*_edge_map)[a] = -1.0 * val.second;
 			}
 		}
@@ -230,5 +245,12 @@ namespace psp {
 			}
 			split(i);
 		}
+	}
+	std::vector<double>& PSP::get_critical_values() {
+		return critical_values;
+	}
+
+	std::vector<stl::Partition>& PSP::get_psp() {
+		return psp;
 	}
 }
