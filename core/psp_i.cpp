@@ -127,11 +127,29 @@ namespace psp {
 			K.push_back(s);
 		}
 		split(0);
-		std::priority_queue<std::pair<int, double>> q;
+		typedef std::pair<int, double> psp_pair;
+		auto lambda_comp =
+			[](const psp_pair & e1, const psp_pair & e2)
+		{ return e1.second > e2.second; };
+		// take the smallest number from the queue
+		std::priority_queue<psp_pair, std::vector<psp_pair>, decltype(lambda_comp)> q(lambda_comp);
 		Digraph::OutArcIt a(*_g, root);
 		q.push(std::make_pair(0, (*_edge_map)[a]));
 		while (!q.empty()) {
-			break;
+			psp_pair tmp = q.top();
+			q.pop();
+			if(tmp.second < INFINITY)
+				critical_values.push_back(tmp.second);
+			for (Digraph::OutArcIt a(tree, tree.nodeFromId(tmp.first)); a != lemon::INVALID; ++a) {
+				Node child = tree.target(a);
+				Digraph::OutArcIt a_child(tree, child);
+				double inserted_lambda;
+				if (a_child == lemon::INVALID)
+					inserted_lambda = INFINITY;
+				else
+					inserted_lambda = tree_edge_map[a_child];
+				q.push(std::make_pair(tree.id(tree.target(a)), inserted_lambda));
+			}
 		}
 	}
 	void PSP::contract(const stl::CSet& S, int i) {
@@ -246,11 +264,11 @@ namespace psp {
 			split(i);
 		}
 	}
-	std::vector<double>& PSP::get_critical_values() {
+	std::list<double>& PSP::get_critical_values() {
 		return critical_values;
 	}
 
-	std::vector<stl::Partition>& PSP::get_psp() {
-		return psp;
+	std::list<stl::Partition>& PSP::get_psp() {
+		return psp_list;
 	}
 }

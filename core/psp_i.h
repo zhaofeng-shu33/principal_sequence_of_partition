@@ -35,8 +35,8 @@ namespace psp {
 		//! contract node set S to a single node i and remove duplicate arcs, requiring i in S
 		void contract(const stl::CSet& S, int i);
 		PSP(Digraph* g, ArcMap* edge_map);
-		std::vector<double>& get_critical_values();
-		std::vector<stl::Partition>& get_psp();
+		std::list<double>& get_critical_values();
+		std::list<stl::Partition>& get_psp();
 		void run();
 	private:
 		void split(int i);
@@ -46,8 +46,8 @@ namespace psp {
 		ArcMap tree_edge_map;
 		Digraph* _g;
 		ArcMap* _edge_map;
-		std::vector<double> critical_values;
-		std::vector<stl::Partition> psp;
+		std::list<double> critical_values;
+		std::list<stl::Partition> psp_list;
 		lemon::Tolerance<double> _tolerance;
 	};
 }

@@ -30,5 +30,13 @@ namespace demo {
 		instance_2.run();
 		psp::PSP instance(&g, &am);
 		instance.run();
+		std::list<double> cv = instance.get_critical_values();
+		EXPECT_EQ(cv.size(), 3);
+		std::list<double>::iterator it = cv.begin();
+		EXPECT_DOUBLE_EQ(*it, 0.9);
+		it++;
+		EXPECT_DOUBLE_EQ(*it, 1);
+		it++;
+		EXPECT_DOUBLE_EQ(*it, 2);
 	}
 }
