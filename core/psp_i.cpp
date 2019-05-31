@@ -1,25 +1,25 @@
+#include <queue>
 #include <lemon/adaptors.h>
 #include "core/psp_i.h"
 #include "core/dt.h"
 #include "core/sfm_mf.h"
 #include <cassert>
 namespace psp {
-	void DilworthTruncation::minimize(std::vector<double>& xl, double lambda_) {
+	void DilworthTruncation::minimize(std::vector<double>& xl) {
 		int graph_size = xl.size();
 
 		for (int i = 0; i <= graph_size; i++) {
-			_g->enable(_g->nodeFromId(i));
+			_g->enable(enabled_nodes[i]);
 		}
-		for (int i = graph_size + 1; i < lemon::countNodes(*_g); i++) {
-			_g->disable(_g->nodeFromId(i));
+		for (int i = graph_size + 1; i < node_size; i++) {
+			_g->disable(enabled_nodes[i]);
 		}
-		std::vector<double> sink_node_cost_map;
-		sink_node_cost_map.resize(graph_size);
-		for (Digraph::InArcIt a(*_g, _g->nodeFromId(graph_size)); a != lemon::INVALID; ++a) {
+		std::map<int, double> sink_node_cost_map;
+		for (Digraph::InArcIt a(*_g, enabled_nodes[graph_size]); a != lemon::INVALID; ++a) {
 			int node_id = _g->id(_g->source(a));
 			sink_node_cost_map[node_id] = (*_edge_map)[a];
 		}
-		_g->disable(_g->nodeFromId(graph_size));
+		_g->disable(enabled_nodes[graph_size]);
 
 		// construct source node and sink node (inplace)
 		Digraph::Node source_node = _g->addNode();
@@ -30,12 +30,12 @@ namespace psp {
 		for (int i = 0; i < graph_size; i++) {
 			Digraph::Arc arc;
 			if (xl[i] < 0) {
-				arc = _g->addArc(source_node, _g->nodeFromId(i));
+				arc = _g->addArc(source_node, enabled_nodes[i]);
 				(*_edge_map)[arc] = -xl[i];
 			}
 			double sink_cost = std::max<double>(0, xl[i]) + sink_node_cost_map[i];
 			if (sink_cost > 0) {
-				arc = _g->addArc(_g->nodeFromId(i), sink_node);
+				arc = _g->addArc(enabled_nodes[i], sink_node);
 				(*_edge_map)[arc] = sink_cost;
 			}
 			const_difference += std::max<double>(0, xl[i]);
@@ -47,8 +47,8 @@ namespace psp {
 		min_value = pf.flowValue() - const_difference;
 		stl::CSet X;
 		for (int v = 0; v < graph_size; ++v) {
-			if (!pf.minCut(_g->nodeFromId(v)))
-				X.AddElement(v);
+			if (!pf.minCut(enabled_nodes[v]))
+				X.AddElement(_g->id(enabled_nodes[v]));
 		}
 		// house keeping, map is handled automatically
 
@@ -60,7 +60,10 @@ namespace psp {
 	DilworthTruncation::DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map) :
 		lambda_(lambda), min_value(0), _g(g), _edge_map(edge_map)
 	{
-		node_size = lemon::countNodes(*_g);
+		for (Digraph::NodeIt n(*_g); n != lemon::INVALID; ++n)
+			enabled_nodes.push_back(n);
+		std::reverse(enabled_nodes.begin(), enabled_nodes.end());
+		node_size = enabled_nodes.size();
 	}
 	double DilworthTruncation::get_min_value() {
 		return min_value;
@@ -75,7 +78,7 @@ namespace psp {
 		std::vector<double> xl;
 		double alpha_l = 0;
 		for (int i = 0; i < node_size; i++) {
-			minimize(xl, lambda_);
+			minimize(xl);
 			alpha_l = min_value;
 			Tl.AddElement(i);
 			_partition = _partition.expand(Tl);
@@ -85,6 +88,14 @@ namespace psp {
 		for (auto it = xl.begin(); it != xl.end(); it++) {
 			min_value += *it;
 		}
+#ifdef _DEBUG 
+		double min_value_check = evaluate(_partition);
+		if (std::abs(min_value - min_value_check) > 1e-4) {
+			std::stringstream ss;
+			ss << "min_value_check error: " << min_value << ' ' << min_value_check;
+			throw std::logic_error(ss.str());
+		}
+#endif
 	}
 
 	double DilworthTruncation::evaluate(stl::Partition & partition) {
@@ -168,7 +179,8 @@ namespace psp {
 		stl::CSet& Q = K[i];
 		lemon::ListDigraph::NodeMap<bool> node_filter(*_g);
 		int num_of_children = 0;
-		for (Digraph::OutArcIt a(tree, tree.nodeFromId(i)); a != lemon::INVALID; ++a) {
+		Node root = tree.nodeFromId(i);
+		for (Digraph::OutArcIt a(tree, root); a != lemon::INVALID; ++a) {
 			stl::CSet& s = K[tree.id(tree.target(a))];
 			int j = *s.begin();
 			node_filter[_g->nodeFromId(j)] = true;
@@ -183,7 +195,7 @@ namespace psp {
 		dt.run();
 		double min_value = dt.get_min_value();
 		if (min_value > -1 * gamma_apostrophe - _tolerance.epsilon()) {
-			for (Digraph::OutArcIt a(tree, tree.nodeFromId(i)); a != lemon::INVALID; ++a) {
+			for (Digraph::OutArcIt a(tree, root); a != lemon::INVALID; ++a) {
 				tree_edge_map[a] = gamma_apostrophe;
 			}
 		}
@@ -196,17 +208,21 @@ namespace psp {
 				int s = K.size();
 				Node _S = tree.addNode();
 				assert(tree.id(_S) == s);
-				for (Digraph::OutArcIt a(tree, tree.nodeFromId(i)); a != lemon::INVALID; ++a) {
+				std::queue<Arc> a_q;
+				for (Digraph::OutArcIt a(tree, root); a != lemon::INVALID; ++a) {
 					int j = tree.id(tree.target(a));
 					stl::CSet& K_j = K[j];
 					if (K_j.Intersection(S).Cardinality() > 0) {
-						tree.changeSource(a, _S);
-						tree.addArc(_S, tree.nodeFromId(j));
-						tree.erase(a);
+						a_q.push(a);
 						S_apostrophe = S.Union(K_j);
 					}
 				}
-				tree.addArc(tree.nodeFromId(i), _S);
+				while (!a_q.empty()) {
+					Arc a = a_q.front();
+					tree.changeSource(a, _S);
+					a_q.pop();
+				}
+				tree.addArc(root, _S);
 				K.push_back(S_apostrophe);
 				split(s);
 				// contract the graph

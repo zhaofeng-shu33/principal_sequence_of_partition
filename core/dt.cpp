@@ -1,4 +1,6 @@
+#include <sstream>
 #include "core/dt.h"
+
 namespace submodular {
 
     DilworthTruncation::DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map):
@@ -43,10 +45,9 @@ namespace submodular {
 #ifdef _DEBUG            
         double min_value_check = evaluate(_partition);
         if (std::abs(min_value - min_value_check) > 1e-4) {
-            std::cout << "min_value_check error: " << std::endl;
-            std::cout << min_value << std::endl;
-            std::cout << min_value_check << std::endl;
-            exit(-1);
+			std::stringstream ss;
+			ss << "min_value_check error: " << min_value << ' ' << min_value_check;
+			throw std::logic_error(ss.str());
         }
 #endif
         delete solver2;

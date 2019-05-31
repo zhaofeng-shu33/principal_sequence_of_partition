@@ -6,19 +6,20 @@ namespace psp {
 	public:
 		typedef lemon::FilterNodes<lemon::ListDigraph> Digraph;
 		typedef typename lemon::ListDigraph::ArcMap<double> ArcMap;
-
+		typedef Digraph::Node Node;
 		DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map);
 		double get_min_value();
 		stl::Partition& get_min_partition();
 		double evaluate(stl::Partition& partition);
 		void run();
 	private:
-		void minimize(std::vector<double>& xl, double lambda_);
+		void minimize(std::vector<double>& xl);
 		Digraph* _g;
 		ArcMap* _edge_map;
 		double min_value;
 		stl::CSet Tl;
 		stl::Partition _partition;
+		std::vector<Node> enabled_nodes;
 		double lambda_;
 		int node_size;
 	};
