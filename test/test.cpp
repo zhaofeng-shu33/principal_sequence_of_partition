@@ -12,3 +12,5 @@
 #if USE_LEMON
 #include "algorithms/test_sfm_mf.h"
 #endif
+
+#include "test_psp_i.h"

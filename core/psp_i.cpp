@@ -118,10 +118,10 @@ namespace psp {
 			int s_id = _g->id(_g->source(a));
 			int t_id = _g->id(_g->target(a));
 			if (S.HasElement(s_id) && !S.HasElement(t_id)) {
-				capacity_map.at(i) += (*_edge_map)[a]; //out is positive
+				capacity_map.at(t_id) += (*_edge_map)[a]; //out is positive
 			}
 			else if (!S.HasElement(s_id) && S.HasElement(t_id)) {
-				capacity_map.at(i) -= (*_edge_map)[a];
+				capacity_map.at(s_id) -= (*_edge_map)[a];
 			}
 		}
 		//delete S\{i} in _g
