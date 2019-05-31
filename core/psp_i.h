@@ -29,7 +29,10 @@ namespace psp {
 	public:
 		typedef lemon::ListDigraph Digraph;
 		typedef Digraph::Node Node;
+		typedef Digraph::Arc Arc;
 		typedef typename Digraph::ArcMap<double> ArcMap;
+		//! contract node set S to a single node i and remove duplicate arcs, requiring i in S
+		void contract(const stl::CSet& S, int i);
 		PSP(Digraph* g, ArcMap* edge_map);
 		void run();
 	private:

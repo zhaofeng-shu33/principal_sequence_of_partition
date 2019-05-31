@@ -2,7 +2,7 @@
 #include "core/psp_i.h"
 #include "core/dt.h"
 #include "core/sfm_mf.h"
-
+#include <cassert>
 namespace psp {
 	void DilworthTruncation::minimize(std::vector<double>& xl, double lambda_) {
 		int graph_size = xl.size();
@@ -108,6 +108,62 @@ namespace psp {
 		}
 		split(0);
 	}
+	void PSP::contract(const stl::CSet& S, int i) {
+		// we don't use _g->contract function since it can not handle multiple arcs within two nodes
+		std::map<int, double> capacity_map;
+		for (Digraph::NodeIt n(*_g); n != lemon::INVALID; ++n)
+			capacity_map[_g->id(n)] = 0;
+		// iterate over all arcs
+		for (Digraph::ArcIt a(*_g); a != lemon::INVALID; ++a) {
+			int s_id = _g->id(_g->source(a));
+			int t_id = _g->id(_g->target(a));
+			if (S.HasElement(s_id) && !S.HasElement(t_id)) {
+				capacity_map.at(i) += (*_edge_map)[a]; //out is positive
+			}
+			else if (!S.HasElement(s_id) && S.HasElement(t_id)) {
+				capacity_map.at(i) -= (*_edge_map)[a];
+			}
+		}
+		//delete S\{i} in _g
+		for (int j : S) {
+			Node J = _g->nodeFromId(j);
+			if (_g->valid(J) && j != i)
+				_g->erase(J);
+		}
+		Node _S = _g->nodeFromId(i);
+		for (Digraph::InArcIt a(*_g, _S); a != lemon::INVALID; ++a) {
+			int j  = _g->id(_g->source(a));
+			if (_tolerance.nonZero(capacity_map.at(j))) {
+				(*_edge_map)[a] = -1.0 * capacity_map.at(j);
+				capacity_map.at(j) = 0;
+			} 
+			else {
+				_g->erase(a);
+			}
+		}
+		for (Digraph::OutArcIt a(*_g, _S); a != lemon::INVALID; ++a) {
+			int j = _g->id(_g->target(a));
+			if (_tolerance.nonZero(capacity_map.at(j))) {
+				(*_edge_map)[a] = capacity_map.at(j);
+				capacity_map.at(j) = 0;
+			}
+			else {
+				_g->erase(a);
+			}
+		}
+		for (const std::pair<int, double>& val : capacity_map) {
+			if (S.HasElement(val.first) || std::abs(val.second) < _tolerance.epsilon())
+				continue;
+			if (val.second > 0) {
+				Arc a = _g->addArc(_S, _g->nodeFromId(val.first));
+				(*_edge_map)[a] = val.second;
+			}
+			else {
+			    Arc a = _g->addArc(_S, _g->nodeFromId(val.first));
+				(*_edge_map)[a] = -1.0 * val.second;
+			}
+		}
+	}
 	void PSP::split(int i) {
 		stl::CSet& Q = K[i];
 		lemon::ListDigraph::NodeMap<bool> node_filter(*_g);
@@ -133,6 +189,30 @@ namespace psp {
 		}
 		else {
 			stl::Partition P_apostrophe = dt.get_min_partition();
+			for (const stl::CSet& S : P_apostrophe) {
+				if (S.Cardinality() == 1)
+					continue;
+				stl::CSet S_apostrophe = S;
+				int s = K.size();
+				Node _S = tree.addNode();
+				assert(tree.id(_S) == s);
+				for (Digraph::OutArcIt a(tree, tree.nodeFromId(i)); a != lemon::INVALID; ++a) {
+					int j = tree.id(tree.target(a));
+					stl::CSet& K_j = K[j];
+					if (K_j.Intersection(S).Cardinality() > 0) {
+						tree.changeSource(a, _S);
+						tree.addArc(_S, tree.nodeFromId(j));
+						tree.erase(a);
+						S_apostrophe = S.Union(K_j);
+					}
+				}
+				tree.addArc(tree.nodeFromId(i), _S);
+				K.push_back(S_apostrophe);
+				split(s);
+				// contract the graph
+				contract(S, *S.begin());
+			}
+			split(i);
 		}
 	}
 }
