@@ -128,27 +128,45 @@ namespace psp {
 		}
 		split(0);
 		typedef std::pair<int, double> psp_pair;
-		auto lambda_comp =
-			[](const psp_pair & e1, const psp_pair & e2)
-		{ return e1.second > e2.second; };
 		// take the smallest number from the queue
-		std::priority_queue<psp_pair, std::vector<psp_pair>, decltype(lambda_comp)> q(lambda_comp);
+		std::vector<psp_pair> q; // decreasing
 		Digraph::OutArcIt a(*_g, root);
-		q.push(std::make_pair(0, (*_edge_map)[a]));
+		q.push_back(std::make_pair(0, (*_edge_map)[a]));
 		while (!q.empty()) {
-			psp_pair tmp = q.top();
-			q.pop();
+			stl::Partition p;
+			for (const psp_pair& pair : q) {
+				p.AddElement(K[pair.first]);
+			}
+			psp_list.push_back(p);
+
+			psp_pair tmp = q.back();
+			q.pop_back();
 			if(tmp.second < INFINITY)
 				critical_values.push_back(tmp.second);
+			else {
+				q.clear();
+				break;
+			}
 			for (Digraph::OutArcIt a(tree, tree.nodeFromId(tmp.first)); a != lemon::INVALID; ++a) {
 				Node child = tree.target(a);
 				Digraph::OutArcIt a_child(tree, child);
 				double inserted_lambda;
-				if (a_child == lemon::INVALID)
+				if (a_child == lemon::INVALID){
 					inserted_lambda = INFINITY;
+				}
 				else
 					inserted_lambda = tree_edge_map[a_child];
-				q.push(std::make_pair(tree.id(tree.target(a)), inserted_lambda));
+				bool inserted = false;
+				for (std::vector<psp_pair>::iterator it = q.begin(); it != q.end(); it++) {
+					if (it->second < inserted_lambda) {
+						q.insert(it, std::make_pair(tree.id(tree.target(a)), inserted_lambda));
+						inserted = true;
+						break;
+					}
+				}
+				if (inserted == false) {
+					q.push_back(std::make_pair(tree.id(tree.target(a)), inserted_lambda));
+				}
 			}
 		}
 	}

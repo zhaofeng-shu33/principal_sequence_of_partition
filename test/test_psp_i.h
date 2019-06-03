@@ -38,5 +38,23 @@ namespace demo {
 		EXPECT_DOUBLE_EQ(*it, 1);
 		it++;
 		EXPECT_DOUBLE_EQ(*it, 2);
+
+		std::list<stl::Partition> psp_list = instance.get_psp();
+		EXPECT_EQ(psp_list.size(), 4);
+		std::list<stl::Partition>::iterator it_2 = psp_list.begin();
+		EXPECT_EQ(*it_2, stl::Partition::makeDense(4));
+		stl::Partition p2;
+		p2.AddElement(stl::CSet(std::string("11")));
+		p2.AddElement(stl::CSet(std::string("0011")));
+		it_2++;
+		EXPECT_EQ(*it_2, p2);
+		stl::Partition p3;
+		p3.AddElement(stl::CSet(std::string("1")));
+		p3.AddElement(stl::CSet(std::string("01")));
+		p3.AddElement(stl::CSet(std::string("0011")));
+		it_2++;
+		EXPECT_EQ(*it_2, p3);
+		it_2++;
+		EXPECT_EQ(*it_2, stl::Partition::makeFine(4));
 	}
 }
