@@ -6,7 +6,6 @@
 #include <sstream>
 #include "core/graph/graph.h"
 #include "core/pmf.h"
-
 namespace parametric {
     using Set = stl::CSet;
     double PMF::compute_lambda(const std::vector<pair>& parameter_list, const double target_value) {
@@ -239,7 +238,7 @@ namespace parametric {
 			throw std::logic_error("not subset");
 		}
 #endif
-        if(T_apostrophe != T_r && new_flow_value < original_flow_value - tolerance.epsilon()){
+        if(T_apostrophe != T_r && T_apostrophe != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
             insert_set(T_apostrophe);
             slice(T_l, T_apostrophe, flowMap, lambda_1, lambda_2);
