@@ -76,7 +76,7 @@ namespace submodular {
         dt.Run(bruteForce);
         double min_value = dt.Get_min_value();
         stl::Partition P_apostrophe = dt.Get_min_partition();
-        if (min_value > h_apostrophe - 1e-4) {
+        if (min_value > h_apostrophe - _tolerance.epsilon()) {
             return P;
         }
         else {
@@ -102,7 +102,7 @@ namespace submodular {
         dt.Run(bruteForce);
         double min_value = dt.Get_min_value();
         stl::Partition P_apostrophe = dt.Get_min_partition();
-        if (min_value > h_apostrophe-1e-4) {
+        if (min_value > h_apostrophe - _tolerance.epsilon()) {
             critical_values[Q.Cardinality() - 1] = gamma_apostrophe;
         }
         else {                

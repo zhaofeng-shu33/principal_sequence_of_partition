@@ -58,6 +58,7 @@ namespace submodular {
         double evaluate(const stl::Partition& P);
 
         int NodeSize;
+		lemon::Tolerance<double> _tolerance;
         std::vector<double> critical_values;
         std::vector<stl::Partition> psp;
 		Digraph* _g;

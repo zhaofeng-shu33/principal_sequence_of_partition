@@ -57,4 +57,42 @@ namespace demo {
 		it_2++;
 		EXPECT_EQ(*it_2, stl::Partition::makeFine(4));
 	}
+	TEST(PSP_I, GivenPoint8) {
+		double a[8][2] = { {3.1, 3.2},
+						   {4.0, 4.0 },
+						   {1.1, -2.2},
+						   {3.9, -2.0},
+						   {-3.9, -2.0},
+						   {-2.2, -3.5},
+						   {-3.9, 2.4},
+						   {-3.1, 2.6}
+		};
+		Gaussian2DGraph g2g(8, 1.0, a);
+		g2g.run();
+		std::vector<double> gamma_list_2 = g2g.get_gamma_list();
+		std::vector<stl::Partition> psp_list_2 = g2g.get_psp_list();
+
+		demo::EdgeListTuple et = g2g.get_edge_list_tuple();
+		lemon::ListDigraph g;
+		lemon::ListDigraph::ArcMap<double> edge_map(g);
+		submodular::make_dgraph(8, et, g, edge_map);
+
+		psp::PSP instance(&g, &edge_map);
+		instance.run();
+		std::list<double> gamma_list = instance.get_critical_values();
+		std::list<stl::Partition> psp_list = instance.get_psp();
+
+		std::list<double>::iterator it = gamma_list.begin();
+		std::list<stl::Partition>::iterator it_2 = psp_list.begin();
+
+		for (int i = 0; i < gamma_list.size(); i++) {
+			if (psp_list_2[i].Cardinality() == 0)
+				continue;
+			EXPECT_DOUBLE_EQ(*it, gamma_list_2[i]);
+			EXPECT_EQ(*it_2, psp_list_2[i]);
+			it++;
+			it_2++;
+		}
+
+	}
 }

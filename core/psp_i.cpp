@@ -130,8 +130,8 @@ namespace psp {
 		typedef std::pair<int, double> psp_pair;
 		// take the smallest number from the queue
 		std::vector<psp_pair> q; // decreasing
-		Digraph::OutArcIt a(*_g, root);
-		q.push_back(std::make_pair(0, (*_edge_map)[a]));
+		Digraph::OutArcIt a(tree, root);
+		q.push_back(std::make_pair(0, tree_edge_map[a]));
 		while (!q.empty()) {
 			stl::Partition p;
 			for (const psp_pair& pair : q) {
@@ -265,7 +265,7 @@ namespace psp {
 					stl::CSet& K_j = K[j];
 					if (K_j.Intersection(S).Cardinality() > 0) {
 						a_q.push(a);
-						S_apostrophe = S.Union(K_j);
+						S_apostrophe = S_apostrophe.Union(K_j);
 					}
 				}
 				while (!a_q.empty()) {
