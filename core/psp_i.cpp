@@ -185,6 +185,9 @@ namespace psp {
 			else if (!S.HasElement(s_id) && S.HasElement(t_id)) {
 				capacity_map.at(s_id) -= (*_edge_map)[a];
 			}
+			if (s_id == i || t_id == i) { // delete all arcs connected with Node(i)
+				_g->erase(a);
+			}
 		}
 		//delete S\{i} in _g
 		for (int j : S) {
@@ -193,26 +196,7 @@ namespace psp {
 				_g->erase(J);
 		}
 		Node _S = _g->nodeFromId(i);
-		for (Digraph::InArcIt a(*_g, _S); a != lemon::INVALID; ++a) {
-			int j  = _g->id(_g->source(a));
-			if (_tolerance.nonZero(capacity_map.at(j))) {
-				(*_edge_map)[a] = -1.0 * capacity_map.at(j);
-				capacity_map.at(j) = 0;
-			} 
-			else {
-				_g->erase(a);
-			}
-		}
-		for (Digraph::OutArcIt a(*_g, _S); a != lemon::INVALID; ++a) {
-			int j = _g->id(_g->target(a));
-			if (_tolerance.nonZero(capacity_map.at(j))) {
-				(*_edge_map)[a] = capacity_map.at(j);
-				capacity_map.at(j) = 0;
-			}
-			else {
-				_g->erase(a);
-			}
-		}
+				
 		for (const std::pair<int, double>& val : capacity_map) {
 			if (S.HasElement(val.first) || std::abs(val.second) < _tolerance.epsilon())
 				continue;

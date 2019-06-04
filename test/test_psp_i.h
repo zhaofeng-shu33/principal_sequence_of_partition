@@ -11,6 +11,7 @@ namespace demo {
 		lemon::ListDigraph::ArcIt a(g);
 		EXPECT_DOUBLE_EQ(edge_map[a], 2.5);
 	}
+
 	TEST(PSP_I, SIMPLE_FOUR_POINT) {
 		lemon::ListDigraph g;
 		lemon::ListDigraph::Node n1 = g.addNode();
