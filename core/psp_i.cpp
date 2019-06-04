@@ -227,7 +227,6 @@ namespace psp {
 		}
 	}
 	void PSP::split(int i) {
-		stl::CSet& Q = K[i];
 		lemon::ListDigraph::NodeMap<bool> node_filter(*_g);
 		int num_of_children = 0;
 		Node root = tree.nodeFromId(i);
@@ -242,16 +241,24 @@ namespace psp {
 		for (lemon::FilterNodes<Digraph>::ArcIt a(subgraph); a != lemon::INVALID; ++a)
 			weight_total += (*_edge_map)[a];
 		double gamma_apostrophe = weight_total / (num_of_children - 1.0);
-		DilworthTruncation dt(gamma_apostrophe, &subgraph, _edge_map);
-		dt.run();
-		double min_value = dt.get_min_value();
-		if (min_value > -1 * gamma_apostrophe - _tolerance.epsilon()) {
-			for (Digraph::OutArcIt a(tree, root); a != lemon::INVALID; ++a) {
-				tree_edge_map[a] = gamma_apostrophe;
-			}
+		stl::Partition P_apostrophe;
+		double min_value;
+		if (num_of_children == 2) {
+			goto add_lambda;
 		}
-		else {
-			stl::Partition P_apostrophe = dt.get_min_partition();
+		else{
+			DilworthTruncation dt(gamma_apostrophe, &subgraph, _edge_map);
+			dt.run();
+			min_value = dt.get_min_value();
+			P_apostrophe = dt.get_min_partition();
+		}
+		if (!(P_apostrophe.Cardinality() != 1 && P_apostrophe.Cardinality() != num_of_children && min_value < -1 * gamma_apostrophe - _tolerance.epsilon())) {
+			add_lambda:
+				for (Digraph::OutArcIt a(tree, root); a != lemon::INVALID; ++a) {
+					tree_edge_map[a] = gamma_apostrophe;
+				}
+		}
+		else {			
 			for (const stl::CSet& S : P_apostrophe) {
 				if (S.Cardinality() == 1)
 					continue;
