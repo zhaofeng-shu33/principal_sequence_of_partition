@@ -2,6 +2,41 @@
 import argparse
 from sklearn import datasets
 from sklearn.metrics.pairwise import pairwise_kernels
+import networkx as nx
+import pdb
+def toNetworkX(filename):
+    dot = nx.DiGraph()
+    with open(filename) as f:
+        st = f.readline()
+        st = f.readline()
+        while(True):
+            if(st.find('@arcs')>=0):
+                break
+            if(st.find('label')>=0):
+                st = f.readline()
+                continue
+            node_label = st.strip()
+            dot.add_node(node_label)
+            st = f.readline()
+        st = f.readline()
+        while(len(st)>0):
+            if(st.find('@attributes')>=0):
+                break
+            if(st.find('label')>=0):
+                st = f.readline()
+                continue
+            s,t,_,c = st.strip().split('\t')
+            dot.add_edge(s,t,label=str(c))
+            st = f.readline()
+        if(st.find('source')>=0):
+            _,s_id = st.strip().split(' ')
+            dot.nodes[s_id]['label'] = 's'
+        st = f.readline()
+        if(st.find('target')>=0):
+            _,t_id = st.strip().split(' ')
+            dot.nodes[t_id]['label'] = 't'
+    return dot
+    
 def convert(filename, affinity_matrix):
     Ls = ['@nodes', 'label']
     ms = affinity_matrix.shape[0]

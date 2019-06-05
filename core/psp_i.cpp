@@ -19,6 +19,12 @@ namespace psp {
 			int node_id = _g->id(_g->source(a));
 			sink_node_cost_map[node_id] = (*_edge_map)[a];
 		}
+#ifdef  _DEBUG	
+		for (Digraph::OutArcIt a(*_g, enabled_nodes[graph_size]); a != lemon::INVALID; ++a) {
+			std::cout << _g->id(_g->target(a)) << std::endl;
+			throw std::logic_error("no outarc allowed");
+		}
+#endif
 		_g->disable(enabled_nodes[graph_size]);
 
 		// construct source node and sink node (inplace)
@@ -51,7 +57,24 @@ namespace psp {
 				X.AddElement(_g->id(enabled_nodes[v]));
 		}
 		// house keeping, map is handled automatically
-
+#ifdef  _DEBUG	
+		stl::CSet _X;
+		for (int v = 0; v < graph_size; ++v) {
+			if (!pf.minCut(enabled_nodes[v]))
+				_X.AddElement(v);
+		}
+		_g->disable(source_node);
+		_g->disable(sink_node);
+		_g->enable(enabled_nodes[graph_size]);
+		double minimum_value_2 = -lambda_;
+		for (int i : _X.GetMembers())
+			minimum_value_2 -= xl[i];
+		_X.clear();
+		std::copy(X.begin(), X.end(), std::back_inserter(_X));
+		_X.AddElement(_g->id(enabled_nodes[graph_size]));
+		minimum_value_2 += submodular::get_cut_value(*_g, *_edge_map, _X);
+		assert(std::abs(min_value - minimum_value_2) < 1e-5);
+#endif
 		_g->erase(source_node);
 		_g->erase(sink_node);
 		Tl = X;
@@ -200,14 +223,14 @@ namespace psp {
 		for (const std::pair<int, double>& val : capacity_map) {
 			if (S.HasElement(val.first) || std::abs(val.second) < _tolerance.epsilon())
 				continue;
-			if (val.second > 0) {
-				Arc a = _g->addArc(_S, _g->nodeFromId(val.first));
-				(*_edge_map)[a] = val.second;
+			Arc a;
+			if (val.first > i) {
+				a = _g->addArc(_S, _g->nodeFromId(val.first));
 			}
 			else {
-			    Arc a = _g->addArc(_g->nodeFromId(val.first), _S);
-				(*_edge_map)[a] = -1.0 * val.second;
+				a = _g->addArc(_g->nodeFromId(val.first), _S);
 			}
+			(*_edge_map)[a] = std::abs(val.second);
 		}
 	}
 	void PSP::split(int i) {
