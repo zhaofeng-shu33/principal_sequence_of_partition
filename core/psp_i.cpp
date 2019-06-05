@@ -206,7 +206,7 @@ namespace psp {
 				capacity_map.at(t_id) += (*_edge_map)[a]; //out is positive
 			}
 			else if (!S.HasElement(s_id) && S.HasElement(t_id)) {
-				capacity_map.at(s_id) -= (*_edge_map)[a];
+				capacity_map.at(s_id) += (*_edge_map)[a];
 			}
 			if (s_id == i || t_id == i) { // delete all arcs connected with Node(i)
 				_g->erase(a);
