@@ -191,41 +191,7 @@ namespace demo {
         EXPECT_EQ(*partition_it, parametric::Partition::makeFine(4));
         delete pdt;
     }
-    TEST(GivenPoint8, SMALL) {
-        double a[8][2] = { {3.1, 3.2},
-                           {4.0, 4.0 },
-                           {1.1, -2.2},
-                           {3.9, -2.0},
-                           {-3.9, -2.0},
-                           {-2.2, -3.5},
-                           {-3.9, 2.4},
-                           {-3.1, 2.6}
-        };
-        Gaussian2DGraphBase g2g(8, 0.1, a);
-        EdgeListTuple elt = g2g.get_edge_list_tuple();
-        lemon::ListDigraph g;
-        g.reserveNode(8);
-        for (int i = 0; i < 8; i++)
-            g.addNode();
-        lemon::ListDigraph::ArcMap<double> aM(g);
-        for (std::tuple<std::size_t, std::size_t, double>& edge_tuple : elt) {
-            lemon::ListDigraph::Node s = g.nodeFromId(std::get<0>(edge_tuple));
-            lemon::ListDigraph::Node t = g.nodeFromId(std::get<1>(edge_tuple));
-            lemon::ListDigraph::Arc a1 = g.addArc(s, t);
-            lemon::ListDigraph::Arc a2 = g.addArc(t, s);
-            aM[a1] = std::get<2>(edge_tuple);
-            aM[a2] = std::get<2>(edge_tuple);
-        }
-        stl::CSet s(std::string("00001111"));
-        std::vector<pair> parameter_list;
-        for(int i = 0; i < 8; i++)
-            parameter_list.push_back(std::make_pair(0, -0.0286));
-        parameter_list[0] = std::make_pair(0.993, -0.737);
-        parameter_list[1] = std::make_pair(0.909, INFINITY);
 
-        parametric::PMF pmf(g, aM, 2, parameter_list);
-        pmf.run(); 
-    }
     TEST(GivenPoint8, PDT) {
         double a[8][2] = { {3.1, 3.2},
                            {4.0, 4.0 },

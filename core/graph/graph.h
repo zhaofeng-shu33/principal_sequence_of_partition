@@ -1,4 +1,3 @@
-// Copyright 2018 Kentaro Minami. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -108,6 +107,15 @@ namespace submodular {
 			target_value += get_cut_value(g, arc_map, _s);
 		return target_value;
 	}
+
+	template <typename T>
+	T get_partition_value(lemon::FilterNodes<lemon::ListDigraph>& g, lemon::ListDigraph::ArcMap<T>& arc_map, const stl::Partition _partition) {
+		T target_value = 0;
+		for (const stl::CSet& _s : _partition)
+			target_value += get_cut_value(g, arc_map, _s);
+		return target_value;
+	}
+
 }
 
 #endif

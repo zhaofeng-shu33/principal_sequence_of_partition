@@ -18,7 +18,7 @@ namespace submodular {
     public:
 		typedef lemon::ListDigraph Digraph;
 		typedef typename Digraph::ArcMap<double> ArcMap;
-        
+
         DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map);
         double get_min_value();
         stl::Partition& get_min_partition();
@@ -40,7 +40,7 @@ namespace submodular {
     public:
 		typedef lemon::ListDigraph Digraph;
 		typedef typename Digraph::ArcMap<double> ArcMap;
-        PSP(Digraph* g, ArcMap* edge_map );
+        PSP(Digraph* g, ArcMap* edge_map);
         //! evaluate and find the finest partition with $\abs{\P} > \texttt{partition_num}$
 		stl::Partition split(stl::Partition& Q, stl::Partition& P, int partition_num, bool bruteForce = false);
         
@@ -58,6 +58,7 @@ namespace submodular {
         double evaluate(const stl::Partition& P);
 
         int NodeSize;
+		lemon::Tolerance<double> _tolerance;
         std::vector<double> critical_values;
         std::vector<stl::Partition> psp;
 		Digraph* _g;

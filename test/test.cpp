@@ -8,7 +8,6 @@
 
 #include "test_pmf.h"
 
-// maxflow test in dt case
-#if USE_LEMON
-#include "algorithms/test_sfm_mf.h"
-#endif
+#include "test_dt.h"
+
+#include "test_psp_i.h"

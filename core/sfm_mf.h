@@ -28,10 +28,7 @@ public:
 	SFMAlgorithm() : done_sfm_(false) {}
 	virtual ~SFMAlgorithm() {}
 
-	// Perform SFM algorithm.
-	// The minimum value (and a minimizer) should be stored in minimum_value (resp. minimizer_)
-	// Some statistics should be reported as stats_.
-	// NOTE: SubmodularOracle object F will possibly be modified by the algorithm.
+	// For node with id = size(xl), which is sink_node, this function requires no outarc of Node(id) exists.
 	virtual void Minimize(std::vector<double>& xl, double lambda_, lemon::ListDigraph* _g, lemon::ListDigraph::ArcMap<double>* _edge_map) {}
 	virtual std::string GetName() = 0;
 

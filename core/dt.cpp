@@ -1,4 +1,6 @@
+#include <sstream>
 #include "core/dt.h"
+
 namespace submodular {
 
     DilworthTruncation::DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map):
@@ -26,7 +28,7 @@ namespace submodular {
             solver2 = new MF;
 #else
 #pragma message("No lemon lib used, only BruteForce algorithm provided.")
-            solver2 = new BruteForce<double>;
+            solver2 = new BruteForce;
 #endif
         }
         for (int i = 0; i < NodeSize; i++) {
@@ -43,10 +45,9 @@ namespace submodular {
 #ifdef _DEBUG            
         double min_value_check = evaluate(_partition);
         if (std::abs(min_value - min_value_check) > 1e-4) {
-            std::cout << "min_value_check error: " << std::endl;
-            std::cout << min_value << std::endl;
-            std::cout << min_value_check << std::endl;
-            exit(-1);
+			std::stringstream ss;
+			ss << "min_value_check error: " << min_value << ' ' << min_value_check;
+			throw std::logic_error(ss.str());
         }
 #endif
         delete solver2;
@@ -75,7 +76,7 @@ namespace submodular {
         dt.run(bruteForce);
         double min_value = dt.get_min_value();
         stl::Partition P_apostrophe = dt.get_min_partition();
-        if (min_value > h_apostrophe - 1e-4) {
+        if (min_value > h_apostrophe - _tolerance.epsilon()) {
             return P;
         }
         else {
@@ -101,7 +102,7 @@ namespace submodular {
         dt.run(bruteForce);
         double min_value = dt.get_min_value();
         stl::Partition P_apostrophe = dt.get_min_partition();
-        if (min_value > h_apostrophe-1e-4) {
+        if (min_value > h_apostrophe - _tolerance.epsilon()) {
             critical_values[Q.Cardinality() - 1] = gamma_apostrophe;
         }
         else {                
