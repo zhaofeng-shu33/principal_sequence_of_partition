@@ -56,39 +56,25 @@ int main(int argc, const char *argv[]){
 		psp_i.run();
 		critical_values = psp_i.get_critical_values();
 		partition_list = psp_i.get_psp();
-		std::list<stl::Partition>::iterator it_2 = partition_list.begin();
-		result << *it_2 << std::endl;
-		for (std::list<double>::iterator it_1 = critical_values.begin(); it_1 != critical_values.end(); it_1++) {
-			it_2++;
-			result << *it_1 << std::endl;
-			result << *it_2 << std::endl;
-		}
 	}
     else if (use_pdt) {
 		parametric::PDT pmf(&digraph, &cap);
 		pmf.run();
 		critical_values = pmf.get_critical_values();
 		partition_list = pmf.get_psp();
-		std::list<stl::Partition>::iterator it_2 = partition_list.begin();
-		result << *it_2 << std::endl;
-		for (std::list<double>::iterator it_1 = critical_values.begin(); *it_1 != INFINITY; it_1++) {
-			it_2++;
-			result << *it_1 << std::endl;
-			result << *it_2 << std::endl;
-		}
     }
 	else{
 		submodular::PSP psp_class(&digraph, &cap);
 		psp_class.run();
 		critical_values = psp_class.get_critical_values();
 		partition_list = psp_class.get_psp();
-		std::list<stl::Partition>::iterator it_2 = partition_list.begin();
+	}
+	std::list<stl::Partition>::iterator it_2 = partition_list.begin();
+	result << *it_2 << std::endl;
+	for (std::list<double>::iterator it_1 = critical_values.begin(); it_1 != critical_values.end(); it_1++) {
+		it_2++;
+		result << *it_1 << std::endl;
 		result << *it_2 << std::endl;
-		for (std::list<double>::iterator it_1 = critical_values.begin(); it_1 != critical_values.end(); it_1++) {
-			it_2++;
-			result << *it_1 << std::endl;
-			result << *it_2 << std::endl;
-		}
 	}
 	std::ofstream fout(result_filename);
 	fout << result.str();
