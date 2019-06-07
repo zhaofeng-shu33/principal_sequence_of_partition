@@ -51,16 +51,16 @@ namespace submodular {
         
         void run(bool bruteForce = false);
         
-        std::vector<double>& get_critical_values();
-        std::vector<stl::Partition>& get_psp();
+        std::list<double>& get_critical_values();
+        std::list<stl::Partition>& get_psp();
     private:
         //! evalute the submodular function at the given partition
         double evaluate(const stl::Partition& P);
 
         int NodeSize;
 		lemon::Tolerance<double> _tolerance;
-        std::vector<double> critical_values;
-        std::vector<stl::Partition> psp;
+        std::list<double> critical_values;
+        std::list<stl::Partition> psp;
 		Digraph* _g;
 		ArcMap* _edge_map;
     };

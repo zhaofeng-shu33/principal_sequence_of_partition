@@ -61,12 +61,9 @@ namespace submodular {
     PSP::PSP(Digraph* g, ArcMap* edge_map ) : _g(g), _edge_map(edge_map)
     {
         NodeSize = lemon::countNodes(*_g);
-        critical_values.resize(NodeSize);
-        psp.resize(NodeSize);
     }    
     
-    stl::Partition PSP::split(stl::Partition& Q, stl::Partition& P, int partition_num, bool bruteForce)
-    {
+    stl::Partition PSP::split(stl::Partition& Q, stl::Partition& P, int partition_num, bool bruteForce){
         if (Q.Cardinality() == P.Cardinality()) {
             throw std::logic_error("Q and P have the same size");
         }
@@ -103,10 +100,10 @@ namespace submodular {
         double min_value = dt.get_min_value();
         stl::Partition P_apostrophe = dt.get_min_partition();
         if (min_value > h_apostrophe - _tolerance.epsilon()) {
-            critical_values[Q.Cardinality() - 1] = gamma_apostrophe;
+            critical_values.push_back(gamma_apostrophe);
         }
         else {                
-            psp[P_apostrophe.Cardinality() - 1] = P_apostrophe;
+            psp.push_back(P_apostrophe);
             try{
                 split(Q, P_apostrophe, bruteForce);
                 split(P_apostrophe, P, bruteForce);
@@ -140,16 +137,20 @@ namespace submodular {
         stl::Partition Q, P;
         Q.AddElement(V);
         P = stl::Partition::makeFine(NodeSize);
-        psp[0] = Q;
-        psp[P.Cardinality()-1] = P;
+        psp.push_back(Q);
+        psp.push_back(P);
         split(Q, P, bruteForce);
+		critical_values.sort();
+		auto partition_compare = [](const stl::Partition & p1, const stl::Partition & p2)
+			{return p1.Cardinality() < p2.Cardinality(); };
+		psp.sort(partition_compare);
     }    
     
-    std::vector<double>& PSP::get_critical_values() {
+    std::list<double>& PSP::get_critical_values() {
         return critical_values;
     }
     
-    std::vector<stl::Partition>& PSP::get_psp() {
+    std::list<stl::Partition>& PSP::get_psp() {
         return psp;
     }    
     

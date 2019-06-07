@@ -42,30 +42,21 @@ namespace submodular {
             gamma_list = psp_class.get_critical_values();
             psp_list = psp_class.get_psp();
         }
-        std::vector<double>& get_gamma_list() {
+        std::list<double>& get_gamma_list() {
             return gamma_list;
         }
-        std::vector<double> get_critical_values() {
-            std::vector<double> critical_value_list;
-            for (int i = 0; i < psp_list.size(); i++) {
-                if (psp_list[i].Cardinality() > 0) {
-                    critical_value_list.push_back(gamma_list[i]);
-                }
-            }
-            critical_value_list.pop_back(); // the last value is invalid
-            return critical_value_list;
+        std::list<double>& get_critical_values() {
+            return gamma_list;
         }
         std::vector<int> get_partitions() {
             std::vector<int> partitions;
-            for (int i = 0; i < psp_list.size(); i++) {
-                if (psp_list[i].Cardinality() > 0) {
-                    partitions.push_back(psp_list[i].Cardinality());
-                }
+            for (std::list<stl::Partition>::iterator it = psp_list.begin(); it != psp_list.end(); it++) {
+				partitions.push_back(it->Cardinality());
             }
             return partitions;
         }
 
-        std::vector<stl::Partition>& get_psp_list() {
+        std::list<stl::Partition>& get_psp_list() {
             return psp_list;
         }
         //! get the smallest partition whose size >= k
@@ -89,9 +80,9 @@ namespace submodular {
 		ArcMap* edge_map;
         int num_points;
     private:
-        std::vector<double> gamma_list;
+        std::list<double> gamma_list;
         
-        std::vector<stl::Partition> psp_list;
+        std::list<stl::Partition> psp_list;
         //! form conversion
         std::vector<int> to_category(stl::Partition& partition) {
             std::vector<int> cat(num_points, 0);

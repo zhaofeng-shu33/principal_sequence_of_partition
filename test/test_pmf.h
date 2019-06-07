@@ -142,7 +142,7 @@ namespace demo {
         pdt->run();
         std::list<double> lambda_list = pdt->get_critical_values();
         std::list<parametric::Partition> partition_list = pdt->get_psp();
-        EXPECT_EQ(lambda_list.size(), 2);
+        EXPECT_EQ(lambda_list.size(), 1);
         std::list<double>::iterator lambda_it = lambda_list.begin();
         EXPECT_DOUBLE_EQ(*lambda_it, 1 + 2 / 3.0);
 
@@ -174,25 +174,19 @@ namespace demo {
 
         submodular::InfoCluster ic(elt, 8);
         ic.run();
-        std::vector<double> lambda_list_2 = ic.get_gamma_list();
-        std::vector<stl::Partition> partition_list_2 = ic.get_psp_list();
+        std::list<double> lambda_list_2 = ic.get_gamma_list();
+        std::list<stl::Partition> partition_list_2 = ic.get_psp_list();
 
         EXPECT_EQ(lambda_list.size(), lambda_list_2.size());
         lemon::Tolerance<double> Tol;
         
         std::list<double>::iterator it = lambda_list.begin();
-        for (int vector_it = 0; vector_it < lambda_list_2.size()-1; vector_it++) {
-            EXPECT_NEAR(*it, lambda_list_2[vector_it], Tol.epsilon());
+		;
+        for (std::list<double>::iterator it_2 = lambda_list_2.begin(); it_2 != lambda_list_2.end(); it_2++) {
+            EXPECT_NEAR(*it, *it_2, Tol.epsilon());
             it++;
         }
-        std::list<parametric::Partition>::iterator partition_it = partition_list.begin();
-        for (int i = 0; i < partition_list_2.size(); i++) {
-            if (partition_list_2[i].Cardinality() == 0)
-                continue;
-            stl::Partition p = partition_list_2[i];
-            EXPECT_EQ(p, *partition_it);
-            partition_it++;
-        }
+		EXPECT_EQ(partition_list, partition_list_2);
     }
 	TEST(ThreePointComplete, PDT) {
 		std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
@@ -208,7 +202,7 @@ namespace demo {
 		it++;
 		EXPECT_DOUBLE_EQ(*it, 5);
 
-		EXPECT_EQ(lambda_list.size(), 3);  // the last value is infinity
+		EXPECT_EQ(lambda_list.size(), 2); 
 		EXPECT_EQ(partition_list.size(), 3);
 
 		stl::Partition p = stl::Partition::makeDense(3);
@@ -240,7 +234,7 @@ namespace demo {
 		it++;
 		EXPECT_DOUBLE_EQ(*it, 1);
 
-		EXPECT_EQ(lambda_list.size(), 3);  // the last value is infinity
+		EXPECT_EQ(lambda_list.size(), 2); 
 		EXPECT_EQ(partition_list.size(), 3);
 
 		stl::Partition p = stl::Partition::makeDense(3);
@@ -272,7 +266,7 @@ namespace demo {
 		it++;
 		EXPECT_DOUBLE_EQ(*it, 1);
 
-		EXPECT_EQ(lambda_list.size(), 3);  // the last value is infinity
+		EXPECT_EQ(lambda_list.size(), 2);  
 		EXPECT_EQ(partition_list.size(), 3);
 
 		stl::Partition p = stl::Partition::makeDense(4);

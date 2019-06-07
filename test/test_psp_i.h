@@ -70,8 +70,8 @@ namespace demo {
 		};
 		Gaussian2DGraph g2g(8, 1.0, a);
 		g2g.run();
-		std::vector<double> gamma_list_2 = g2g.get_gamma_list();
-		std::vector<stl::Partition> psp_list_2 = g2g.get_psp_list();
+		std::list<double> gamma_list_2 = g2g.get_gamma_list();
+		std::list<stl::Partition> psp_list_2 = g2g.get_psp_list();
 
 		demo::EdgeListTuple et = g2g.get_edge_list_tuple();
 		lemon::ListDigraph g;
@@ -83,15 +83,12 @@ namespace demo {
 		std::list<double> gamma_list = instance.get_critical_values();
 		std::list<stl::Partition> psp_list = instance.get_psp();
 
-		std::list<double>::iterator it = gamma_list.begin();
-		std::list<stl::Partition>::iterator it_2 = psp_list.begin();
+		std::list<double>::iterator it_2 = gamma_list_2.begin();
 
-		for (int i = 0; i < gamma_list.size(); i++) {
-			if (psp_list_2[i].Cardinality() == 0)
-				continue;
-			EXPECT_DOUBLE_EQ(*it, gamma_list_2[i]);
-			EXPECT_EQ(*it_2, psp_list_2[i]);
-			it++;
+		EXPECT_EQ(psp_list, psp_list_2);
+
+		for (std::list<double>::iterator it = gamma_list.begin(); it != gamma_list.end(); it++) {
+			EXPECT_DOUBLE_EQ(*it, *it_2);
 			it_2++;
 		}
 

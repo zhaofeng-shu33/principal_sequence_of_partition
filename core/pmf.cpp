@@ -268,10 +268,12 @@ namespace parametric {
         _g(g),
         _arcMap(arcMap),
         pmf(g, arcMap, 0, _y_lambda){
-        partition_list.push_back(Partition());
-        Lambda_list.push_back(INFINITY);
     }
     void PDT::run() {
+		partition_list.clear();
+		Lambda_list.clear();
+		partition_list.push_back(Partition());
+		Lambda_list.push_back(INFINITY);
         _y_lambda.resize(lemon::countNodes(*_g), pair(0, INFINITY));
         for (int j = 0; j < _y_lambda.size(); j++) {
             pmf.reset_y_lambda(_y_lambda);
@@ -335,5 +337,6 @@ namespace parametric {
             Lambda_list = Lambda_list_apostrophe;
             partition_list = partition_list_apostrophe;
         }
+		Lambda_list.pop_back();
     }
 }

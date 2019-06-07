@@ -78,19 +78,17 @@ int main(int argc, const char *argv[]){
 		}
     }
 	else{
-		std::vector<double> critical_values;
-		std::vector<stl::Partition> partition_list;
 		submodular::PSP psp_class(&digraph, &cap);
 		psp_class.run();
 		critical_values = psp_class.get_critical_values();
 		partition_list = psp_class.get_psp();
-		for (int i = 0; i < partition_list.size()-1; i++) {
-			if (partition_list[i].Cardinality() > 0) {
-				result << partition_list[i] << std::endl;
-				result << critical_values[i] << std::endl;
-			}
+		std::list<stl::Partition>::iterator it_2 = partition_list.begin();
+		result << *it_2 << std::endl;
+		for (std::list<double>::iterator it_1 = critical_values.begin(); it_1 != critical_values.end(); it_1++) {
+			it_2++;
+			result << *it_1 << std::endl;
+			result << *it_2 << std::endl;
 		}
-		result << partition_list[partition_list.size() - 1] << std::endl;
 	}
 	std::ofstream fout(result_filename);
 	fout << result.str();

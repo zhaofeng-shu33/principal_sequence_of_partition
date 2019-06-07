@@ -19,12 +19,12 @@ TEST(Gaussian2D, GivenPoint) {
     EXPECT_DOUBLE_EQ(y_pos[1], -3);
     EXPECT_DOUBLE_EQ(y_pos[2], 3);
     g2g.run();
-    std::vector<double> gamma_list = g2g.get_gamma_list();
-    std::vector<stl::Partition> psp_list = g2g.get_psp_list();
-    EXPECT_EQ(psp_list[0].Cardinality(), 1);
-    EXPECT_EQ(psp_list[1].Cardinality(), 0);
-    EXPECT_EQ(psp_list[2].Cardinality(), 0);
-    EXPECT_EQ(psp_list[3].Cardinality(), 4);
+    std::list<stl::Partition> psp_list = g2g.get_psp_list();
+	EXPECT_EQ(psp_list.size(), 2);
+	std::list<stl::Partition>::iterator it = psp_list.begin();
+	EXPECT_EQ(it->Cardinality(), 1);
+	it++;
+	EXPECT_EQ(it->Cardinality(), 4);
 
     std::vector<int> cat = g2g.get_category(2);
     std::cout << cat << std::endl;
@@ -47,32 +47,28 @@ TEST(Gaussian2D, GivenPoint8) {
                      };
     Gaussian2DGraph g2g(8, 1.0, a);
     g2g.run_bruteForce();
-    std::vector<double> gamma_list = g2g.get_gamma_list();
-    std::vector<stl::Partition> psp_list = g2g.get_psp_list();
+    std::list<double> gamma_list = g2g.get_gamma_list();
+    std::list<stl::Partition> psp_list = g2g.get_psp_list();
     g2g.run();
-    std::vector<double> gamma_list_2 = g2g.get_gamma_list();
-    std::vector<stl::Partition> psp_list_2 = g2g.get_psp_list();
-
-    for (int i = 0; i < gamma_list.size(); i++) {
-        if (psp_list[i].Cardinality() == 0)
-            continue;
-        EXPECT_DOUBLE_EQ(gamma_list[i], gamma_list_2[i]);
-        EXPECT_EQ(psp_list[i], psp_list_2[i]);
-    }
-
+    std::list<double> gamma_list_2 = g2g.get_gamma_list();
+    std::list<stl::Partition> psp_list_2 = g2g.get_psp_list();
+	EXPECT_EQ(gamma_list, gamma_list_2);
+	EXPECT_EQ(psp_list, psp_list_2);
 }
 
 // This test is used to verify that MaxFlow algorithm works
 TEST_F(Graph4PointTest, TwoCase) {
     submodular::PSP psp_class(&g, &edge_map);
     psp_class.run();
-    std::vector<double> gamma_list = psp_class.get_critical_values();
-    std::vector<stl::Partition> psp_list = psp_class.get_psp();
-    EXPECT_DOUBLE_EQ(gamma_list[0],1+2/3.0);    
-    EXPECT_EQ(psp_list[0].Cardinality(), 1);
-    EXPECT_EQ(psp_list[1].Cardinality(), 0);
-    EXPECT_EQ(psp_list[2].Cardinality(), 0);
-    EXPECT_EQ(psp_list[3].Cardinality(), 4);
+    std::list<double> gamma_list = psp_class.get_critical_values();
+    std::list<stl::Partition> psp_list = psp_class.get_psp();
+	std::list<stl::Partition>::iterator it = psp_list.begin();
+    EXPECT_DOUBLE_EQ(*gamma_list.begin(),1+2/3.0);    
+
+	EXPECT_EQ(psp_list.size(), 2);
+    EXPECT_EQ(it->Cardinality(), 1);
+	it++;
+    EXPECT_EQ(it->Cardinality(), 4);
 }
 
 }
