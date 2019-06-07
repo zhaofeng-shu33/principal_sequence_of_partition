@@ -95,7 +95,7 @@ namespace demo {
         parametric::Partition get_smallest_partition(int part) {
             if (part < 1 || part > num_points)
                 throw std::range_error("invalid part number is given");
-            std::list<parametric::Partition> Lp = get_partition_list();
+            std::list<parametric::Partition> Lp = get_psp();
             for (std::list<parametric::Partition>::iterator it = Lp.begin(); it != Lp.end(); it++) {
                 if (it->Cardinality() >= part)
                     return *it;

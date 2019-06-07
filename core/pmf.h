@@ -59,8 +59,8 @@ public:
     PDT(lemon::ListDigraph& g, ArcMap& arcMap);
     PDT(const PDT& another_pdt);
     void run();
-    std::list<double> get_lambda_list(){ return Lambda_list; }
-    std::list<Partition> get_partition_list() {
+    std::list<double> get_critical_values(){ return Lambda_list; }
+    std::list<Partition> get_psp() {
         return partition_list;
     }
 protected:

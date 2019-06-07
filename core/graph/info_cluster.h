@@ -33,14 +33,14 @@ namespace submodular {
         void run() {
             PSP psp_class(g, edge_map);
             psp_class.run(false);
-            gamma_list = psp_class.Get_critical_values();
-            psp_list = psp_class.Get_psp();
+            gamma_list = psp_class.get_critical_values();
+            psp_list = psp_class.get_psp();
         }
         void run_bruteForce() {
             PSP psp_class(g, edge_map);
             psp_class.run(true);
-            gamma_list = psp_class.Get_critical_values();
-            psp_list = psp_class.Get_psp();
+            gamma_list = psp_class.get_critical_values();
+            psp_list = psp_class.get_psp();
         }
         std::vector<double>& get_gamma_list() {
             return gamma_list;

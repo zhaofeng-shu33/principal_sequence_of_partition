@@ -66,8 +66,8 @@ TEST(Gaussian2D, GivenPoint8) {
 TEST_F(Graph4PointTest, TwoCase) {
     submodular::PSP psp_class(&g, &edge_map);
     psp_class.run();
-    std::vector<double> gamma_list = psp_class.Get_critical_values();
-    std::vector<stl::Partition> psp_list = psp_class.Get_psp();
+    std::vector<double> gamma_list = psp_class.get_critical_values();
+    std::vector<stl::Partition> psp_list = psp_class.get_psp();
     EXPECT_DOUBLE_EQ(gamma_list[0],1+2/3.0);    
     EXPECT_EQ(psp_list[0].Cardinality(), 1);
     EXPECT_EQ(psp_list[1].Cardinality(), 0);

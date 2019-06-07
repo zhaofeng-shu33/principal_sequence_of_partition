@@ -68,8 +68,8 @@ int main(int argc, const char *argv[]){
 		std::list<stl::Partition> partition_list;
 		parametric::PDT pmf(digraph, cap);
 		pmf.run();
-		critical_values = pmf.get_lambda_list();
-		partition_list = pmf.get_partition_list();
+		critical_values = pmf.get_critical_values();
+		partition_list = pmf.get_psp();
 		std::list<stl::Partition>::iterator it_2 = partition_list.begin();
 		result << *it_2 << std::endl;
 		for (std::list<double>::iterator it_1 = critical_values.begin(); *it_1 != INFINITY; it_1++) {

@@ -140,8 +140,8 @@ TEST(PDT, RUN) {
     aM[a5] = 1;
     PDT pdt(g, aM);
     pdt.run();
-    std::list<double> lambda_list = pdt.get_lambda_list();
-    std::list<Partition> partition_list = pdt.get_partition_list();
+    std::list<double> lambda_list = pdt.get_critical_values();
+    std::list<Partition> partition_list = pdt.get_psp();
     for (double d : lambda_list) {
         std::cout << d << std::endl;
     }
@@ -177,8 +177,8 @@ namespace demo {
     TEST_F(Graph4PointTest, PDT) {
         parametric::PDT* pdt = parametric::make_pdt(4, edge_list_tuple_1);
         pdt->run();
-        std::list<double> lambda_list = pdt->get_lambda_list();
-        std::list<parametric::Partition> partition_list = pdt->get_partition_list();
+        std::list<double> lambda_list = pdt->get_critical_values();
+        std::list<parametric::Partition> partition_list = pdt->get_psp();
         EXPECT_EQ(lambda_list.size(), 2);
         std::list<double>::iterator lambda_it = lambda_list.begin();
         EXPECT_DOUBLE_EQ(*lambda_it, 1 + 2 / 3.0);
@@ -206,8 +206,8 @@ namespace demo {
         EdgeListTuple elt = g2g.get_edge_list_tuple();
         parametric::PDT* pdt = parametric::make_pdt(8, elt);
         pdt->run();
-        std::list<double> lambda_list = pdt->get_lambda_list();
-        std::list<parametric::Partition> partition_list = pdt->get_partition_list();
+        std::list<double> lambda_list = pdt->get_critical_values();
+        std::list<parametric::Partition> partition_list = pdt->get_psp();
 
         submodular::InfoCluster ic(elt, 8);
         ic.run();
@@ -238,8 +238,8 @@ namespace demo {
 		edges.push_back(std::make_tuple(1, 2, 5.0));
 		parametric::PDT* pdt = parametric::make_pdt(3, edges);
 		pdt->run();
-		std::list<double> lambda_list = pdt->get_lambda_list();
-		std::list<parametric::Partition> partition_list = pdt->get_partition_list();
+		std::list<double> lambda_list = pdt->get_critical_values();
+		std::list<parametric::Partition> partition_list = pdt->get_psp();
 		std::list<double>::iterator it = lambda_list.begin();
 		EXPECT_DOUBLE_EQ(*it, 2);
 		it++;
@@ -270,8 +270,8 @@ namespace demo {
 		edges.push_back(std::make_tuple(0, 1, 1.0));
 		parametric::PDT* pdt = parametric::make_pdt(3, edges);
 		pdt->run();
-		std::list<double> lambda_list = pdt->get_lambda_list();
-		std::list<parametric::Partition> partition_list = pdt->get_partition_list();
+		std::list<double> lambda_list = pdt->get_critical_values();
+		std::list<parametric::Partition> partition_list = pdt->get_psp();
 		std::list<double>::iterator it = lambda_list.begin();
 		EXPECT_DOUBLE_EQ(*it, 0);
 		it++;
@@ -302,8 +302,8 @@ namespace demo {
 		edges.push_back(std::make_tuple(2, 3, 1.0));
 		parametric::PDT* pdt = parametric::make_pdt(4, edges);
 		pdt->run();
-		std::list<double> lambda_list = pdt->get_lambda_list();
-		std::list<parametric::Partition> partition_list = pdt->get_partition_list();
+		std::list<double> lambda_list = pdt->get_critical_values();
+		std::list<parametric::Partition> partition_list = pdt->get_psp();
 		std::list<double>::iterator it = lambda_list.begin();
 		EXPECT_DOUBLE_EQ(*it, 0);
 		it++;

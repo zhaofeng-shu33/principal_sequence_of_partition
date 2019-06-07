@@ -17,13 +17,13 @@ namespace demo {
 
 	TEST_F(Graph4PointTest, MFDT) {
 		submodular::DilworthTruncation dt(5 / 3.0 + 0.1, &g, &edge_map);
-		dt.Run(true);//BruteForce
-		double min_value = dt.Get_min_value();
-		stl::Partition P_apostrophe = dt.Get_min_partition();
+		dt.run(true);//BruteForce
+		double min_value = dt.get_min_value();
+		stl::Partition P_apostrophe = dt.get_min_partition();
 		EXPECT_EQ(P_apostrophe.Cardinality(), 4);
-		dt.Run(false);
-		EXPECT_DOUBLE_EQ(dt.Get_min_value(), min_value);
-		EXPECT_EQ(dt.Get_min_partition().Cardinality(), 4);
+		dt.run(false);
+		EXPECT_DOUBLE_EQ(dt.get_min_value(), min_value);
+		EXPECT_EQ(dt.get_min_partition().Cardinality(), 4);
 	}
 
 	TEST(FourPointNotComplete, MFDT) {
@@ -39,9 +39,9 @@ namespace demo {
 		arc_map[a1] = 1;
 		arc_map[a2] = 1;
 		submodular::DilworthTruncation dt(0.1, &g, &arc_map);
-		dt.Run(false);
-		double min_value = dt.Get_min_value();
-		stl::Partition P_apostrophe = dt.Get_min_partition();
+		dt.run(false);
+		double min_value = dt.get_min_value();
+		stl::Partition P_apostrophe = dt.get_min_partition();
 		EXPECT_DOUBLE_EQ(min_value, -0.2);
 		stl::Partition p;
 		p.AddElement(stl::CSet(std::string("0011")));
