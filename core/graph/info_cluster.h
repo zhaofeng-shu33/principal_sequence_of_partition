@@ -45,7 +45,7 @@ namespace submodular {
         std::list<double>& get_gamma_list() {
             return gamma_list;
         }
-        std::list<double>& get_critical_values() {
+        std::list<double> get_critical_values() {
             return gamma_list;
         }
         std::vector<int> get_partitions() {
