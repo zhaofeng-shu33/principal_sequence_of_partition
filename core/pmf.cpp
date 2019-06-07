@@ -126,6 +126,7 @@ namespace parametric {
         set_list.push_back(T_0);
         set_list.push_back(T_1);
         slice(T_0, T_1, pf.flowMap(), init_lambda, std::numeric_limits<double>::infinity());
+        lambda_list.sort();
     }
 
     void PMF::reset_j(std::size_t j) { 
@@ -206,7 +207,7 @@ namespace parametric {
         }
         double lambda_2 = compute_lambda(y_lambda_filter, lambda_const);
 		if (!tolerance.different(lambda_2, lambda_1) || !tolerance.different(lambda_2, lambda_3)) {
-			insert(lambda_2);
+            lambda_list.push_back(lambda_2);
 			return;
 		}
         update_dig(lambda_2);

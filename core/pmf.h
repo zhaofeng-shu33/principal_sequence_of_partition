@@ -38,6 +38,7 @@ private:
 	void modify_flow(const FlowMap& flowMap, FlowMap& newFlowMap);
     inline Set get_min_cut_sink_side(Preflow& pf);
     double compute_lambda_eq_const(Set& S, Set& T);
+private:    
     lemon::ListDigraph* g_ptr;
     ArcMap* aM;
     lemon::ListDigraph dig; //directed graph
