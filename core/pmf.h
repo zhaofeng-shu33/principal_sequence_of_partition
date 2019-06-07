@@ -21,8 +21,6 @@ public:
 	typedef Preflow::Elevator Elevator;
     PMF(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda);
     void run();
-    void insert(double lambda);
-    void insert_set(Set s);
     std::list<Set> get_set_list() { return set_list; }
     std::list<double> get_lambda_list() { return lambda_list; }
     void reset_j(std::size_t j);

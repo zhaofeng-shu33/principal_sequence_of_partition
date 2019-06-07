@@ -61,6 +61,7 @@ namespace parametric {
         }
         return (target_value - sum) / slope + last_tp;
     }
+
     PMF::PMF(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda) :
         g_ptr(g), aM(arcMap), _j(j),
         _y_lambda(y_lambda),
@@ -69,6 +70,7 @@ namespace parametric {
         sink_capacity.resize(_y_lambda.size());
 
     }
+
     Set PMF::get_min_cut_sink_side(Preflow& pf) {
         Set t = Set::MakeEmpty(tilde_G_size);
         for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
@@ -77,6 +79,7 @@ namespace parametric {
         }
         return t;
     }
+    
     void PMF::run() {
         //set sink_capacity
         int a = g_ptr->maxNodeId();
@@ -127,6 +130,8 @@ namespace parametric {
         set_list.push_back(T_1);
         slice(T_0, T_1, pf.flowMap(), init_lambda, std::numeric_limits<double>::infinity());
         lambda_list.sort();
+        auto is_superset = [](const Set& A, const Set& B){return B.IsSubSet(A);};
+        set_list.sort(is_superset);
     }
 
     void PMF::reset_j(std::size_t j) { 
@@ -165,24 +170,7 @@ namespace parametric {
             dig_aM[arc] = sink_capacity[i] + std::max<double>(0, std::min<double>(a_i - lambda, b_i));
         }
     }
-    void PMF::insert(double lambda) {
-        for (std::list<double>::iterator i = lambda_list.begin(); i != lambda_list.end(); i++) {
-            if (*i > lambda) {
-                lambda_list.insert(i, lambda);
-                return;
-            }
-        }
-        lambda_list.insert(lambda_list.end(), lambda);
-    }
-    void PMF::insert_set(Set s) {
-        for (std::list<Set>::iterator i = set_list.begin(); i != set_list.end(); i++) {
-            if (i->IsSubSet(s)) {
-                set_list.insert(i, s);
-                return;
-            }
-        }
-        set_list.insert(set_list.end(), s);
-    }
+
     void PMF::slice(Set& T_l, Set& T_r, const FlowMap& flowMap, double lambda_1, double lambda_3) {
 #if _DEBUG
 
@@ -241,12 +229,12 @@ namespace parametric {
 #endif
         if(T_apostrophe != T_r && T_apostrophe != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
-            insert_set(T_apostrophe);
+            set_list.push_back(T_apostrophe);
             slice(T_l, T_apostrophe, flowMap, lambda_1, lambda_2);
             slice(T_apostrophe, T_r, newFlowMap, lambda_2, lambda_3);
         }
         else {
-            insert(lambda_2);
+            lambda_list.push_back(lambda_2);
         }
     }
     double PMF::compute_lambda_eq_const(Set& T_l, Set& T_r) {

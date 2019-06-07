@@ -40,43 +40,6 @@ TEST(PMF, EquationSolve) {
 	double lambda_11 = pmf.compute_lambda(parameter_list, -1);
 	EXPECT_DOUBLE_EQ(lambda_11, 2);
 }
-TEST(PMF, insert_set) {
-    using Set = stl::CSet;
-    std::vector<pair> y_lambda;
-    lemon::ListDigraph g;
-    lemon::ListDigraph::ArcMap<double> aM(g);
-    PMF pmf(&g, &aM, 0, y_lambda);
-    Set V1(std::string("0001"));
-    Set V2(std::string("1001"));
-    Set V3(std::string("1101"));
-
-    pmf.insert_set(V3);
-    pmf.insert_set(V1);
-    pmf.insert_set(V2);
-    std::list<Set> set_list = pmf.get_set_list();
-    std::list<Set>::iterator i = set_list.begin();
-    EXPECT_EQ(*i, V3);
-    i++;
-    EXPECT_EQ(*i, V2);
-    i++;
-    EXPECT_EQ(*i, V1);
-}
-TEST(PMF, insert) {
-    std::vector<pair> y_lambda;
-    lemon::ListDigraph g;
-    lemon::ListDigraph::ArcMap<double> aM(g);
-    PMF pmf(&g, &aM, 0, y_lambda);
-    pmf.insert(4);
-    pmf.insert(6);
-    pmf.insert(5);
-    std::list<double> lambda_list = pmf.get_lambda_list();
-    std::list<double>::iterator i = lambda_list.begin();
-    EXPECT_DOUBLE_EQ(*i, 4);
-    i++;
-    EXPECT_DOUBLE_EQ(*i, 5);
-    i++;
-    EXPECT_DOUBLE_EQ(*i, 6);
-}
 
 TEST(PMF, PMClass) {
     using Set = stl::CSet;
