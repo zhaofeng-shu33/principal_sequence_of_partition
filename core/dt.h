@@ -20,10 +20,10 @@ namespace submodular {
 		typedef typename Digraph::ArcMap<double> ArcMap;
         
         DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map);
-        double Get_min_value();
-        stl::Partition& Get_min_partition();
+        double get_min_value();
+        stl::Partition& get_min_partition();
         double evaluate(stl::Partition& partition);
-        void Run(bool bruteForce = false);
+        void run(bool bruteForce = false);
     private:
 		Digraph* _g;
 		ArcMap* _edge_map;
@@ -51,8 +51,8 @@ namespace submodular {
         
         void run(bool bruteForce = false);
         
-        std::vector<double>& Get_critical_values();
-        std::vector<stl::Partition>& Get_psp();
+        std::vector<double>& get_critical_values();
+        std::vector<stl::Partition>& get_psp();
     private:
         //! evalute the submodular function at the given partition
         double evaluate(const stl::Partition& P);

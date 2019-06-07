@@ -6,14 +6,14 @@ namespace submodular {
     {
         NodeSize = lemon::countNodes(*_g);
     }
-    double DilworthTruncation::Get_min_value() {
+    double DilworthTruncation::get_min_value() {
         return min_value;
     }
-    stl::Partition& DilworthTruncation::Get_min_partition(){
+    stl::Partition& DilworthTruncation::get_min_partition(){
         return _partition;
     }
         
-    void DilworthTruncation::Run(bool bruteForce) {
+    void DilworthTruncation::run(bool bruteForce) {
         min_value = 0;
         _partition.clear();
         std::vector<double> xl;
@@ -72,9 +72,9 @@ namespace submodular {
         double gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.Cardinality() - Q.Cardinality());
         double h_apostrophe = (P.Cardinality() * evaluate(Q) - Q.Cardinality() * evaluate(P)) / (P.Cardinality() - Q.Cardinality());
         DilworthTruncation dt(gamma_apostrophe, _g, _edge_map);
-        dt.Run(bruteForce);
-        double min_value = dt.Get_min_value();
-        stl::Partition P_apostrophe = dt.Get_min_partition();
+        dt.run(bruteForce);
+        double min_value = dt.get_min_value();
+        stl::Partition P_apostrophe = dt.get_min_partition();
         if (min_value > h_apostrophe - 1e-4) {
             return P;
         }
@@ -98,9 +98,9 @@ namespace submodular {
         double gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.Cardinality() - Q.Cardinality());
         double h_apostrophe = (P.Cardinality() * evaluate(Q) - Q.Cardinality() * evaluate(P)) / (P.Cardinality() - Q.Cardinality());
         DilworthTruncation dt(gamma_apostrophe, _g, _edge_map);
-        dt.Run(bruteForce);
-        double min_value = dt.Get_min_value();
-        stl::Partition P_apostrophe = dt.Get_min_partition();
+        dt.run(bruteForce);
+        double min_value = dt.get_min_value();
+        stl::Partition P_apostrophe = dt.get_min_partition();
         if (min_value > h_apostrophe-1e-4) {
             critical_values[Q.Cardinality() - 1] = gamma_apostrophe;
         }
@@ -144,11 +144,11 @@ namespace submodular {
         split(Q, P, bruteForce);
     }    
     
-    std::vector<double>& PSP::Get_critical_values() {
+    std::vector<double>& PSP::get_critical_values() {
         return critical_values;
     }
     
-    std::vector<stl::Partition>& PSP::Get_psp() {
+    std::vector<stl::Partition>& PSP::get_psp() {
         return psp;
     }    
     

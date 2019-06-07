@@ -65,8 +65,8 @@ int main(int argc, const char *argv[]){
 		std::vector<stl::Partition> partition_list;
 		submodular::PSP psp_class(&digraph, &cap);
 		psp_class.run();
-		critical_values = psp_class.Get_critical_values();
-		partition_list = psp_class.Get_psp();
+		critical_values = psp_class.get_critical_values();
+		partition_list = psp_class.get_psp();
 		for (int i = 0; i < partition_list.size()-1; i++) {
 			if (partition_list[i].Cardinality() > 0) {
 				result << partition_list[i] << std::endl;
