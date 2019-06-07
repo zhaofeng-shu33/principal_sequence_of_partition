@@ -48,9 +48,10 @@ int main(int argc, const char *argv[]){
 		.arcMap("capacity", cap).run();
 
 	std::stringstream result;
+	std::list<double> critical_values;
+	std::list<stl::Partition> partition_list;
+
 	if (use_psp_i) {
-		std::list<double> critical_values;
-		std::list<stl::Partition> partition_list;
 		psp::PSP psp_i(&digraph, &cap);
 		psp_i.run();
 		critical_values = psp_i.get_critical_values();
@@ -64,9 +65,7 @@ int main(int argc, const char *argv[]){
 		}
 	}
     else if (use_pdt) {
-		std::list<double> critical_values;
-		std::list<stl::Partition> partition_list;
-		parametric::PDT pmf(digraph, cap);
+		parametric::PDT pmf(&digraph, &cap);
 		pmf.run();
 		critical_values = pmf.get_critical_values();
 		partition_list = pmf.get_psp();

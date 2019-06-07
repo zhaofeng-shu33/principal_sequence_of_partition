@@ -72,7 +72,7 @@ namespace demo {
     };
     class Gaussian2DPDT : public parametric::PDT {
     public:
-        Gaussian2DPDT(int np, double gamma = 1): num_points(np), arcMap(g), parametric::PDT(g, arcMap){
+        Gaussian2DPDT(int np, double gamma = 1): num_points(np), arcMap(g), parametric::PDT(&g, &arcMap){
             demo::Gaussian2DGraphBase* gb = new demo::Gaussian2DGraphBase(np, gamma);
             demo::EdgeListTuple elt = gb->get_edge_list_tuple();
             //build the graph and arcMap

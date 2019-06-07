@@ -12,7 +12,7 @@ TEST(PMF, EquationSolve) {
     std::vector<pair> y_lambda;
     lemon::ListDigraph g;
     lemon::ListDigraph::ArcMap<double> aM(g);
-    PMF pmf(g, aM, 0, y_lambda);
+    PMF pmf(&g, &aM, 0, y_lambda);
     double lambda_1 = pmf.compute_lambda(parameter_list, -0.5);
     EXPECT_DOUBLE_EQ(lambda_1, 0.5);
     double lambda_2 = pmf.compute_lambda(parameter_list, -3.0);
@@ -45,7 +45,7 @@ TEST(PMF, insert_set) {
     std::vector<pair> y_lambda;
     lemon::ListDigraph g;
     lemon::ListDigraph::ArcMap<double> aM(g);
-    PMF pmf(g, aM, 0, y_lambda);
+    PMF pmf(&g, &aM, 0, y_lambda);
     Set V1(std::string("0001"));
     Set V2(std::string("1001"));
     Set V3(std::string("1101"));
@@ -65,7 +65,7 @@ TEST(PMF, insert) {
     std::vector<pair> y_lambda;
     lemon::ListDigraph g;
     lemon::ListDigraph::ArcMap<double> aM(g);
-    PMF pmf(g, aM, 0, y_lambda);
+    PMF pmf(&g, &aM, 0, y_lambda);
     pmf.insert(4);
     pmf.insert(6);
     pmf.insert(5);
@@ -98,7 +98,7 @@ TEST(PMF, PMClass) {
     aM[a1] = 1;
     aM[a3] = 5;
     aM[a5] = 1;
-    PMF pmf(g, aM, 2, parameter_list);
+    PMF pmf(&g, &aM, 2, parameter_list);
     pmf.run();
 
     std::list<Set> sL = pmf.get_set_list();
@@ -138,7 +138,7 @@ TEST(PDT, RUN) {
     aM[a1] = 1;
     aM[a3] = 5;
     aM[a5] = 1;
-    PDT pdt(g, aM);
+    PDT pdt(&g, &aM);
     pdt.run();
     std::list<double> lambda_list = pdt.get_critical_values();
     std::list<Partition> partition_list = pdt.get_psp();

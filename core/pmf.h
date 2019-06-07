@@ -19,7 +19,7 @@ public:
 	typedef lemon::Preflow<lemon::ListDigraph, ArcMap> Preflow;
 	typedef Preflow::FlowMap FlowMap;
 	typedef Preflow::Elevator Elevator;
-    PMF(lemon::ListDigraph& g, ArcMap& arcMap, std::size_t j, std::vector<pair>& y_lambda);
+    PMF(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda);
     void run();
     void insert(double lambda);
     void insert_set(Set s);
@@ -56,7 +56,7 @@ private:
 class PDT {
 public:
     typedef lemon::ListDigraph::ArcMap<double> ArcMap;
-    PDT(lemon::ListDigraph& g, ArcMap& arcMap);
+    PDT(lemon::ListDigraph* g, ArcMap* arcMap);
     PDT(const PDT& another_pdt);
     void run();
     std::list<double> get_critical_values(){ return Lambda_list; }
