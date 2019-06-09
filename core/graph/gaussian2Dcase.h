@@ -63,10 +63,10 @@ namespace demo {
 			InfoCluster(edge_list_tuple, np)
         {
         }
-        std::vector<double>& get_x_pos_list() {
+        std::vector<double> get_x_pos_list() {
             return x_pos;
         }
-        std::vector<double>& get_y_pos_list() {
+        std::vector<double> get_y_pos_list() {
             return y_pos;
         }
     };

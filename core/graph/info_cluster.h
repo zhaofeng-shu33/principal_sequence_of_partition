@@ -2,6 +2,7 @@
 #include <lemon/list_graph.h>
 #include "core/graph/graph.h"
 #include "core/dt.h"
+#include "core/pmf.h"
 
 namespace submodular {
     class InfoCluster {
@@ -52,6 +53,12 @@ namespace submodular {
             gamma_list = psp_class.get_critical_values();
             psp_list = psp_class.get_psp();
         }
+		void run_pdt() {
+			parametric::PDT pdt(g, edge_map);
+			pdt.run();
+			gamma_list = pdt.get_critical_values();
+			psp_list = pdt.get_psp();
+		}
         std::list<double>& get_gamma_list() {
             return gamma_list;
         }
