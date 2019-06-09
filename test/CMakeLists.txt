@@ -22,8 +22,6 @@ target_link_libraries(TestAll ${GTEST_MAIN_LIBRARY} ${GTEST_LIBRARY} pthread)
 target_link_libraries(TestAll set_stl)
 endif()
 
-if(USE_LEMON)
 target_link_libraries(TestAll ${LEMON_LIBRARY})
-endif()    
 
 add_test(NAME TestAll COMMAND TestAll)
