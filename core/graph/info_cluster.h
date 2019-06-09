@@ -15,12 +15,12 @@ namespace submodular {
 			edge_map = new ArcMap(*g);
 			make_dgraph(np, elt, *g, *edge_map);
         }
-		InfoCluster(std::vector<int> s_list, std::vector<int> t_list, std::vector<double> weight_list) {
-			num_points = s_list.size();
+		InfoCluster(std::vector<int> s_list, std::vector<int> t_list, std::vector<double> weight_list, int np) {
+			num_points = np;
 			g = new Digraph();
 			edge_map = new ArcMap(*g);
 			std::vector<std::tuple<std::size_t, std::size_t, double>> elt;
-			for (int i = 0; i < num_points; i++) {
+			for (int i = 0; i < s_list.size(); i++) {
 				elt.push_back(std::make_tuple(s_list[i], t_list[i], weight_list[i]));
 			}
 			make_dgraph(num_points, elt, *g, *edge_map);
