@@ -23,13 +23,6 @@ add_executable(main main.cpp)
 find_package(Boost REQUIRED program_options)
 target_include_directories(main PUBLIC ${Boost_INCLUDE_DIRS})
 
-if(WIN32)
-    set(DYNAMIC_LIB_SUFFIX dll)
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")    
-    set(DYNAMIC_LIB_SUFFIX dylib)
-else()
-    set(DYNAMIC_LIB_SUFFIX so)
-endif()
 
 if(WIN32)
     target_link_libraries(main debug ${Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG})    
