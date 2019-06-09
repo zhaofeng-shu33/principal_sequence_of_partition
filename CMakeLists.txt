@@ -32,13 +32,6 @@ else()
     set(USE_BOOST_INCLUDE 0)
 endif()
 
-if(WIN32)
-    set(DYNAMIC_LIB_SUFFIX dll)
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")    
-    set(DYNAMIC_LIB_SUFFIX dylib)
-else()
-    set(DYNAMIC_LIB_SUFFIX so)
-endif()
 
 if(USE_BOOST_OPTION)
     find_package(Boost REQUIRED program_options)
