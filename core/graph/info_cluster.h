@@ -15,6 +15,16 @@ namespace submodular {
 			edge_map = new ArcMap(*g);
 			make_dgraph(np, elt, *g, *edge_map);
         }
+		InfoCluster(std::vector<int> s_list, std::vector<int> t_list, std::vector<double> weight_list) {
+			num_points = s_list.size();
+			g = new Digraph();
+			edge_map = new ArcMap(*g);
+			std::vector<std::tuple<std::size_t, std::size_t, double>> elt;
+			for (int i = 0; i < num_points; i++) {
+				elt.push_back(std::make_tuple(s_list[i], t_list[i], weight_list[i]));
+			}
+			make_dgraph(num_points, elt, *g, *edge_map);
+		}
 		virtual  ~InfoCluster() {
 			delete edge_map;
 			delete g;
@@ -48,6 +58,11 @@ namespace submodular {
         std::list<double> get_critical_values() {
             return gamma_list;
         }
+		std::vector<double> get_critical_value_vector() {
+			std::vector<double> gamma_vector(gamma_list.size());
+			std::copy(gamma_list.begin(), gamma_list.end(), gamma_vector.begin());
+			return gamma_vector;
+		}
         std::vector<int> get_partitions() {
             std::vector<int> partitions;
             for (std::list<stl::Partition>::iterator it = psp_list.begin(); it != psp_list.end(); it++) {
