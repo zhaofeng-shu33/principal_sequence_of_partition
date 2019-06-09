@@ -3,7 +3,6 @@
 *   Example from Literature "Minimum Average Cost Clustering"
 **/
 #include <lemon/list_graph.h>
-#include "config.h"
 #include "core/sfm_mf.h"
 #include "core/graph/graph.h"
 #include "set/set_stl.h"

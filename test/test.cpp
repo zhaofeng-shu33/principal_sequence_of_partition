@@ -1,4 +1,3 @@
-#include "config.h"
 #include "gtest/gtest.h"
 
 // Graph tests

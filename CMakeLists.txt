@@ -23,7 +23,6 @@ add_executable(main main.cpp)
 find_package(Boost REQUIRED program_options)
 target_include_directories(main PUBLIC ${Boost_INCLUDE_DIRS})
 
-
 if(WIN32)
     target_link_libraries(main debug ${Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG})    
     target_link_libraries(main optimized ${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE})
