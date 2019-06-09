@@ -2,7 +2,6 @@
 * \author : zhaofeng-shu33
 * \brief : accomplish real task by info-clustering technique
 */
-#include "config.h"
 #include <string>
 #include <fstream>
 #include <sstream>
