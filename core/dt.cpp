@@ -24,12 +24,7 @@ namespace submodular {
         if(bruteForce)
             solver2 = new BruteForce;
         else{
-#if USE_LEMON
             solver2 = new MF;
-#else
-#pragma message("No lemon lib used, only BruteForce algorithm provided.")
-            solver2 = new BruteForce;
-#endif
         }
         for (int i = 0; i < NodeSize; i++) {
             solver2->Minimize(xl, lambda_, _g, _edge_map);
