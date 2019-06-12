@@ -97,6 +97,10 @@ namespace submodular {
         if (min_value > h_apostrophe - _tolerance.epsilon()) {
             critical_values.push_back(gamma_apostrophe);
         }
+		else if (Q.Cardinality() == P_apostrophe.Cardinality() || P.Cardinality() == P_apostrophe.Cardinality()) {
+			// check f[Q]-gamma'|Q| = f[P] - gamma'|P|
+			critical_values.push_back(gamma_apostrophe);
+		}
         else {                
             psp.push_back(P_apostrophe);
             try{
