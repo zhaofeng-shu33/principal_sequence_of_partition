@@ -13,8 +13,8 @@ namespace submodular {
     */
     class DilworthTruncation {
     public:
-		typedef lemon::ListDigraph Digraph;
-		typedef typename Digraph::ArcMap<double> ArcMap;
+	typedef lemon::ListDigraph Digraph;
+	typedef typename Digraph::ArcMap<double> ArcMap;
 
         DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map);
         double get_min_value();
@@ -22,8 +22,8 @@ namespace submodular {
         double evaluate(stl::Partition& partition);
         void run(bool bruteForce = false);
     private:
-		Digraph* _g;
-		ArcMap* _edge_map;
+	Digraph* _g;
+	ArcMap* _edge_map;
         double min_value;
         stl::Partition _partition;
         double lambda_;
@@ -35,16 +35,16 @@ namespace submodular {
     */
     class PSP {
     public:
-		typedef lemon::ListDigraph Digraph;
-		typedef typename Digraph::ArcMap<double> ArcMap;
+	typedef lemon::ListDigraph Digraph;
+	typedef typename Digraph::ArcMap<double> ArcMap;
         PSP(Digraph* g, ArcMap* edge_map);
         //! evaluate and find the finest partition with $\abs{\P} > \texttt{partition_num}$
-		stl::Partition split(stl::Partition& Q, stl::Partition& P, int partition_num, bool bruteForce = false);
+	stl::Partition split(stl::Partition& Q, stl::Partition& P, int partition_num, bool bruteForce = false);
         
         //! |Q| < |P|
         void split(stl::Partition& Q, stl::Partition& P, bool bruteForce = false);
 
-		stl::Partition run(int partition_num, bool bruteForce = false);
+	stl::Partition run(int partition_num, bool bruteForce = false);
         
         void run(bool bruteForce = false);
         
@@ -55,7 +55,7 @@ namespace submodular {
         double evaluate(const stl::Partition& P);
 
         int NodeSize;
-		lemon::Tolerance<double> _tolerance;
+	lemon::Tolerance<double> _tolerance;
         std::list<double> critical_values;
         std::list<stl::Partition> psp;
 		Digraph* _g;
