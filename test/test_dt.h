@@ -1,9 +1,7 @@
 #pragma once
 #include <gtest/gtest.h>
 #include "core/sfm_mf.h"
-#include "core/psp_i.h"
 #include "test/utility.h"
-#include "core/graph/gaussian2Dcase.h"
 namespace demo {
 
 	TEST_F(Graph4PointTest, MFCompare) {

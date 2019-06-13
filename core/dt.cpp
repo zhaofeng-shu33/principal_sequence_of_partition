@@ -85,22 +85,15 @@ namespace submodular {
     }
         //! |Q| < |P|
     void PSP::split(stl::Partition& Q, stl::Partition& P, bool bruteForce) {
-        if (Q.Cardinality() == P.Cardinality()) {
-            throw std::logic_error("Q and P have the same size");
-        }
         double gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.Cardinality() - Q.Cardinality());
         double h_apostrophe = (P.Cardinality() * evaluate(Q) - Q.Cardinality() * evaluate(P)) / (P.Cardinality() - Q.Cardinality());
         DilworthTruncation dt(gamma_apostrophe, _g, _edge_map);
         dt.run(bruteForce);
         double min_value = dt.get_min_value();
         stl::Partition P_apostrophe = dt.get_min_partition();
-        if (min_value > h_apostrophe - _tolerance.epsilon()) {
+        if (min_value > h_apostrophe - _tolerance.epsilon() || Q.Cardinality() == P_apostrophe.Cardinality() || P.Cardinality() == P_apostrophe.Cardinality()) {
             critical_values.push_back(gamma_apostrophe);
         }
-		else if (Q.Cardinality() == P_apostrophe.Cardinality() || P.Cardinality() == P_apostrophe.Cardinality()) {
-			// check f[Q]-gamma'|Q| = f[P] - gamma'|P|
-			critical_values.push_back(gamma_apostrophe);
-		}
         else {                
             psp.push_back(P_apostrophe);
             try{
