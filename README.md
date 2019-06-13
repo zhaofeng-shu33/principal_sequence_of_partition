@@ -62,5 +62,6 @@ See [contributing.md](./contributing.md)
 
 # ChangeLog
 * Version 1.1: expose `Gaussian2DGraph` (C++) class, which can be used directly in python.
-* Version 1.2: expose `PyGraph` (C++) class, which is high customizable in python.
+* Version 1.2: expose `PSP` (C++) class, which is high customizable in python.
 * Version 1.3: expose `PyGraphPDT` (C++) class, which has similar api as `PyGraph` but different inner implementation.
+* Version 1.4: expose psp_i method.
