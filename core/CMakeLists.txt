@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-set(ic_lib io_utility.cpp pmf.cpp dt.cpp sfm_mf.cpp psp_i.cpp)
+set(ic_lib io_utility.cpp pmf.cpp dt.cpp sfm_mf.cpp psp_i.cpp graph/info_cluster.cpp graph/gaussian2Dcase.cpp)
 
 add_library(ic_static ${ic_lib})
 
