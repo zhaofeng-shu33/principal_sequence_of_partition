@@ -1,8 +1,6 @@
 #pragma once
 #include <lemon/list_graph.h>
 #include "core/graph/graph.h"
-#include "core/dt.h"
-#include "core/pmf.h"
 
 namespace submodular {
     class InfoCluster {
@@ -19,6 +17,7 @@ namespace submodular {
 		void run();
 		void run_bruteForce();
 		void run_pdt();
+		void run_psp_i();
 		std::list<double>& get_gamma_list();
 		std::list<double> get_critical_values();
 		std::vector<double> get_critical_value_vector();

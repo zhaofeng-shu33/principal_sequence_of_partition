@@ -1,4 +1,7 @@
 #include "core/graph/info_cluster.h"
+#include "core/dt.h"
+#include "core/pmf.h"
+#include "core/psp_i.h"
 namespace submodular {
 	InfoCluster::InfoCluster(const std::vector<std::tuple<std::size_t, std::size_t, double>>& elt, int np) {
 		num_points = np;
@@ -31,7 +34,7 @@ namespace submodular {
 	}
 	void InfoCluster::run() {
 		PSP psp_class(g, edge_map);
-		psp_class.run(false);
+		psp_class.run();
 		gamma_list = psp_class.get_critical_values();
 		psp_list = psp_class.get_psp();
 	}
@@ -46,6 +49,12 @@ namespace submodular {
 		pdt.run();
 		gamma_list = pdt.get_critical_values();
 		psp_list = pdt.get_psp();
+	}
+	void InfoCluster::run_psp_i() {
+		psp::PSP psp_class(g, edge_map);
+		psp_class.run();
+		gamma_list = psp_class.get_critical_values();
+		psp_list = psp_class.get_psp();
 	}
 	std::list<double>& InfoCluster::get_gamma_list() {
 		return gamma_list;

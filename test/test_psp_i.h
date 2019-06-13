@@ -13,25 +13,14 @@ namespace demo {
 	}
 
 	TEST(PSP_I, SIMPLE_FOUR_POINT) {
-		lemon::ListDigraph g;
-		lemon::ListDigraph::Node n1 = g.addNode();
-		lemon::ListDigraph::Node n2 = g.addNode();
-		lemon::ListDigraph::Node n3 = g.addNode();
-		lemon::ListDigraph::Node n4 = g.addNode();
-		lemon::ListDigraph::Arc a1 = g.addArc(n1, n2);
-		lemon::ListDigraph::Arc a2 = g.addArc(n2, n4);
-		lemon::ListDigraph::Arc a3 = g.addArc(n3, n4);
-		lemon::ListDigraph::Arc a4 = g.addArc(n1, n3);
-		lemon::ListDigraph::ArcMap<double> am(g);
-		am[a1] = 1;
-		am[a2] = 0.5;
-		am[a3] = 2;
-		am[a4] = 0.4;
-		submodular::PSP instance_2(&g, &am);
-		instance_2.run();
-		psp::PSP instance(&g, &am);
-		instance.run();
-		std::list<double> cv = instance.get_critical_values();
+		std::vector<std::tuple<std::size_t, std::size_t, double>> elt;
+		elt.push_back(std::make_tuple(0, 1, 1));
+		elt.push_back(std::make_tuple(0, 2, 0.4));
+		elt.push_back(std::make_tuple(1, 3, 0.5));
+		elt.push_back(std::make_tuple(2, 3, 2));
+		submodular::InfoCluster ic(elt, 4);
+		ic.run_psp_i();
+		std::list<double> cv = ic.get_critical_values();
 		EXPECT_EQ(cv.size(), 3);
 		std::list<double>::iterator it = cv.begin();
 		EXPECT_DOUBLE_EQ(*it, 0.9);
@@ -40,7 +29,7 @@ namespace demo {
 		it++;
 		EXPECT_DOUBLE_EQ(*it, 2);
 
-		std::list<stl::Partition> psp_list = instance.get_psp();
+		std::list<stl::Partition> psp_list = ic.get_psp();
 		EXPECT_EQ(psp_list.size(), 4);
 		std::list<stl::Partition>::iterator it_2 = psp_list.begin();
 		EXPECT_EQ(*it_2, stl::Partition::makeDense(4));
