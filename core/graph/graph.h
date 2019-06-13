@@ -13,6 +13,7 @@
 #define GRAPH_H
 
 #include <vector>
+#include <tuple>
 #include <lemon/list_graph.h>
 #include <lemon/adaptors.h>
 
