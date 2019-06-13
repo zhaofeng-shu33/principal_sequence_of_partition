@@ -71,7 +71,6 @@ namespace parametric{
         ArcMap* _arcMap;
         PMF pmf;
     };
-    PDT* make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges);
 
 
 }

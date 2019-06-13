@@ -19,7 +19,7 @@ TEST(Gaussian2D, GivenPoint) {
     EXPECT_DOUBLE_EQ(y_pos[1], -3);
     EXPECT_DOUBLE_EQ(y_pos[2], 3);
     g2g.run();
-    std::list<stl::Partition> psp_list = g2g.get_psp_list();
+    std::list<stl::Partition> psp_list = g2g.get_psp();
 	EXPECT_EQ(psp_list.size(), 2);
 	std::list<stl::Partition>::iterator it = psp_list.begin();
 	EXPECT_EQ(it->Cardinality(), 1);
@@ -48,10 +48,10 @@ TEST(Gaussian2D, GivenPoint8) {
     Gaussian2DGraph g2g(8, 1.0, a);
     g2g.run_bruteForce();
     std::list<double> gamma_list = g2g.get_gamma_list();
-    std::list<stl::Partition> psp_list = g2g.get_psp_list();
+    std::list<stl::Partition> psp_list = g2g.get_psp();
     g2g.run();
     std::list<double> gamma_list_2 = g2g.get_gamma_list();
-    std::list<stl::Partition> psp_list_2 = g2g.get_psp_list();
+    std::list<stl::Partition> psp_list_2 = g2g.get_psp();
 	EXPECT_EQ(gamma_list, gamma_list_2);
 	EXPECT_EQ(psp_list, psp_list_2);
 }

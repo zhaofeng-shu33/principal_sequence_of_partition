@@ -249,21 +249,7 @@ namespace parametric {
         pmf(_g, _arcMap, 0, _y_lambda),
         Lambda_list(another_pdt.Lambda_list),
         partition_list(another_pdt.partition_list){}
-    PDT* make_pdt(std::size_t num_nodes, std::vector<std::tuple<std::size_t, std::size_t, double>>& edges) {
-        lemon::ListDigraph* g = new lemon::ListDigraph();
-        g->reserveNode(num_nodes);
-        for(int i = 0; i < num_nodes; i++)
-            g->addNode();
-        lemon::ListDigraph::ArcMap<double>* aM = new lemon::ListDigraph::ArcMap<double>(*g);
-        for(std::tuple<std::size_t, std::size_t, double>& edge_tuple : edges){
-            lemon::ListDigraph::Node s = g->nodeFromId(std::get<0>(edge_tuple));
-            lemon::ListDigraph::Node t = g->nodeFromId(std::get<1>(edge_tuple));
-            lemon::ListDigraph::Arc a1 = g->addArc(s, t);
-            (*aM)[a1] = std::get<2>(edge_tuple);
-        }
-        PDT* pdt = new PDT(g, aM);
-        return pdt;
-    }
+
     PDT::PDT(lemon::ListDigraph* g, ArcMap* arcMap):
         _g(g),
         _arcMap(arcMap),

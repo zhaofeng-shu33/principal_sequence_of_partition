@@ -66,7 +66,7 @@ namespace submodular {
 		return partitions;
 	}
 
-	std::list<stl::Partition>& InfoCluster::get_psp_list() {
+	std::list<stl::Partition>& InfoCluster::get_psp() {
 		return psp_list;
 	}
 	//! get the smallest partition whose size >= k

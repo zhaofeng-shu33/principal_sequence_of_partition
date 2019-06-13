@@ -23,7 +23,7 @@ namespace submodular {
 		std::list<double> get_critical_values();
 		std::vector<double> get_critical_value_vector();
 		std::vector<int> get_partitions();
-		std::list<stl::Partition>& get_psp_list();
+		std::list<stl::Partition>& get_psp();
         //! get the smallest partition whose size >= k
 		stl::Partition& get_smallest_partition(int k);
         //! get the smallest partition whose size >= k, label each data point with an integer

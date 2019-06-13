@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include <cmath>
 #include "core/pmf.h"
+#include "core/graph/info_cluster.h"
 #include "core/graph/gaussian2Dcase.h"
 #include "test/utility.h"
 namespace parametric {
@@ -88,23 +89,14 @@ TEST(PMF, PMClass) {
 
 
 TEST(PDT, RUN) {
-    lemon::ListDigraph g;
-    lemon::ListDigraph::Node n1 = g.addNode();
-    lemon::ListDigraph::Node n2 = g.addNode();
-    lemon::ListDigraph::Node n3 = g.addNode();
-
-    lemon::ListDigraph::Arc a1 = g.addArc(n1, n2);
-    lemon::ListDigraph::Arc a3 = g.addArc(n1, n3);
-    lemon::ListDigraph::Arc a5 = g.addArc(n2, n3);
-
-    lemon::ListDigraph::ArcMap<double> aM(g);
-    aM[a1] = 1;
-    aM[a3] = 5;
-    aM[a5] = 1;
-    PDT pdt(&g, &aM);
-    pdt.run();
-    std::list<double> lambda_list = pdt.get_critical_values();
-    std::list<Partition> partition_list = pdt.get_psp();
+	std::vector<std::tuple<std::size_t, std::size_t, double>> elt;
+	elt.push_back(std::make_tuple(0, 1, 1));
+	elt.push_back(std::make_tuple(0, 2, 5));
+	elt.push_back(std::make_tuple(1, 2, 1));
+	submodular::InfoCluster ic(elt, 3);
+    ic.run_pdt();
+    std::list<double> lambda_list = ic.get_critical_values();
+    std::list<Partition> partition_list = ic.get_psp();
     for (double d : lambda_list) {
         std::cout << d << std::endl;
     }
@@ -138,10 +130,10 @@ TEST(PMF, ComputeCut) {
 }
 namespace demo {
     TEST_F(Graph4PointTest, PDT) {
-        parametric::PDT* pdt = parametric::make_pdt(4, edge_list_tuple_1);
-        pdt->run();
-        std::list<double> lambda_list = pdt->get_critical_values();
-        std::list<parametric::Partition> partition_list = pdt->get_psp();
+		submodular::InfoCluster ic(edge_list_tuple_1, 4);
+		ic.run_pdt();
+        std::list<double> lambda_list = ic.get_critical_values();
+        std::list<parametric::Partition> partition_list = ic.get_psp();
         EXPECT_EQ(lambda_list.size(), 1);
         std::list<double>::iterator lambda_it = lambda_list.begin();
         EXPECT_DOUBLE_EQ(*lambda_it, 1 + 2 / 3.0);
@@ -152,7 +144,7 @@ namespace demo {
         EXPECT_EQ(*partition_it, parametric::Partition::makeDense(4));
         partition_it++;
         EXPECT_EQ(*partition_it, parametric::Partition::makeFine(4));
-        delete pdt;
+
     }
 
     TEST(GivenPoint8, PDT) {
@@ -167,15 +159,15 @@ namespace demo {
         };
         Gaussian2DGraphBase g2g(8, 0.1, a);
         EdgeListTuple elt = g2g.get_edge_list_tuple();
-        parametric::PDT* pdt = parametric::make_pdt(8, elt);
-        pdt->run();
-        std::list<double> lambda_list = pdt->get_critical_values();
-        std::list<parametric::Partition> partition_list = pdt->get_psp();
+		submodular::InfoCluster ic(elt, 8);
+		ic.run_pdt();
+        std::list<double> lambda_list = ic.get_critical_values();
+        std::list<parametric::Partition> partition_list = ic.get_psp();
 
-        submodular::InfoCluster ic(elt, 8);
+
         ic.run();
         std::list<double> lambda_list_2 = ic.get_gamma_list();
-        std::list<stl::Partition> partition_list_2 = ic.get_psp_list();
+        std::list<stl::Partition> partition_list_2 = ic.get_psp();
 
         EXPECT_EQ(lambda_list.size(), lambda_list_2.size());
         lemon::Tolerance<double> Tol;
@@ -193,10 +185,10 @@ namespace demo {
 		edges.push_back(std::make_tuple(0, 1, 1.0));
 		edges.push_back(std::make_tuple(0, 2, 1.0));
 		edges.push_back(std::make_tuple(1, 2, 5.0));
-		parametric::PDT* pdt = parametric::make_pdt(3, edges);
-		pdt->run();
-		std::list<double> lambda_list = pdt->get_critical_values();
-		std::list<parametric::Partition> partition_list = pdt->get_psp();
+		submodular::InfoCluster ic(edges, 3);
+		ic.run_pdt();
+		std::list<double> lambda_list = ic.get_critical_values();
+		std::list<parametric::Partition> partition_list = ic.get_psp();
 		std::list<double>::iterator it = lambda_list.begin();
 		EXPECT_DOUBLE_EQ(*it, 2);
 		it++;
@@ -225,10 +217,10 @@ namespace demo {
 	TEST(ThreePointNotComplete, PDT) {
 		std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
 		edges.push_back(std::make_tuple(0, 1, 1.0));
-		parametric::PDT* pdt = parametric::make_pdt(3, edges);
-		pdt->run();
-		std::list<double> lambda_list = pdt->get_critical_values();
-		std::list<parametric::Partition> partition_list = pdt->get_psp();
+		submodular::InfoCluster ic(edges, 3);
+		ic.run_pdt();
+		std::list<double> lambda_list = ic.get_critical_values();
+		std::list<parametric::Partition> partition_list = ic.get_psp();
 		std::list<double>::iterator it = lambda_list.begin();
 		EXPECT_DOUBLE_EQ(*it, 0);
 		it++;
@@ -257,10 +249,10 @@ namespace demo {
 		std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
 		edges.push_back(std::make_tuple(0, 1, 1.0));
 		edges.push_back(std::make_tuple(2, 3, 1.0));
-		parametric::PDT* pdt = parametric::make_pdt(4, edges);
-		pdt->run();
-		std::list<double> lambda_list = pdt->get_critical_values();
-		std::list<parametric::Partition> partition_list = pdt->get_psp();
+		submodular::InfoCluster ic(edges, 4);
+		ic.run_pdt();
+		std::list<double> lambda_list = ic.get_critical_values();
+		std::list<parametric::Partition> partition_list = ic.get_psp();
 		std::list<double>::iterator it = lambda_list.begin();
 		EXPECT_DOUBLE_EQ(*it, 0);
 		it++;

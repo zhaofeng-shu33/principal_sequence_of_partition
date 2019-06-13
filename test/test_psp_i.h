@@ -71,7 +71,7 @@ namespace demo {
 		Gaussian2DGraph g2g(8, 1.0, a);
 		g2g.run();
 		std::list<double> gamma_list_2 = g2g.get_gamma_list();
-		std::list<stl::Partition> psp_list_2 = g2g.get_psp_list();
+		std::list<stl::Partition> psp_list_2 = g2g.get_psp();
 
 		demo::EdgeListTuple et = g2g.get_edge_list_tuple();
 		lemon::ListDigraph g;
