@@ -23,6 +23,27 @@ namespace psp {
 		double lambda_;
 		int node_size;
 	};
+	class DilworthTruncation_Improved {
+	public:
+		typedef lemon::ListDigraph Digraph;
+		typedef typename lemon::ListDigraph::ArcMap<double> ArcMap;
+		typedef Digraph::Node Node;
+		DilworthTruncation_Improved(double lambda, Digraph* g, ArcMap* edge_map);
+		double get_min_value();
+		stl::Partition& get_min_partition();
+		double evaluate(stl::Partition& partition);
+		void run();
+	private:
+		void minimize(int i);
+		Digraph* _g;
+		ArcMap* _edge_map;
+		double min_value;
+		stl::CSet Tl;
+		std::vector<double> xl;
+		stl::Partition _partition;
+		double lambda_;
+		int node_size;
+	};
 	/**
 	* improved version of principal sequence of partition
 	*/
