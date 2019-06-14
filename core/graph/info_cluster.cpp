@@ -38,12 +38,6 @@ namespace submodular {
 		gamma_list = psp_class.get_critical_values();
 		psp_list = psp_class.get_psp();
 	}
-	void InfoCluster::run_bruteForce() {
-		PSP psp_class(g, edge_map);
-		psp_class.run(true);
-		gamma_list = psp_class.get_critical_values();
-		psp_list = psp_class.get_psp();
-	}
 	void InfoCluster::run_pdt() {
 		parametric::PDT pdt(g, edge_map);
 		pdt.run();

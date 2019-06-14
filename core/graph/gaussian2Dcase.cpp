@@ -24,7 +24,9 @@ namespace demo {
 		}
 		for (int i = 0; i < np; i++)
 			for (int j = i + 1; j < np; j++) {
-				edge_list_tuple.push_back(std::make_tuple(i, j, compute_similarity(x_pos[i], y_pos[i], x_pos[j], y_pos[j])));
+				double sim = compute_similarity(x_pos[i], y_pos[i], x_pos[j], y_pos[j]);
+				if(sim > _tolerance.epsilon())
+					edge_list_tuple.push_back(std::make_tuple(i, j, sim));
 			}
 	}
 	EdgeListTuple Gaussian2DGraphBase::get_edge_list_tuple() { return edge_list_tuple; }

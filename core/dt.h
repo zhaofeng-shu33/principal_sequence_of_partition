@@ -3,7 +3,6 @@
 *   Example from Literature "Minimum Average Cost Clustering"
 **/
 #include <lemon/list_graph.h>
-#include "core/sfm_mf.h"
 #include "core/graph/graph.h"
 #include "set/set_stl.h"
 namespace submodular {
@@ -20,11 +19,13 @@ namespace submodular {
         double get_min_value();
         stl::Partition& get_min_partition();
         double evaluate(stl::Partition& partition);
-        void run(bool bruteForce = false);
+        void run();
     private:
+		void minimize(std::vector<double>& xl);
         Digraph* _g;
         ArcMap* _edge_map;
         double min_value;
+		stl::CSet Tl;
         stl::Partition _partition;
         double lambda_;
         int NodeSize;
@@ -39,14 +40,14 @@ namespace submodular {
         typedef typename Digraph::ArcMap<double> ArcMap;
         PSP(Digraph* g, ArcMap* edge_map);
         //! evaluate and find the finest partition with $\abs{\P} > \texttt{partition_num}$
-        stl::Partition split(stl::Partition& Q, stl::Partition& P, int partition_num, bool bruteForce = false);
+        stl::Partition split(stl::Partition& Q, stl::Partition& P, int partition_num);
         
         //! |Q| < |P|
-        void split(stl::Partition& Q, stl::Partition& P, bool bruteForce = false);
+        void split(stl::Partition& Q, stl::Partition& P);
 
-        stl::Partition run(int partition_num, bool bruteForce = false);
+        stl::Partition run(int partition_num);
         
-        void run(bool bruteForce = false);
+        void run();
         
         std::list<double>& get_critical_values();
         std::list<stl::Partition>& get_psp();

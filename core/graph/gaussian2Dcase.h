@@ -22,6 +22,7 @@ namespace demo {
         // {src, dst, capacity}
         std::default_random_engine generator;
         std::normal_distribution<double> distribution;
+		lemon::Tolerance<double> _tolerance;
         double _gamma;
         int data_1[4][2] = { {3,3},{3,-3},{-3,-3},{-3,3} };
         //! use Gaussian similarity function $exp(-||p_1 - p_2||^2/2) $

@@ -1,22 +1,13 @@
 #pragma once
 #include <gtest/gtest.h>
-#include "core/sfm_mf.h"
 #include "core/psp_i.h"
 #include "test/utility.h"
 namespace demo {
 
-	TEST_F(Graph4PointTest, MFCompare) {
-		std::vector<double> xl({ -1 - 2 / 3.0,-2 / 3.0,-1 / 6.0 });
-		submodular::MF solver2;
-		solver2.Minimize(xl, 5 / 3.0, &g, &edge_map);
-		submodular::BruteForce solver1;
-		solver1.Minimize(xl, 1 + 2 / 3.0, &g, &edge_map);
-		EXPECT_DOUBLE_EQ(solver2.GetMinimumValue(), solver1.GetMinimumValue());
-	}
 
 	TEST_F(Graph4PointTest, MFDT) {
 		submodular::DilworthTruncation dt(5 / 3.0 + 0.1, &g, &edge_map);
-		dt.run(false);//BruteForce
+		dt.run();
 		double min_value = dt.get_min_value();
 		stl::Partition P_apostrophe = dt.get_min_partition();
 
@@ -43,7 +34,7 @@ namespace demo {
 		arc_map[a2] = 1;
 
 		submodular::DilworthTruncation dt(0.1, &g, &arc_map);
-		dt.run(false);
+		dt.run();
 		double min_value = dt.get_min_value();
 		stl::Partition P_apostrophe = dt.get_min_partition();
 

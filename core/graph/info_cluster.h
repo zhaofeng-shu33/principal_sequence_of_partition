@@ -15,7 +15,6 @@ namespace submodular {
 		std::vector<int> get_labels(int pn);
 		stl::Partition get_partition(int pn);
 		void run();
-		void run_bruteForce();
 		void run_pdt();
 		void run_psp_i();
 		std::list<double>& get_gamma_list();

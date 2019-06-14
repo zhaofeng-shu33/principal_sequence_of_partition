@@ -46,13 +46,18 @@ TEST(Gaussian2D, GivenPoint8) {
                        {-3.1, 2.6}
                      };
     Gaussian2DGraph g2g(8, 1.0, a);
-    g2g.run_bruteForce();
+	g2g.run_pdt();
     std::list<double> gamma_list = g2g.get_gamma_list();
     std::list<stl::Partition> psp_list = g2g.get_psp();
     g2g.run();
     std::list<double> gamma_list_2 = g2g.get_gamma_list();
     std::list<stl::Partition> psp_list_2 = g2g.get_psp();
-	EXPECT_EQ(gamma_list, gamma_list_2);
+	std::list<double>::iterator it_2 = gamma_list_2.begin();
+	for (std::list<double>::iterator it = gamma_list.begin(); it != gamma_list.end(); it++) {
+		lemon::Tolerance<double> _tolerance;
+		EXPECT_FALSE(_tolerance.different(*it, *it_2));
+		it_2++;
+	}
 	EXPECT_EQ(psp_list, psp_list_2);
 }
 
