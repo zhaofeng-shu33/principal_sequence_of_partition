@@ -85,4 +85,26 @@ namespace demo {
 		double v = dt.get_min_value();
 		EXPECT_DOUBLE_EQ(v, -4);
 	}
+	// verify the early stopping property of new dt algorithm
+	TEST(ThreePoint, DT_I_Early_Stopping) {
+		lemon::ListDigraph g;
+		lemon::ListDigraph::Node n1 = g.addNode();
+		lemon::ListDigraph::Node n2 = g.addNode();
+		lemon::ListDigraph::Node n3 = g.addNode();
+
+		lemon::ListDigraph::ArcMap<double> arc_map(g);
+		lemon::ListDigraph::Arc a1 = g.addArc(n1, n2);
+		lemon::ListDigraph::Arc a2 = g.addArc(n1, n3);
+		lemon::ListDigraph::Arc a3 = g.addArc(n2, n3);
+		arc_map[a1] = 1;
+		arc_map[a2] = 1;
+		arc_map[a3] = 1;
+		psp::DilworthTruncation_Improved dt(1.5, &g, &arc_map);
+		dt.run();
+		stl::Partition p = dt.get_min_partition();
+		stl::Partition p1 = stl::Partition::makeDense(3);
+		EXPECT_EQ(p, p1);
+		double v = dt.get_min_value();
+		EXPECT_DOUBLE_EQ(v, -1.5);
+	}
 }
