@@ -210,6 +210,8 @@ namespace psp {
 		// construct edge cost map related with source_node and sink_node
 		double const_difference = lambda_;
 		for (int j = 0; j < graph_size; j++) {
+			if (j == i)
+				continue;
 			Digraph::Arc arc;
 			if (xl[j] < 0) {
 				arc = subgraph.addArc(source_node, subgraph.nodeFromId(j));
@@ -241,8 +243,9 @@ namespace psp {
 		_X.AddElement(i);
 		subgraph.enable(_g->nodeFromId(i));
 		double minimum_value_2 = -lambda_ + submodular::get_cut_value(subgraph, *_edge_map, _X);
-		for (int j : X.GetMembers())
-			minimum_value_2 -= xl[j];
+		for (int j : X.GetMembers()) {
+				minimum_value_2 -= xl[j];
+		}
 		assert(std::abs(min_value - minimum_value_2) < 1e-5);
 #endif
 		subgraph.erase(source_node);
