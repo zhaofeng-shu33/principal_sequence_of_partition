@@ -29,7 +29,7 @@ matrix:
 before_install:
   - mkdir build
   - cd build
-  - cmake -DENABLE_TESTING=ON -DCMAKE_BUILD_TYPE=Release ../ 
+  - cmake -DENABLE_TESTING=ON -DCODE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Release ../ 
 install:
   - make
 script:
