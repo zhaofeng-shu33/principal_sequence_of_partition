@@ -1,11 +1,11 @@
 [![Windows](https://ci.appveyor.com/api/projects/status/github/zhaofeng-shu33/principal_sequence_of_partition?branch=master&svg=true)](https://ci.appveyor.com/project/zhaofeng-shu33/principal-sequence-of-partition)
 [![Build Status](https://api.travis-ci.com/zhaofeng-shu33/principal_sequence_of_partition.svg?branch=master)](https://travis-ci.com/zhaofeng-shu33/principal_sequence_of_partition/)
 # Introduction
-This repo contains code to compute the principal sequence of partition for Dilworth truncation function.
+This repository contains code to compute the principal sequence of partition for Dilworth truncation function.
 Currently, three methods are available:
 
 1. Traditional Canonical Method based on Dilworth truncation and Graph Maximal Flow
-2. Paramatric computing scheme combined with Parametric Maximal Flow
+2. Parametric computing scheme combined with Parametric Maximal Flow
 3. Graph Contraction combined with rapid jump (under development)
 Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to compute maximal flow for graph.
 
@@ -48,4 +48,4 @@ See [contributing.md](./contributing.md)
 * Version 1.1: expose `Gaussian2DGraph` (C++) class, which can be used directly in python.
 * Version 1.2: expose `PSP` (C++) class, which is high customizable in python.
 * Version 1.3: expose `PyGraphPDT` (C++) class, which has similar api as `PyGraph` but different inner implementation.
-* Version 1.4: expose psp_i method.
+* Version 1.4: expose `psp_i` method.

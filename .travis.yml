@@ -28,12 +28,12 @@ matrix:
           - boost
           - googletest  
 before_install:
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
+script:
   - mkdir build
   - cd build
   - cmake -DENABLE_TESTING=ON -DCMAKE_BUILD_TYPE=Release ../ 
-install:
   - make
-script:
   - test/TestAll
 after_success:
   - |
