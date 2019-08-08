@@ -32,7 +32,7 @@ before_install:
 script:
   - mkdir build
   - cd build
-  - cmake -DENABLE_TESTING=ON -DCMAKE_BUILD_TYPE=Release ../ 
+  - cmake -DENABLE_TESTING=ON -DCODE_COVERAGE=ON ../ 
   - make
   - test/TestAll
 after_success:
@@ -41,4 +41,4 @@ after_success:
       lcov --directory . --capture --output-file coverage.info
       lcov --remove coverage.info '/usr/*' --output-file coverage.info
       bash <(curl -s https://codecov.io/bash) -f coverage.info
-    fi   
+    fi
