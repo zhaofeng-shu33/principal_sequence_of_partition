@@ -27,14 +27,17 @@ matrix:
           - boost
           - googletest  
 before_install:
-  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gsl boost-python; fi 
-  # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install ; fi
-  # build and install gtest library manually  
   - mkdir build
   - cd build
   - cmake -DENABLE_TESTING=ON -DCMAKE_BUILD_TYPE=Release ../ 
 install:
   - make
 script:
-# used for testing
   - test/TestAll
+after_success:
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      lcov --directory . --capture --output-file coverage.info
+      lcov --remove coverage.info '/usr/*' --output-file coverage.info
+      bash <(curl -s https://codecov.io/bash) -f coverage.info
+    fi   
