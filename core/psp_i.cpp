@@ -107,6 +107,9 @@ namespace psp {
 			Tl.AddElement(_g->id(enabled_nodes[i]));
 			_partition = _partition.expand(Tl);
 			xl.push_back(alpha_l);
+            if(i% 50 ==0){
+                std::cout << "DT " << i << std::endl;
+            }
 		}
 		min_value = 0;
 		for (auto it = xl.begin(); it != xl.end(); it++) {
@@ -254,6 +257,7 @@ namespace psp {
 			goto add_lambda;
 		}
 		else{
+			std::cout << "split " << i << " " << num_of_children << std::endl;
 			DilworthTruncation dt(gamma_apostrophe, &subgraph, _edge_map);
 			dt.run();
 			min_value = dt.get_min_value();
