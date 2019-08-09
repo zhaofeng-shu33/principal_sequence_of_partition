@@ -28,7 +28,7 @@ before_install:
       brew tap zhaofeng-shu33/liblemonformula
     fi
 install:  
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install liblemon boost googletest; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install liblemon googletest; fi
   
 script:
   - mkdir build
