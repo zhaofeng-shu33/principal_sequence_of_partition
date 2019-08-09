@@ -20,15 +20,16 @@ matrix:
         - /usr/src/gtest
       - pip3
   - os: osx
-    addons:
-      homebrew:
-        taps: zhaofeng-shu33/liblemonformula  
-        packages:
-          - liblemon
-          - boost
-          - googletest  
+  
 before_install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
+  - |
+    if [ "$TRAVIS_OS_NAME" == "osx" ]; then 
+      brew update
+      brew tap zhaofeng-shu33/liblemonformula
+    fi
+install:  
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install liblemon boost googletest; fi
+  
 script:
   - mkdir build
   - cd build
