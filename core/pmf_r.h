@@ -17,7 +17,7 @@ namespace parametric{
     public:
         using Set = stl::CSet;
         typedef lemon::Preflow<lemon::ListDigraph, ArcMap> Preflow;
-        typedef Preflow::FlowMap FlowMap;
+        typedef std::map<int, std::map<int, double>> FlowMap;
         typedef Preflow::Elevator Elevator;
         PMF_R(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda);
         void run();
@@ -36,6 +36,16 @@ namespace parametric{
         void modify_flow(const FlowMap& flowMap, FlowMap& newFlowMap);
         inline Set get_min_cut_sink_side(Preflow& pf);
         double compute_lambda_eq_const(Set& S, Set& T);
+		double contract(const Set& S, const Set& T, lemon::ListDigraph& G, ArcMap& arcMap);
+		inline void addArc(int u, int v, double w, lemon::ListDigraph& G, ArcMap& arcMap);
+		void get_flowMap(const lemon::ListDigraph& G, Preflow p, FlowMap& flowMap) {
+			const ArcMap& arcMap = p.flowMap();
+			for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; a++) {
+				int u = G.id(G.source(a));
+				int v = G.id(G.target(a));
+				flowMap[u][v] = arcMap[a];
+			}
+		}
     private:    
         lemon::ListDigraph* g_ptr;
         ArcMap* aM;
