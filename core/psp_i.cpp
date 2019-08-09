@@ -257,7 +257,6 @@ namespace psp {
 			goto add_lambda;
 		}
 		else{
-			std::cout << "split " << i << " " << num_of_children << std::endl;
 			DilworthTruncation dt(gamma_apostrophe, &subgraph, _edge_map);
 			dt.run();
 			min_value = dt.get_min_value();
