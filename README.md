@@ -1,5 +1,7 @@
 [![Windows](https://ci.appveyor.com/api/projects/status/github/zhaofeng-shu33/principal_sequence_of_partition?branch=master&svg=true)](https://ci.appveyor.com/project/zhaofeng-shu33/principal-sequence-of-partition)
 [![Build Status](https://api.travis-ci.com/zhaofeng-shu33/principal_sequence_of_partition.svg?branch=master)](https://travis-ci.com/zhaofeng-shu33/principal_sequence_of_partition/)
+[![codecov](https://codecov.io/gh/zhaofeng-shu33/principal_sequence_of_partition/branch/master/graph/badge.svg)](https://codecov.io/gh/zhaofeng-shu33/principal_sequence_of_partition)
+
 # Introduction
 This repository contains code to compute the principal sequence of partition for Dilworth truncation function.
 Currently, three methods are available:
