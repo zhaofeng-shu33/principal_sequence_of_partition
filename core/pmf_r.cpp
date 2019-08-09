@@ -104,7 +104,9 @@ namespace parametric {
             dig_aM[a1] = (*aM)[a];
         }
         source_node = dig.addNode();
-        sink_node = dig.nodeFromId(_j);        
+        sink_node = dig.nodeFromId(_j);   
+		source_node_id = dig.id(source_node);
+		sink_node_id = dig.id(sink_node);
         tilde_G_size = dig.maxNodeId() + 1;
         for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
             if (n == sink_node || n == source_node)
@@ -128,7 +130,7 @@ namespace parametric {
         set_list.push_back(T_0);
         set_list.push_back(T_1);
 		FlowMap newFlowMap;
-		get_flowMap(dig, pf, newFlowMap);
+		set_flowMap(dig, pf, newFlowMap);
         slice(T_0, T_1, newFlowMap, init_lambda, std::numeric_limits<double>::infinity());
         lambda_list.sort();
         auto is_superset = [](const Set& A, const Set& B){return B.IsSubSet(A);};
@@ -140,17 +142,17 @@ namespace parametric {
         set_list.clear();
         lambda_list.clear();    
 	}
-	void PMF_R::modify_flow(const FlowMap& flowMap, FlowMap& newFlowMap){
+	void PMF_R::modify_flow(const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap){
 		// make sure the keys of newFlowMap is subset of flowMap
-		for (lemon::ListDigraph::ArcIt arc(dig); arc != lemon::INVALID; ++arc) {
-			newFlowMap[arc] = flowMap[arc];
-		}
-		for (lemon::ListDigraph::OutArcIt e(dig, source_node); e != lemon::INVALID; ++e) {
-			newFlowMap[e] = dig_aM[e];
-		}
-		for (lemon::ListDigraph::InArcIt e(dig, sink_node); e != lemon::INVALID; ++e) {
-			if(flowMap[e] > dig_aM[e])
-				newFlowMap[e] = dig_aM[e];
+		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; ++a) {
+			int u = G.id(G.source(a));
+			int v = G.id(G.target(a));
+			if (v == sink_node_id && flowMap.at(u).at(v) > capMap[a]) {
+				newFlowMap[u][v]= capMap[a];
+			}
+			else {
+				newFlowMap[u][v] = flowMap.at(u).at(v);
+			}
 		}
 	}
 
@@ -214,12 +216,14 @@ namespace parametric {
 		ArcMap newArcMap(newDig);
 		contract(S, T_r,newDig, newArcMap);
 		FlowMap newFlowMap;
-
+		modify_flow(newDig, newArcMap, flowMap, newFlowMap);
         // do not use graph contraction
-        Preflow pf_instance(dig, dig_aM, source_node, sink_node);
+        Preflow pf_instance(newDig, newArcMap, source_node, sink_node);
 		// pf_instance.init();
 		// bool isValid = true;
-        bool isValid = pf_instance.init(newFlowMap);
+		Preflow::FlowMap innerNewFlowMap(newDig);
+		get_preflow_flowMap(newDig, newFlowMap, innerNewFlowMap);
+        bool isValid = pf_instance.init(innerNewFlowMap);
 #if _DEBUG
 		if (!isValid)
 			throw std::logic_error("not valid flow map to init.");
@@ -228,14 +232,9 @@ namespace parametric {
         pf_instance.startSecondPhase();
 		double new_flow_value = pf_instance.flowValue();
         Set T_apostrophe = get_min_cut_sink_side(pf_instance);
-#if _DEBUG
-		if (!T_apostrophe.IsSubSet(T_l) || !T_r.IsSubSet(T_apostrophe)) {
-			throw std::logic_error("not subset");
-		}
-#endif
         if(T_apostrophe != T_r && T_apostrophe != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
-            set_list.push_back(T_apostrophe);
+            set_list.push_back(T_apostrophe.Union(T_r));
             slice(T_l, T_apostrophe, flowMap, lambda_1, lambda_2);
             slice(T_apostrophe, T_r, newFlowMap, lambda_2, lambda_3);
         }
@@ -250,8 +249,6 @@ namespace parametric {
         return target_value;
     }
 	double PMF_R::contract(const Set& S, const Set& T, lemon::ListDigraph& G, ArcMap& arcMap) {
-		int source_node_id = dig.id(source_node);
-		int sink_node_id = dig.id(sink_node);
 #if _DEBUG
 		// check s \in S and t \in T
 		if (S.HasElement(source_node_id) || T.HasElement(sink_node_id)) {
@@ -342,6 +339,21 @@ namespace parametric {
 		else if (w < -tolerance.epsilon()) {
 			lemon::ListDigraph::Arc newA = G.addArc(G.nodeFromId(v), G.nodeFromId(u));
 			arcMap[newA] = -w;
+		}
+	}
+	void PMF_R::set_flowMap(const lemon::ListDigraph& G, Preflow p, FlowMap& flowMap) {
+		const ArcMap& arcMap = p.flowMap();
+		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; a++) {
+			int u = G.id(G.source(a));
+			int v = G.id(G.target(a));
+			flowMap[u][v] = arcMap[a];
+		}
+	}
+	void PMF_R::get_preflow_flowMap(const lemon::ListDigraph& G, const FlowMap& flowMapDic, Preflow::FlowMap& flowMap) {
+		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; a++) {
+			int u = G.id(G.source(a));
+			int v = G.id(G.target(a));
+			flowMap[a] = flowMapDic.at(u).at(v);
 		}
 	}
 }

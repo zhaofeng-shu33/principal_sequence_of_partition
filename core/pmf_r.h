@@ -33,19 +33,14 @@ namespace parametric{
         void update_dig(double lambda);
         void slice(Set& T_l, Set& T_r, const FlowMap& arcMap, double lambda_1, double lambda_3);
         //! modify flow given current dig_aM
-        void modify_flow(const FlowMap& flowMap, FlowMap& newFlowMap);
+        void modify_flow(const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap);
         inline Set get_min_cut_sink_side(Preflow& pf);
         double compute_lambda_eq_const(Set& S, Set& T);
 		double contract(const Set& S, const Set& T, lemon::ListDigraph& G, ArcMap& arcMap);
 		inline void addArc(int u, int v, double w, lemon::ListDigraph& G, ArcMap& arcMap);
-		void get_flowMap(const lemon::ListDigraph& G, Preflow p, FlowMap& flowMap) {
-			const ArcMap& arcMap = p.flowMap();
-			for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; a++) {
-				int u = G.id(G.source(a));
-				int v = G.id(G.target(a));
-				flowMap[u][v] = arcMap[a];
-			}
-		}
+		//! convert Preflow flowMap to double dic flowMap
+		void set_flowMap(const lemon::ListDigraph& G, Preflow p, FlowMap& flowMap);
+		void get_preflow_flowMap(const lemon::ListDigraph& G, const FlowMap& flowMapDic, Preflow::FlowMap& flowMap);
     private:    
         lemon::ListDigraph* g_ptr;
         ArcMap* aM;
@@ -57,6 +52,8 @@ namespace parametric{
         std::list<Set> set_list;
         lemon::ListDigraph::Node source_node;
         lemon::ListDigraph::Node sink_node;
+		int source_node_id;
+		int sink_node_id;
         int tilde_G_size;
         lemon::Tolerance<double> tolerance;
         std::size_t _j;
