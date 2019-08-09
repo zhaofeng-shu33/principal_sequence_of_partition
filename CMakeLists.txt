@@ -45,6 +45,10 @@ include_directories(${LEMON_INCLUDE_DIR})
 
 
 option(ENABLE_TESTING "Enable testing" OFF)
+if(ENABLE_TESTING)
+  find_package(GTest REQUIRED)
+  include(CTest)
+endif()
 add_subdirectory(set)
 add_subdirectory(core)
 add_subdirectory(preflow)
@@ -53,7 +57,5 @@ target_link_libraries(main set_stl)
 target_link_libraries(main ${LEMON_LIBRARY})
 
 if(ENABLE_TESTING)
-  find_package(GTest REQUIRED)
-  include(CTest)
   add_subdirectory(test)
 endif()
