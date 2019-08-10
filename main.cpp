@@ -4,6 +4,7 @@
 */
 #include <string>
 #include <fstream>
+#include <chrono>
 #include <sstream>
 #include <boost/program_options.hpp>
 #include <lemon/lgf_reader.h>
@@ -18,7 +19,8 @@ int main(int argc, const char *argv[]){
 		("help,h", "Show this help screen")
 		("graph", boost::program_options::value<std::string>(), "input graph file, currently only lgf format is supported")
 		("method", boost::program_options::value<std::string>()->default_value("dt"), "method to use, should be within dt, pdt, psp_i, pdt_i")
-		("result", boost::program_options::value<std::string>()->default_value("output.txt"), "result file");
+		("result", boost::program_options::value<std::string>()->default_value("output.txt"), "result file")
+		("time", boost::program_options::value<bool>()->default_value(false), "report time used");
 
     boost::program_options::variables_map vm;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
@@ -44,6 +46,7 @@ int main(int argc, const char *argv[]){
 
     std::string graph_filename = vm["graph"].as<std::string>();
 	std::string result_filename = vm["result"].as<std::string>();
+	bool report_time = vm["time"].as<bool>();
 	if (result_filename == "output.txt") {
 		result_filename = method + "-" + graph_filename + ".txt";
 	}
@@ -55,7 +58,9 @@ int main(int argc, const char *argv[]){
 	std::stringstream result;
 	std::list<double> critical_values;
 	std::list<stl::Partition> partition_list;
-
+	std::chrono::system_clock::time_point start_time;
+	if(report_time)
+		start_time = std::chrono::system_clock::now();
 	if (method == "psp_i") {
 		psp::PSP psp_i(&digraph, &cap);
 		psp_i.run();
@@ -79,6 +84,13 @@ int main(int argc, const char *argv[]){
 		psp_class.run();
 		critical_values = psp_class.get_critical_values();
 		partition_list = psp_class.get_psp();
+	}
+	if (report_time) {
+		std::chrono::system_clock::duration dtn;
+		std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+		dtn = end_time - start_time;
+		float time_used = std::chrono::duration_cast<std::chrono::milliseconds>(dtn).count() / 1000.0;
+		std::cout << "Time used : " << time_used << std::endl;
 	}
 	std::list<stl::Partition>::iterator it_2 = partition_list.begin();
 	result << *it_2 << std::endl;
