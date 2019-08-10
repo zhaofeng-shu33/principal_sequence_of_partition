@@ -71,6 +71,14 @@ namespace parametric {
         sink_capacity.resize(_y_lambda.size());
     }
 	PMF_R::PMF_R():dig_aM(dig){}
+	Set PMF_R::get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, lemon::Preflow<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap>& pf) {
+		Set t = Set::MakeEmpty(tilde_G_size);
+		for (lemon::ReverseDigraph<lemon::ListDigraph>::NodeIt n(digraph); n != lemon::INVALID; ++n) {
+			if (pf.minCut(n))
+				t.AddElement(dig.id(n));
+		}
+		return t;
+	}
     Set PMF_R::get_min_cut_sink_side(const lemon::ListDigraph& digraph, Preflow& pf) {
         Set t = Set::MakeEmpty(tilde_G_size);
         for (lemon::ListDigraph::NodeIt n(digraph); n != lemon::INVALID; ++n) {
@@ -285,9 +293,27 @@ namespace parametric {
 		new_flow_value = pf_instance.flowValue();
 		T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
 	}
-	void PMF_R::executePreflow_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& reverse_newDig, const ArcMap& newArcMap, const FlowMap& rightArcMap, const Set& S, const Set& T, Set& T_apostrophe, double& new_flow_value, FlowMap& newFlowMap) {
+	void PMF_R::executePreflow_reverse(lemon::ListDigraph& newDig, const ArcMap& newArcMap, const FlowMap& rightArcMap, const Set& S, const Set& T, Set& T_apostrophe, double& new_flow_value, FlowMap& newFlowMap) {
+		lemon::ReverseDigraph<lemon::ListDigraph> reverse_newDig(newDig);
 		lemon::Preflow<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap> pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
+		FlowMap new_rightFlowMap;
+		modify_flow(S, T, newDig, newArcMap, rightArcMap, new_rightFlowMap);
+		Preflow::FlowMap inner_new_rightFlowMap(newDig);
+		get_preflow_flowMap(newDig, new_rightFlowMap, inner_new_rightFlowMap);
 
+		bool isValid = pf_reverse_instance.init(inner_new_rightFlowMap);
+#if _DEBUG
+		if (!isValid)
+			throw std::logic_error("not valid flow map to init.");
+#endif
+		pf_reverse_instance.startFirstPhase();
+		pf_reverse_instance.startSecondPhase();
+
+
+		set_flowMap(newDig, pf_reverse_instance.flowMap(), newFlowMap);
+
+		new_flow_value = pf_reverse_instance.flowValue();
+		T_apostrophe = get_min_cut_sink_side_reverse(reverse_newDig, pf_reverse_instance);
 	}
 
     void PMF_R::slice(Set& T_l, Set& T_r, const FlowMap& leftArcMap, const FlowMap& rightArcMap, double lambda_1, double lambda_3) {
@@ -336,7 +362,6 @@ namespace parametric {
 		double new_flow_value;
 
 		// Todo: run 
-		// lemon::ReverseDigraph<lemon::ListDigraph> reverse_newDig(newDig);
 		// Todo: use a thread to run the code below
 		executePreflow(newDig, newArcMap, leftArcMap, S, T_r, T_apostrophe, new_flow_value, newFlowMap);
 

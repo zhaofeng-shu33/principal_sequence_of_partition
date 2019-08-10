@@ -1,8 +1,56 @@
 #pragma once
 #include <lemon/lgf_reader.h>
 #include "core/pmf_r.h"
+#include <lemon/adaptors.h>
 #include "test/utility.h"
 namespace parametric {
+	TEST(PMF_R, reverse) {
+		PMF_R pmfR;
+		lemon::ListDigraph& digraph = pmfR.dig;
+		ArcMap& cap = pmfR.dig_aM;
+		std::string lgf_str = "@nodes\nlabel\n0\n1\n2\n3\n4\n@arcs\n\t\tlabel\tcapacity\n4\t0\t0\t1\n4\t2\t1\t2\n0\t1\t2\t3\n2\t0\t3\t5\n2\t3\t4\t6\n1\t2\t5\t4\n1\t3\t6\t7";
+		std::stringstream ss;
+		ss << lgf_str;
+		lemon::digraphReader(digraph, ss)
+			.arcMap("capacity", cap)
+			.run();
+		lemon::ReverseDigraph<lemon::ListDigraph> rdig(digraph);
+		lemon::Preflow<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap> pf(rdig, cap, rdig.nodeFromId(3), rdig.nodeFromId(4));
+		pf.run();
+		EXPECT_DOUBLE_EQ(pf.flowValue(), 3);
+		EXPECT_TRUE(pf.minCut(rdig.nodeFromId(0)));
+		EXPECT_TRUE(pf.minCut(rdig.nodeFromId(1)));
+		EXPECT_TRUE(pf.minCut(rdig.nodeFromId(2)));
+		EXPECT_TRUE(pf.minCut(rdig.nodeFromId(3)));
+		EXPECT_FALSE(pf.minCut(rdig.nodeFromId(4)));
+	}
+	TEST(PMF_R, execute_reverse) {
+		PMF_R pmfR;
+		lemon::ListDigraph& digraph = pmfR.dig;
+		ArcMap& cap = pmfR.dig_aM;
+		std::string lgf_str = "@nodes\nlabel\n0\n1\n2\n3\n4\n@arcs\n\t\tlabel\tcapacity\n4\t0\t0\t1\n4\t2\t1\t2\n0\t1\t2\t3\n2\t0\t3\t5\n2\t3\t4\t6\n1\t2\t5\t4\n1\t3\t6\t7";
+		std::stringstream ss;
+		ss << lgf_str;
+		lemon::digraphReader(digraph, ss)
+			.arcMap("capacity", cap)
+			.run();
+		// construct a maximum flow map
+		PMF_R::FlowMap fm;
+		fm[4][0] = 1;
+		fm[4][2] = 2;
+		fm[0][1] = 1;
+		fm[1][3] = 1;
+		fm[2][3] = 2;
+		pmfR.set_source_node_id(4);
+		pmfR.set_sink_node_id(3);
+		pmfR.set_tilde_G_size(5);
+		stl::CSet S("00001");
+		stl::CSet T("00010");
+		stl::CSet T_a;
+		double n_a;
+		PMF_R::FlowMap n_fm;
+		pmfR.executePreflow_reverse(digraph, cap, fm, S, T, T_a, n_a, n_fm);
+	}
 	TEST(PMF_R, contract) {
 		PMF_R pmfR;
 		lemon::ListDigraph& digraph = pmfR.dig;

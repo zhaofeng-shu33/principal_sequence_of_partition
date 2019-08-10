@@ -40,11 +40,12 @@ namespace parametric{
 		//! modify flow given current dig_aM
 		void modify_flow(const Set& S, const Set& T, const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap);
 		void executePreflow(const lemon::ListDigraph& newDig, const ArcMap& newArcMap, const FlowMap& leftArcMap, const Set& S, const Set& T, Set& T_apostrophe, double& new_flow_value, FlowMap& newFlowMap);
-		void executePreflow_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& newDig, const ArcMap& newArcMap, const FlowMap& rightArcMap, const Set& S, const Set& T, Set& T_apostrophe, double& new_flow_value, FlowMap& newFlowMap);
+		void executePreflow_reverse(lemon::ListDigraph& newDig, const ArcMap& newArcMap, const FlowMap& rightArcMap, const Set& S, const Set& T, Set& T_apostrophe, double& new_flow_value, FlowMap& newFlowMap);
     private:    
         void update_dig(double lambda);
         void slice(Set& T_l, Set& T_r, const FlowMap& leftArcMap, const FlowMap& rightArcMap, double lambda_1, double lambda_3);
         inline Set get_min_cut_sink_side(const lemon::ListDigraph& digraph, Preflow& pf);
+		inline Set get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, lemon::Preflow<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap>& pf);
         double compute_lambda_eq_const(Set& S, Set& T);
 		inline void addArc(int u, int v, double w, lemon::ListDigraph& G, ArcMap& arcMap);
 		inline void addFlowArc(int u, int v, double w, FlowMap& flowMap);	
