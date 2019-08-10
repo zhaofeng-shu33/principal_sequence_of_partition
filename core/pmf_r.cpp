@@ -225,7 +225,7 @@ namespace parametric {
 		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; ++a) {
 			int u = G.id(G.source(a));
 			int v = G.id(G.target(a));
-			if (newFlowMap[u][v] > capMap[a])
+			if (newFlowMap[u][v] > capMap[a] + tolerance.epsilon())
 				throw std::logic_error("newFlowMap does not conform to capacity constraint");
 		}
 #endif

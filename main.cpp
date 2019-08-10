@@ -9,6 +9,7 @@
 #include <lemon/lgf_reader.h>
 #include "core/dt.h"
 #include "core/pmf.h"
+#include "core/pmf_r.h"
 #include "core/psp_i.h"
 
 int main(int argc, const char *argv[]){
@@ -16,9 +17,8 @@ int main(int argc, const char *argv[]){
 	desc.add_options()
 		("help,h", "Show this help screen")
 		("graph", boost::program_options::value<std::string>(), "input graph file, currently only lgf format is supported")
-		("result", boost::program_options::value<std::string>(), "result file")
-		("pdt", boost::program_options::value<bool>()->default_value(true), "whether to use parametric Dilworth truncation")
-		("psp_i", boost::program_options::value<bool>()->default_value(false), "whether to use improved principal sequence of partition");
+		("method", boost::program_options::value<std::string>()->default_value("dt"), "method to use, should be within dt, pdt, psp_i, pdt_i")
+		("result", boost::program_options::value<std::string>()->default_value("output.txt"), "result file");
 
     boost::program_options::variables_map vm;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
@@ -27,7 +27,12 @@ int main(int argc, const char *argv[]){
         std::cout << desc << '\n';
         return 0;
     }
-
+	std::string method = vm["method"].as<std::string>();
+	if (!(method == "dt" || method == "psp_i" || method == "pdt" || method == "pdt_r")) {
+		std::cout << "Unknown method, " + method << '\n';
+		std::cout << desc << '\n';
+		return 0;
+	}
 	typedef lemon::ListDigraph Digraph;
 	typedef double T;
 	typedef Digraph::ArcMap<T> ArcMap;
@@ -37,10 +42,11 @@ int main(int argc, const char *argv[]){
 	Digraph digraph;
 	ArcMap cap(digraph);
 
-    bool use_pdt = vm["pdt"].as<bool>();
-	bool use_psp_i = vm["psp_i"].as<bool>();
     std::string graph_filename = vm["graph"].as<std::string>();
 	std::string result_filename = vm["result"].as<std::string>();
+	if (result_filename == "output.txt") {
+		result_filename = method + "-" + graph_filename + ".txt";
+	}
 	std::ifstream fin(graph_filename);
 
 	lemon::digraphReader(digraph, fin)
@@ -50,18 +56,24 @@ int main(int argc, const char *argv[]){
 	std::list<double> critical_values;
 	std::list<stl::Partition> partition_list;
 
-	if (use_psp_i) {
+	if (method == "psp_i") {
 		psp::PSP psp_i(&digraph, &cap);
 		psp_i.run();
 		critical_values = psp_i.get_critical_values();
 		partition_list = psp_i.get_psp();
 	}
-    else if (use_pdt) {
+    else if (method == "pdt") {
 		parametric::PDT pmf(&digraph, &cap);
 		pmf.run();
 		critical_values = pmf.get_critical_values();
 		partition_list = pmf.get_psp();
     }
+	else if (method == "pdt_r") {
+		parametric::PDT_R pmf(&digraph, &cap);
+		pmf.run();
+		critical_values = pmf.get_critical_values();
+		partition_list = pmf.get_psp();
+	}
 	else{
 		submodular::PSP psp_class(&digraph, &cap);
 		psp_class.run();
