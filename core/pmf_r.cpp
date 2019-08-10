@@ -446,4 +446,80 @@ namespace parametric {
 			flowMap[u][v] = w;
 		}
 	}
+
+
+	PDT_R::PDT_R(lemon::ListDigraph* g, ArcMap* arcMap):
+		_g(g),
+		_arcMap(arcMap),
+		pmf(g, arcMap, 0, _y_lambda) {}
+	void PDT_R::run() {
+		partition_list.clear();
+		Lambda_list.clear();
+		partition_list.push_back(Partition());
+		Lambda_list.push_back(INFINITY);
+		_y_lambda.resize(lemon::countNodes(*_g), pair(0, INFINITY));
+		for (int j = 0; j < _y_lambda.size(); j++) {
+			pmf.reset_y_lambda(_y_lambda);
+			pmf.reset_j(j);
+			pmf.run();
+			std::list<Set> t_list = pmf.get_set_list();
+			std::list<double> lambda_list = pmf.get_lambda_list();
+			for (int u = 0; u < _y_lambda.size(); u++) {
+				if (u == j) {
+					stl::CSet t;
+					t.AddElement(j);
+					_y_lambda[j] = pair(submodular::get_cut_value(*_g, *_arcMap, t), INFINITY);
+				}
+				else {
+					int i = -1;
+					std::list<double>::iterator lambda_it = lambda_list.begin();
+					for (Set& s : t_list) {
+						if (s.HasElement(u)) {
+							i++;
+							lambda_it++;
+						}
+					}
+					if (i != -1) {
+						lambda_it--;
+						if (*lambda_it > (_y_lambda[u].first - _y_lambda[u].second))
+							_y_lambda[u] = std::make_pair(_y_lambda[u].first, _y_lambda[u].first - (*lambda_it));
+					}
+				}
+			}
+			std::list<Partition> partition_list_apostrophe;
+			std::list<double> Lambda_list_apostrophe;
+			lambda_list.push_back(INFINITY);
+			int i = 0, k = 0;
+			std::list<Partition>::iterator p_it = partition_list.begin();
+			std::list<Set>::iterator t_it = t_list.begin();
+			std::list<double>::iterator d_i = Lambda_list.begin(), d_k = lambda_list.begin();
+			Partition Q;
+			while (i < Lambda_list.size() && k < lambda_list.size()) {
+				Partition Q_apostrophe = p_it->expand(*t_it);
+				if (Q_apostrophe != Q) {
+					Q = Q_apostrophe;
+					partition_list_apostrophe.push_back(Q);
+					Lambda_list_apostrophe.push_back(std::min(*d_i, *d_k));
+				}
+				else {
+					std::reverse_iterator<std::list<double>::iterator> last_it = Lambda_list_apostrophe.rbegin();
+					*last_it = std::min(*d_i, *d_k);
+				}
+				double d_i_v = *d_i, d_k_v = *d_k;
+				if (d_i_v <= d_k_v) {
+					i++;
+					d_i++;
+					p_it++;
+				}
+				if (d_i_v >= d_k_v) {
+					k++;
+					d_k++;
+					t_it++;
+				}
+			}
+			Lambda_list = Lambda_list_apostrophe;
+			partition_list = partition_list_apostrophe;
+		}
+		Lambda_list.pop_back();
+	}
 }

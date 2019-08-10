@@ -122,5 +122,29 @@ namespace parametric {
 		it_2++;
 		EXPECT_DOUBLE_EQ(*it_2, 5);
 	}
-
+	TEST(PDT_R, RUN) {
+		std::vector<std::tuple<std::size_t, std::size_t, double>> elt;
+		elt.push_back(std::make_tuple(0, 1, 1));
+		elt.push_back(std::make_tuple(0, 2, 5));
+		elt.push_back(std::make_tuple(1, 2, 1));
+		submodular::InfoCluster ic(elt, 3);
+		ic.run_pdt_r();
+		std::list<double> lambda_list = ic.get_critical_values();
+		std::list<Partition> partition_list = ic.get_psp();
+		EXPECT_EQ(lambda_list.size(), 2);
+		EXPECT_EQ(partition_list.size(), 3);
+		std::list<double>::iterator d = lambda_list.begin();
+		EXPECT_DOUBLE_EQ(*d, 2);
+		d++;
+		EXPECT_DOUBLE_EQ(*d, 5);
+		std::list<Partition>::iterator p = partition_list.begin();
+		EXPECT_EQ(*p, Partition::makeDense(3));
+		p++;
+		Partition nP;
+		nP.AddElement(stl::CSet("101"));
+		nP.AddElement(stl::CSet("010"));
+		EXPECT_EQ(*p, nP);
+		p++;
+		EXPECT_EQ(*p, Partition::makeFine(3));
+	}
 }

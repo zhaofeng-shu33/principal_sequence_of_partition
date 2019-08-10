@@ -64,4 +64,23 @@ namespace parametric{
 		lemon::ListDigraph dig; //directed graph
 		ArcMap dig_aM; //directed graph arcMap
     };
+
+	class PDT_R {
+	public:
+		typedef lemon::ListDigraph::ArcMap<double> ArcMap;
+		PDT_R(lemon::ListDigraph* g, ArcMap* arcMap);
+		void run();
+		std::list<double> get_critical_values() { return Lambda_list; }
+		std::list<Partition> get_psp() {
+			return partition_list;
+		}
+	protected:
+		std::list<double> Lambda_list;
+		std::list<Partition> partition_list;
+	private:
+		std::vector<pair> _y_lambda;
+		lemon::ListDigraph* _g;
+		ArcMap* _arcMap;
+		PMF_R pmf;
+	};
 }

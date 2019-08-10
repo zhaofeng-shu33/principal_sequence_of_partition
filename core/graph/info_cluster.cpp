@@ -2,6 +2,8 @@
 #include "core/dt.h"
 #include "core/pmf.h"
 #include "core/psp_i.h"
+#include "core/pmf_r.h"
+
 namespace submodular {
 	InfoCluster::InfoCluster(const std::vector<std::tuple<std::size_t, std::size_t, double>>& elt, int np) {
 		num_points = np;
@@ -40,6 +42,12 @@ namespace submodular {
 	}
 	void InfoCluster::run_pdt() {
 		parametric::PDT pdt(g, edge_map);
+		pdt.run();
+		gamma_list = pdt.get_critical_values();
+		psp_list = pdt.get_psp();
+	}
+	void InfoCluster::run_pdt_r() {
+		parametric::PDT_R pdt(g, edge_map);
 		pdt.run();
 		gamma_list = pdt.get_critical_values();
 		psp_list = pdt.get_psp();

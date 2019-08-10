@@ -16,6 +16,7 @@ namespace submodular {
 		stl::Partition get_partition(int pn);
 		void run();
 		void run_pdt();
+		void run_pdt_r();
 		void run_psp_i();
 		std::list<double>& get_gamma_list();
 		std::list<double> get_critical_values();
