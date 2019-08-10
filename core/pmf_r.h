@@ -6,7 +6,7 @@
 #include <lemon/list_graph.h>
 #include <unordered_set>
 #include "set/set_stl.h"
-#include "preflow/mf_base.h"
+#include <lemon/preflow.h>
 typedef std::pair<double, double> pair;
 namespace parametric{
 	typedef lemon::ListDigraph::ArcMap<double> ArcMap;
@@ -16,7 +16,7 @@ namespace parametric{
     class PMF_R {
     public:
         using Set = stl::CSet;
-        typedef lemon::Preflow_Relabel<lemon::ListDigraph, ArcMap> Preflow;
+        typedef lemon::Preflow<lemon::ListDigraph, ArcMap> Preflow;
         typedef std::map<int, std::map<int, double>> FlowMap;
         typedef Preflow::Elevator Elevator;
         PMF_R(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda);
@@ -39,13 +39,15 @@ namespace parametric{
 		void get_preflow_flowMap(const lemon::ListDigraph& G, const FlowMap& flowMapDic, Preflow::FlowMap& flowMap);
 		//! modify flow given current dig_aM
 		void modify_flow(const Set& S, const Set& T, const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap);
+		void executePreflow(const lemon::ListDigraph& newDig, const ArcMap& newArcMap, const FlowMap& leftArcMap, const Set& S, const Set& T, Set& T_apostrophe, double& new_flow_value, FlowMap& newFlowMap);
+		void executePreflow_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& newDig, const ArcMap& newArcMap, const FlowMap& rightArcMap, const Set& S, const Set& T, Set& T_apostrophe, double& new_flow_value, FlowMap& newFlowMap);
     private:    
         void update_dig(double lambda);
-        void slice(Set& T_l, Set& T_r, const FlowMap& arcMap, double lambda_1, double lambda_3);
-        inline Set get_min_cut_sink_side(lemon::ListDigraph& digraph, Preflow& pf);
+        void slice(Set& T_l, Set& T_r, const FlowMap& leftArcMap, const FlowMap& rightArcMap, double lambda_1, double lambda_3);
+        inline Set get_min_cut_sink_side(const lemon::ListDigraph& digraph, Preflow& pf);
         double compute_lambda_eq_const(Set& S, Set& T);
 		inline void addArc(int u, int v, double w, lemon::ListDigraph& G, ArcMap& arcMap);
-		inline void addFlowArc(int u, int v, double w, FlowMap& flowMap);
+		inline void addFlowArc(int u, int v, double w, FlowMap& flowMap);	
     private:    
         lemon::ListDigraph* g_ptr;
         ArcMap* aM;

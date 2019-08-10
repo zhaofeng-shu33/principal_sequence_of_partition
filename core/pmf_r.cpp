@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <sstream>
+#include <lemon/adaptors.h>
 #include "core/graph/graph.h"
 #include "core/pmf_r.h"
 namespace parametric {
@@ -70,10 +71,10 @@ namespace parametric {
         sink_capacity.resize(_y_lambda.size());
     }
 	PMF_R::PMF_R():dig_aM(dig){}
-    Set PMF_R::get_min_cut_sink_side(lemon::ListDigraph& digraph, Preflow& pf) {
+    Set PMF_R::get_min_cut_sink_side(const lemon::ListDigraph& digraph, Preflow& pf) {
         Set t = Set::MakeEmpty(tilde_G_size);
         for (lemon::ListDigraph::NodeIt n(digraph); n != lemon::INVALID; ++n) {
-            if (!pf.minCutSink(n))
+            if (!pf.minCut(n))
                 t.AddElement(dig.id(n));
         }
         return t;
@@ -122,16 +123,24 @@ namespace parametric {
         update_dig(init_lambda);
         pf.init();
         pf.startFirstPhase();
-        pf.startSecondPhase(false);
+        pf.startSecondPhase();
 
         Set T_0 = get_min_cut_sink_side(dig, pf);
         Set T_1 = Set::MakeEmpty(tilde_G_size);
         T_1.AddElement(_j);
         set_list.push_back(T_0);
         set_list.push_back(T_1);
-		FlowMap newFlowMap;
-		set_flowMap(dig, pf.flowMap(), newFlowMap);
-        slice(T_0, T_1, newFlowMap, init_lambda, std::numeric_limits<double>::infinity());
+		FlowMap leftFlowMap;
+		set_flowMap(dig, pf.flowMap(), leftFlowMap);
+		FlowMap rightFlowMap;
+		// construct rightFlowMap
+		for (int i = 0; i < sink_capacity.size(); i++) {
+			if (sink_capacity[i] > tolerance.epsilon()) {
+				rightFlowMap[source_node_id][i] = sink_capacity[i];
+				rightFlowMap[i][sink_node_id] = sink_capacity[i];
+			}
+		}
+        slice(T_0, T_1, leftFlowMap, rightFlowMap, init_lambda, std::numeric_limits<double>::infinity());
         lambda_list.sort();
         auto is_superset = [](const Set& A, const Set& B){return B.IsSubSet(A);};
         set_list.sort(is_superset);
@@ -220,6 +229,12 @@ namespace parametric {
 				newFlowMap[u][sink_node_id]= capMap[a];
 			}
 		}
+		for (lemon::ListDigraph::OutArcIt a(G, source_node); a != lemon::INVALID; ++a) {
+			int u = G.id(G.target(a));
+			if (newFlowMap[source_node_id][u] > capMap[a]) {
+				newFlowMap[source_node_id][u] = capMap[a];
+			}
+		}
 #if _DEBUG
 		// check newFlowMap has at least the number of arc with directed graph G
 		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; ++a) {
@@ -249,8 +264,33 @@ namespace parametric {
             dig_aM[arc] = sink_capacity[i] + std::max<double>(0, std::min<double>(a_i - lambda, b_i));
         }
     }
+	void PMF_R::executePreflow(const lemon::ListDigraph& newDig, const ArcMap& newArcMap, const FlowMap& leftArcMap, const Set& S, const Set& T, Set& T_apostrophe, double& new_flow_value, FlowMap& newFlowMap) {
+		FlowMap new_leftFlowMap;
+		modify_flow(S, T, newDig, newArcMap, leftArcMap, new_leftFlowMap);
+		Preflow::FlowMap inner_new_leftFlowMap(newDig);
+		get_preflow_flowMap(newDig, new_leftFlowMap, inner_new_leftFlowMap);
 
-    void PMF_R::slice(Set& T_l, Set& T_r, const FlowMap& flowMap, double lambda_1, double lambda_3) {
+		Preflow pf_instance(newDig, newArcMap, source_node, sink_node);
+		bool isValid = pf_instance.init(inner_new_leftFlowMap);
+#if _DEBUG
+		if (!isValid)
+			throw std::logic_error("not valid flow map to init.");
+#endif
+		pf_instance.startFirstPhase();
+		pf_instance.startSecondPhase();
+
+
+		set_flowMap(newDig, pf_instance.flowMap(), newFlowMap);
+
+		new_flow_value = pf_instance.flowValue();
+		T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
+	}
+	void PMF_R::executePreflow_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& reverse_newDig, const ArcMap& newArcMap, const FlowMap& rightArcMap, const Set& S, const Set& T, Set& T_apostrophe, double& new_flow_value, FlowMap& newFlowMap) {
+		lemon::Preflow<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap> pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
+
+	}
+
+    void PMF_R::slice(Set& T_l, Set& T_r, const FlowMap& leftArcMap, const FlowMap& rightArcMap, double lambda_1, double lambda_3) {
 #if _DEBUG
 
 			update_dig(lambda_1);
@@ -290,28 +330,21 @@ namespace parametric {
 		lemon::ListDigraph newDig;
 		ArcMap newArcMap(newDig);
 		contract(S, T_r,newDig, newArcMap);
+
 		FlowMap newFlowMap;
-		modify_flow(S, T_r, newDig, newArcMap, flowMap, newFlowMap);
-        // do not use graph contraction
-        Preflow pf_instance(newDig, newArcMap, source_node, sink_node);
-		// pf_instance.init();
-		// bool isValid = true;
-		Preflow::FlowMap innerNewFlowMap(newDig);
-		get_preflow_flowMap(newDig, newFlowMap, innerNewFlowMap);
-        bool isValid = pf_instance.init(innerNewFlowMap);
-#if _DEBUG
-		if (!isValid)
-			throw std::logic_error("not valid flow map to init.");
-#endif
-        pf_instance.startFirstPhase();
-        pf_instance.startSecondPhase(false);
-		double new_flow_value = pf_instance.flowValue();
-        Set T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
+		Set T_apostrophe;
+		double new_flow_value;
+
+		// Todo: run 
+		// lemon::ReverseDigraph<lemon::ListDigraph> reverse_newDig(newDig);
+		// Todo: use a thread to run the code below
+		executePreflow(newDig, newArcMap, leftArcMap, S, T_r, T_apostrophe, new_flow_value, newFlowMap);
+
 		Set T_apostrophe_total = T_apostrophe.Union(T_r);
         if(T_apostrophe_total != T_r && T_apostrophe_total != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
             set_list.push_back(T_apostrophe_total);
-            slice(T_l, T_apostrophe_total, flowMap, lambda_1, lambda_2);
-            slice(T_apostrophe_total, T_r, newFlowMap, lambda_2, lambda_3);
+            slice(T_l, T_apostrophe_total, leftArcMap, newFlowMap, lambda_1, lambda_2);
+            slice(T_apostrophe_total, T_r, newFlowMap, rightArcMap, lambda_2, lambda_3);
         }
         else {
             lambda_list.push_back(lambda_2);
