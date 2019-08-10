@@ -343,14 +343,14 @@ namespace parametric {
 	}
 	void PMF_R::set_flowMap(const lemon::ListDigraph& G, Preflow p, FlowMap& flowMap) {
 		const ArcMap& arcMap = p.flowMap();
-		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; a++) {
+		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; ++a) {
 			int u = G.id(G.source(a));
 			int v = G.id(G.target(a));
 			flowMap[u][v] = arcMap[a];
 		}
 	}
 	void PMF_R::get_preflow_flowMap(const lemon::ListDigraph& G, const FlowMap& flowMapDic, Preflow::FlowMap& flowMap) {
-		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; a++) {
+		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; ++a) {
 			int u = G.id(G.source(a));
 			int v = G.id(G.target(a));
 			flowMap[a] = flowMapDic.at(u).at(v);
