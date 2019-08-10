@@ -22,7 +22,12 @@ namespace parametric {
 		pmfR.contract(S, T, new_digraph, new_cap);
 		EXPECT_EQ(lemon::countNodes(new_digraph), 3);
 		EXPECT_EQ(lemon::countArcs(new_digraph), 4);
-		
+		PMF_R::FlowMap flowMap;
+		pmfR.set_flowMap(new_digraph, new_cap, flowMap);
+		EXPECT_DOUBLE_EQ(flowMap[4][0], 6);
+		EXPECT_DOUBLE_EQ(flowMap[4][3], 6);
+		EXPECT_DOUBLE_EQ(flowMap[3][4], 4);
+		EXPECT_DOUBLE_EQ(flowMap[0][3], 3);
 	}
 	TEST(PMF_R, flowMap) {
 		PMF_R pmfR;
@@ -39,7 +44,7 @@ namespace parametric {
 		PMF_R::Preflow pf(digraph, cap, source_node, sink_node);
 		pf.run();
 		PMF_R::FlowMap newFlowMap;
-		pmfR.set_flowMap(digraph, pf, newFlowMap);
+		pmfR.set_flowMap(digraph, pf.flowMap(), newFlowMap);
 		EXPECT_TRUE(newFlowMap.size() > 0);
 		PMF_R::Preflow::FlowMap backFlowMap(digraph);
 		pmfR.get_preflow_flowMap(digraph, newFlowMap, backFlowMap);
@@ -71,11 +76,12 @@ namespace parametric {
 		PMF_R::Preflow pf(digraph, cap, source_node, sink_node);
 		pf.run();
 		PMF_R::FlowMap flowMap, newFlowMap;
-		pmfR.set_flowMap(digraph, pf, flowMap);
+		pmfR.set_flowMap(digraph, pf.flowMap(), flowMap);
 		pmfR.modify_flow(S, T, new_digraph, new_cap, flowMap, newFlowMap);
 		EXPECT_DOUBLE_EQ(newFlowMap[4][0], 1);
 		EXPECT_DOUBLE_EQ(newFlowMap[4][3], 2);
 		EXPECT_DOUBLE_EQ(newFlowMap[0][3], 1);
+		EXPECT_DOUBLE_EQ(newFlowMap[3][4], 0);
 	}
 
 

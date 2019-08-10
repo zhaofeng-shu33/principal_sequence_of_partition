@@ -130,7 +130,7 @@ namespace parametric {
         set_list.push_back(T_0);
         set_list.push_back(T_1);
 		FlowMap newFlowMap;
-		set_flowMap(dig, pf, newFlowMap);
+		set_flowMap(dig, pf.flowMap(), newFlowMap);
         slice(T_0, T_1, newFlowMap, init_lambda, std::numeric_limits<double>::infinity());
         lambda_list.sort();
         auto is_superset = [](const Set& A, const Set& B){return B.IsSubSet(A);};
@@ -417,12 +417,11 @@ namespace parametric {
 			arcMap[newA] = w;
 		}
 	}
-	void PMF_R::set_flowMap(const lemon::ListDigraph& G, const Preflow& p, FlowMap& flowMap) {
-		const ArcMap& arcMap = p.flowMap();
+	void PMF_R::set_flowMap(const lemon::ListDigraph& G, const Preflow::FlowMap& pfm, FlowMap& flowMap) {
 		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; ++a) {
 			int u = G.id(G.source(a));
 			int v = G.id(G.target(a));
-			flowMap[u][v] = arcMap[a];
+			flowMap[u][v] = pfm[a];
 		}
 	}
 	void PMF_R::get_preflow_flowMap(const lemon::ListDigraph& G, const FlowMap& flowMapDic, Preflow::FlowMap& flowMap) {

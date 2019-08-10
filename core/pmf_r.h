@@ -35,7 +35,7 @@ namespace parametric{
 		void set_tilde_G_size(int new_size);
 		double contract(const Set& S, const Set& T, lemon::ListDigraph& G, ArcMap& arcMap);
 		//! convert Preflow flowMap to double dic flowMap
-		void set_flowMap(const lemon::ListDigraph& G, const Preflow& p, FlowMap& flowMap);
+		void set_flowMap(const lemon::ListDigraph& G, const Preflow::FlowMap& pfm, FlowMap& flowMap);
 		void get_preflow_flowMap(const lemon::ListDigraph& G, const FlowMap& flowMapDic, Preflow::FlowMap& flowMap);
 		//! modify flow given current dig_aM
 		void modify_flow(const Set& S, const Set& T, const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap);
