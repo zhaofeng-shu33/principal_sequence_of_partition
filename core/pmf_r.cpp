@@ -73,7 +73,7 @@ namespace parametric {
     Set PMF_R::get_min_cut_sink_side(lemon::ListDigraph& digraph, Preflow& pf) {
         Set t = Set::MakeEmpty(tilde_G_size);
         for (lemon::ListDigraph::NodeIt n(digraph); n != lemon::INVALID; ++n) {
-            if (!pf.minCut(n))
+            if (!pf.minCutSink(n))
                 t.AddElement(dig.id(n));
         }
         return t;
@@ -122,7 +122,7 @@ namespace parametric {
         update_dig(init_lambda);
         pf.init();
         pf.startFirstPhase();
-        pf.startSecondPhase();
+        pf.startSecondPhase(false);
 
         Set T_0 = get_min_cut_sink_side(dig, pf);
         Set T_1 = Set::MakeEmpty(tilde_G_size);
@@ -304,7 +304,7 @@ namespace parametric {
 			throw std::logic_error("not valid flow map to init.");
 #endif
         pf_instance.startFirstPhase();
-        pf_instance.startSecondPhase();
+        pf_instance.startSecondPhase(false);
 		double new_flow_value = pf_instance.flowValue();
         Set T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
 		Set T_apostrophe_total = T_apostrophe.Union(T_r);
