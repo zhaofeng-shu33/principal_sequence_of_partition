@@ -69,7 +69,7 @@ namespace parametric {
     {        
         sink_capacity.resize(_y_lambda.size());
     }
-
+	PMF_R::PMF_R():dig_aM(dig){}
     Set PMF_R::get_min_cut_sink_side(Preflow& pf) {
         Set t = Set::MakeEmpty(tilde_G_size);
         for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
@@ -251,7 +251,7 @@ namespace parametric {
 	double PMF_R::contract(const Set& S, const Set& T, lemon::ListDigraph& G, ArcMap& arcMap) {
 #if _DEBUG
 		// check s \in S and t \in T
-		if (S.HasElement(source_node_id) || T.HasElement(sink_node_id)) {
+		if (!S.HasElement(source_node_id) || !T.HasElement(sink_node_id)) {
 			throw std::logic_error("s \in S or t \in T fails");
 		}
 		// G should not have nodes
@@ -280,8 +280,8 @@ namespace parametric {
 			int tmp_id = G.id(n);
 			if (tmp_id == source_node_id || tmp_id == sink_node_id)
 				continue;
-			s_capacity_map[G.id(n)] = 0;
-			t_capacity_map[G.id(n)] = 0;
+			s_capacity_map[tmp_id] = 0;
+			t_capacity_map[tmp_id] = 0;
 		}
 		double s_t_cost = 0;
 		// compute cost and flow from s -> t
@@ -290,33 +290,34 @@ namespace parametric {
 			lemon::ListDigraph::Node v = dig.target(a);
 			int u_id = dig.id(u);
 			int v_id = dig.id(v);
+			double cv = dig_aM[a]; // capacity value
 			if (S.HasElement(u_id)) {
 				if (T.HasElement(v_id)) {
-					s_t_cost += dig_aM[a];
+					s_t_cost += cv;
 				}
 				else if (!S.HasElement(v_id)) {
-					s_capacity_map[u_id] += dig_aM[a];
+					s_capacity_map[v_id] += cv;
 				}
 			}
 			else if (T.HasElement(u_id)) {
 				if (S.HasElement(v_id)) {
-					s_t_cost -= dig_aM[a];
+					s_t_cost -= cv;
 				}
 				else if (!T.HasElement(v_id)) {
-					t_capacity_map[u_id] -= dig_aM[a];
+					t_capacity_map[v_id] -= cv;
 				}
 			}
 			else {
 				if (S.HasElement(v_id)) {
-					s_capacity_map[v_id] -= dig_aM[a];
+					s_capacity_map[u_id] -= cv;
 				}
 				else if (T.HasElement(v_id)) {
-					t_capacity_map[v_id] += dig_aM[a];
+					t_capacity_map[u_id] += cv;
 				}
 				else {
 					// add arc to new graph
 					lemon::ListDigraph::Arc newA = G.addArc(G.nodeFromId(u_id), G.nodeFromId(v_id));
-					arcMap[newA] = dig_aM[a];
+					arcMap[newA] = cv;
 				}
 			}
 		}
@@ -355,5 +356,14 @@ namespace parametric {
 			int v = G.id(G.target(a));
 			flowMap[a] = flowMapDic.at(u).at(v);
 		}
+	}
+	void PMF_R::set_source_node_id(int new_id) {
+		source_node_id = new_id;
+	}
+	void PMF_R::set_sink_node_id(int new_id) {
+		sink_node_id = new_id;
+	}
+	void PMF_R::set_tilde_G_size(int new_size) {
+		tilde_G_size = new_size;
 	}
 }

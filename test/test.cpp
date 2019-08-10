@@ -10,3 +10,5 @@
 #include "test_dt.h"
 
 #include "test_psp_i.h"
+
+#include "test_pmf_r.h"
