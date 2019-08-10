@@ -142,18 +142,81 @@ namespace parametric {
         set_list.clear();
         lambda_list.clear();    
 	}
-	void PMF_R::modify_flow(const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap){
-		// make sure the keys of newFlowMap is subset of flowMap
+	void PMF_R::modify_flow(const Set& S, const Set& T, const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap){
+		std::map<int, double> s_capacity_map;
+		std::map<int, double> t_capacity_map;
+		for (lemon::ListDigraph::NodeIt n(G); n != lemon::INVALID; ++n) {
+			int tmp_id = G.id(n);
+			if (tmp_id == source_node_id || tmp_id == sink_node_id)
+				continue;
+			s_capacity_map[tmp_id] = 0;
+			t_capacity_map[tmp_id] = 0;
+		}
+		double s_t_flow = 0;
+		bool has_s_t_flow = false;
+		// compute flow
+		for (std::pair<int, std::map<int, double>> kv_outer : flowMap) 
+			for(std::pair<int, double> kv_inner: kv_outer.second){
+				int u_id = kv_outer.first;
+				int v_id = kv_inner.first;
+				double cv = kv_inner.second; // capacity value
+				if (S.HasElement(u_id)) {
+					if (T.HasElement(v_id)) {
+						has_s_t_flow = true;
+						s_t_flow += cv;
+					}
+					else if (!S.HasElement(v_id)) {
+						s_capacity_map[v_id] += cv;
+					}
+				}
+				else if (T.HasElement(u_id)) {
+					if (S.HasElement(v_id)) {
+						has_s_t_flow = true;
+						s_t_flow -= cv;
+					}
+					else if (!T.HasElement(v_id)) {
+						t_capacity_map[v_id] -= cv;
+					}
+				}
+				else {
+					if (S.HasElement(v_id)) {
+						s_capacity_map[u_id] -= cv;
+					}
+					else if (T.HasElement(v_id)) {
+						t_capacity_map[u_id] += cv;
+					}
+					else {						
+						newFlowMap[u_id][v_id] = cv;
+					}
+				}
+		}
+		// add necessary s-t arc
+		if (has_s_t_flow)
+			addFlowArc(source_node_id, sink_node_id, s_t_flow, newFlowMap);
+		// add source -> others
+		for (std::pair<int, double> kvp : s_capacity_map) {
+			addFlowArc(source_node_id, kvp.first, kvp.second, newFlowMap);
+		}
+		// add others -> sink
+		for (std::pair<int, double> kvp : t_capacity_map) {
+			addFlowArc(kvp.first, sink_node_id, kvp.second, newFlowMap);
+		}
+
+		for (lemon::ListDigraph::InArcIt a(G, sink_node); a != lemon::INVALID; ++a) {
+			int u = G.id(G.source(a));			
+			if (newFlowMap[u][sink_node_id] > capMap[a]) {
+				newFlowMap[u][sink_node_id]= capMap[a];
+			}
+		}
+#if _DEBUG
+		// check newFlowMap has at least the number of arc with directed graph G
 		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; ++a) {
 			int u = G.id(G.source(a));
 			int v = G.id(G.target(a));
-			if (v == sink_node_id && flowMap.at(u).at(v) > capMap[a]) {
-				newFlowMap[u][v]= capMap[a];
-			}
-			else {
-				newFlowMap[u][v] = flowMap.at(u).at(v);
-			}
+			if (newFlowMap[u][v] > capMap[a])
+				throw std::logic_error("newFlowMap does not conform to capacity constraint");
 		}
+#endif
 	}
 
     void PMF_R::update_dig(double lambda) {
@@ -216,7 +279,7 @@ namespace parametric {
 		ArcMap newArcMap(newDig);
 		contract(S, T_r,newDig, newArcMap);
 		FlowMap newFlowMap;
-		modify_flow(newDig, newArcMap, flowMap, newFlowMap);
+		modify_flow(S, T_r, newDig, newArcMap, flowMap, newFlowMap);
         // do not use graph contraction
         Preflow pf_instance(newDig, newArcMap, source_node, sink_node);
 		// pf_instance.init();
@@ -284,7 +347,7 @@ namespace parametric {
 			t_capacity_map[tmp_id] = 0;
 		}
 		double s_t_cost = 0;
-		// compute cost and flow from s -> t
+		// compute cost
 		for (lemon::ListDigraph::ArcIt a(dig); a != lemon::INVALID; ++a) {
 			lemon::ListDigraph::Node u = dig.source(a);
 			lemon::ListDigraph::Node v = dig.target(a);
@@ -359,11 +422,24 @@ namespace parametric {
 	}
 	void PMF_R::set_source_node_id(int new_id) {
 		source_node_id = new_id;
+		source_node = dig.nodeFromId(source_node_id);
 	}
 	void PMF_R::set_sink_node_id(int new_id) {
 		sink_node_id = new_id;
+		sink_node = dig.nodeFromId(sink_node_id);
 	}
 	void PMF_R::set_tilde_G_size(int new_size) {
 		tilde_G_size = new_size;
+	}
+	inline void PMF_R::addFlowArc(int u, int v, double w, FlowMap& flowMap) {
+		if (w > tolerance.epsilon()) {
+			flowMap[u][v] = w;
+		}
+		else if (w < -tolerance.epsilon()) {
+			flowMap[v][u] = w;
+		}
+		else {
+			flowMap[u][v] = 0;
+		}
 	}
 }
