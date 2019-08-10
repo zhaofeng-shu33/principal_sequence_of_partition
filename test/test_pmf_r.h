@@ -21,7 +21,8 @@ namespace parametric {
 		ArcMap new_cap(new_digraph);
 		pmfR.contract(S, T, new_digraph, new_cap);
 		EXPECT_EQ(lemon::countNodes(new_digraph), 3);
-		EXPECT_EQ(lemon::countArcs(new_digraph), 3);
+		EXPECT_EQ(lemon::countArcs(new_digraph), 4);
+		
 	}
 	TEST(PMF_R, flowMap) {
 		PMF_R pmfR;
@@ -76,5 +77,6 @@ namespace parametric {
 		EXPECT_DOUBLE_EQ(newFlowMap[4][3], 2);
 		EXPECT_DOUBLE_EQ(newFlowMap[0][3], 1);
 	}
+
 
 }
