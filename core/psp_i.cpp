@@ -107,9 +107,6 @@ namespace psp {
 			Tl.AddElement(_g->id(enabled_nodes[i]));
 			_partition = _partition.expand(Tl);
 			xl.push_back(alpha_l);
-            if(i% 50 ==0){
-                std::cout << "DT " << i << std::endl;
-            }
 		}
 		min_value = 0;
 		for (auto it = xl.begin(); it != xl.end(); it++) {

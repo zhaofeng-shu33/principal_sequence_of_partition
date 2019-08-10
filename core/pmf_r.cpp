@@ -342,7 +342,7 @@ namespace parametric {
 			arcMap[newA] = -w;
 		}
 	}
-	void PMF_R::set_flowMap(const lemon::ListDigraph& G, Preflow p, FlowMap& flowMap) {
+	void PMF_R::set_flowMap(const lemon::ListDigraph& G, const Preflow& p, FlowMap& flowMap) {
 		const ArcMap& arcMap = p.flowMap();
 		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; ++a) {
 			int u = G.id(G.source(a));

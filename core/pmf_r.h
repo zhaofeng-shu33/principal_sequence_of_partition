@@ -34,6 +34,8 @@ namespace parametric{
 		void set_sink_node_id(int new_id);
 		void set_tilde_G_size(int new_size);
 		double contract(const Set& S, const Set& T, lemon::ListDigraph& G, ArcMap& arcMap);
+		void set_flowMap(const lemon::ListDigraph& G, const Preflow& p, FlowMap& flowMap);
+		void get_preflow_flowMap(const lemon::ListDigraph& G, const FlowMap& flowMapDic, Preflow::FlowMap& flowMap);
     private:    
         void update_dig(double lambda);
         void slice(Set& T_l, Set& T_r, const FlowMap& arcMap, double lambda_1, double lambda_3);
@@ -43,8 +45,6 @@ namespace parametric{
         double compute_lambda_eq_const(Set& S, Set& T);
 		inline void addArc(int u, int v, double w, lemon::ListDigraph& G, ArcMap& arcMap);
 		//! convert Preflow flowMap to double dic flowMap
-		void set_flowMap(const lemon::ListDigraph& G, Preflow p, FlowMap& flowMap);
-		void get_preflow_flowMap(const lemon::ListDigraph& G, const FlowMap& flowMapDic, Preflow::FlowMap& flowMap);
     private:    
         lemon::ListDigraph* g_ptr;
         ArcMap* aM;
