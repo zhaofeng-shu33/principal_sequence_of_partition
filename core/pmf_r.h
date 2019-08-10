@@ -5,8 +5,8 @@
 
 #include <lemon/list_graph.h>
 #include <unordered_set>
-#include <lemon/preflow.h>
 #include "set/set_stl.h"
+#include "preflow/mf_base.h"
 typedef std::pair<double, double> pair;
 namespace parametric{
 	typedef lemon::ListDigraph::ArcMap<double> ArcMap;
@@ -16,7 +16,7 @@ namespace parametric{
     class PMF_R {
     public:
         using Set = stl::CSet;
-        typedef lemon::Preflow<lemon::ListDigraph, ArcMap> Preflow;
+        typedef lemon::Preflow_Relabel<lemon::ListDigraph, ArcMap> Preflow;
         typedef std::map<int, std::map<int, double>> FlowMap;
         typedef Preflow::Elevator Elevator;
         PMF_R(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda);
@@ -42,7 +42,7 @@ namespace parametric{
     private:    
         void update_dig(double lambda);
         void slice(Set& T_l, Set& T_r, const FlowMap& arcMap, double lambda_1, double lambda_3);
-        inline Set get_min_cut_sink_side(Preflow& pf);
+        inline Set get_min_cut_sink_side(lemon::ListDigraph& digraph, Preflow& pf);
         double compute_lambda_eq_const(Set& S, Set& T);
 		inline void addArc(int u, int v, double w, lemon::ListDigraph& G, ArcMap& arcMap);
 		inline void addFlowArc(int u, int v, double w, FlowMap& flowMap);

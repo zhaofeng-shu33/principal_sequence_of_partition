@@ -70,9 +70,9 @@ namespace parametric {
         sink_capacity.resize(_y_lambda.size());
     }
 	PMF_R::PMF_R():dig_aM(dig){}
-    Set PMF_R::get_min_cut_sink_side(Preflow& pf) {
+    Set PMF_R::get_min_cut_sink_side(lemon::ListDigraph& digraph, Preflow& pf) {
         Set t = Set::MakeEmpty(tilde_G_size);
-        for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
+        for (lemon::ListDigraph::NodeIt n(digraph); n != lemon::INVALID; ++n) {
             if (!pf.minCut(n))
                 t.AddElement(dig.id(n));
         }
@@ -124,7 +124,7 @@ namespace parametric {
         pf.startFirstPhase();
         pf.startSecondPhase();
 
-        Set T_0 = get_min_cut_sink_side(pf);
+        Set T_0 = get_min_cut_sink_side(dig, pf);
         Set T_1 = Set::MakeEmpty(tilde_G_size);
         T_1.AddElement(_j);
         set_list.push_back(T_0);
@@ -306,7 +306,7 @@ namespace parametric {
         pf_instance.startFirstPhase();
         pf_instance.startSecondPhase();
 		double new_flow_value = pf_instance.flowValue();
-        Set T_apostrophe = get_min_cut_sink_side(pf_instance);
+        Set T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
 		Set T_apostrophe_total = T_apostrophe.Union(T_r);
         if(T_apostrophe_total != T_r && T_apostrophe_total != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
             set_list.push_back(T_apostrophe_total);
