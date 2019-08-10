@@ -307,9 +307,8 @@ namespace parametric {
         pf_instance.startSecondPhase();
 		double new_flow_value = pf_instance.flowValue();
         Set T_apostrophe = get_min_cut_sink_side(pf_instance);
-        if(T_apostrophe != T_r && T_apostrophe != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
-            // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
-			Set T_apostrophe_total = T_apostrophe.Union(T_r);
+		Set T_apostrophe_total = T_apostrophe.Union(T_r);
+        if(T_apostrophe_total != T_r && T_apostrophe_total != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
             set_list.push_back(T_apostrophe_total);
             slice(T_l, T_apostrophe_total, flowMap, lambda_1, lambda_2);
             slice(T_apostrophe_total, T_r, newFlowMap, lambda_2, lambda_3);

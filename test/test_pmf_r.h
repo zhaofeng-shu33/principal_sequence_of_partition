@@ -83,6 +83,44 @@ namespace parametric {
 		EXPECT_DOUBLE_EQ(newFlowMap[0][3], 1);
 		EXPECT_DOUBLE_EQ(newFlowMap[3][4], 0);
 	}
+	TEST(PMF_R, PMClass) {
+		using Set = stl::CSet;
+		std::vector<pair> parameter_list;
+		parameter_list.push_back(std::make_pair(0, INFINITY));
+		parameter_list.push_back(std::make_pair(0, INFINITY));
+		parameter_list.push_back(std::make_pair(0, INFINITY));
 
+		lemon::ListDigraph g;
+		lemon::ListDigraph::Node n1 = g.addNode();
+		lemon::ListDigraph::Node n2 = g.addNode();
+		lemon::ListDigraph::Node n3 = g.addNode();
+
+		lemon::ListDigraph::Arc a1 = g.addArc(n1, n2);
+		lemon::ListDigraph::Arc a3 = g.addArc(n1, n3);
+		lemon::ListDigraph::Arc a5 = g.addArc(n2, n3);
+
+		lemon::ListDigraph::ArcMap<double> aM(g);
+		aM[a1] = 1;
+		aM[a3] = 5;
+		aM[a5] = 1;
+		PMF_R pmf(&g, &aM, 2, parameter_list);
+		pmf.run();
+
+		std::list<Set> sL = pmf.get_set_list();
+		EXPECT_EQ(sL.size(), 3);
+		std::list<Set>::iterator it = sL.begin();
+		EXPECT_EQ(*it, Set(std::string("111"))); // { 0, 1, 2 }
+		it++;
+		EXPECT_EQ(*it, Set(std::string("101"))); // { 0, 2 }
+		it++;
+		EXPECT_EQ(*it, Set(std::string("001"))); // { 2 }
+
+		std::list<double> lambda_list = pmf.get_lambda_list();
+		EXPECT_EQ(lambda_list.size(), 2);
+		std::list<double>::iterator it_2 = lambda_list.begin();
+		EXPECT_DOUBLE_EQ(*it_2, 1);
+		it_2++;
+		EXPECT_DOUBLE_EQ(*it_2, 5);
+	}
 
 }
