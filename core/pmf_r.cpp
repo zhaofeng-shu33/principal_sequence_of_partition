@@ -384,8 +384,8 @@ namespace parametric {
 		ThreadArgumentPack TAP_Left(newDig, newArcMap, leftArcMap, S, T_r, T_apostrophe_left, new_flow_value_left, newFlowLeftMap);
 		ThreadArgumentPack TAP_Right(newDig, newArcMap, rightArcMap, S, T_r, T_apostrophe_right, new_flow_value_right, newFlowRightMap);
 
-		std::thread left(&PMF_R::executePreflow, this, TAP_Left);
-		std::thread right(&PMF_R::executePreflow_reverse, this, TAP_Right);
+		std::thread left(&PMF_R::executePreflow, this, std::ref(TAP_Left));
+		std::thread right(&PMF_R::executePreflow_reverse, this, std::ref(TAP_Right));
 		left.join();
 		right.join();
 		double new_flow_value = new_flow_value_left;
