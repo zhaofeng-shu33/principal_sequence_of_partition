@@ -72,7 +72,7 @@ namespace parametric {
         sink_capacity.resize(_y_lambda.size());
     }
 	PMF_R::PMF_R():dig_aM(dig){}
-	Set PMF_R::get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, lemon::Preflow<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap>& pf) {
+	Set PMF_R::get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, Preflow_Reverse& pf) {
 		Set t = Set::MakeEmpty(tilde_G_size);
 		for (lemon::ReverseDigraph<lemon::ListDigraph>::NodeIt n(digraph); n != lemon::INVALID; ++n) {
 			if (pf.minCut(n))
@@ -312,10 +312,10 @@ namespace parametric {
 		double& new_flow_value = *TAP.new_flow_value;
 		FlowMap& newFlowMap = *TAP.newFlowMap;
 		lemon::ReverseDigraph<lemon::ListDigraph> reverse_newDig(newDig);
-		lemon::Preflow<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap> pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
+		Preflow_Reverse pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
 		FlowMap new_rightFlowMap;
 		modify_flow(S, T, newDig, newArcMap, rightArcMap, new_rightFlowMap);
-		Preflow::FlowMap inner_new_rightFlowMap(newDig);
+		Preflow_Reverse::FlowMap inner_new_rightFlowMap(newDig);
 		get_preflow_flowMap(newDig, new_rightFlowMap, inner_new_rightFlowMap);
 
 		bool isValid = pf_reverse_instance.init(inner_new_rightFlowMap);

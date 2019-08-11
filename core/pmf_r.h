@@ -17,6 +17,7 @@ namespace parametric{
     public:
         using Set = stl::CSet;
         typedef lemon::Preflow<lemon::ListDigraph, ArcMap> Preflow;
+		typedef lemon::Preflow<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap> Preflow_Reverse;
         typedef std::map<int, std::map<int, double>> FlowMap;
         typedef Preflow::Elevator Elevator;
 		struct ThreadArgumentPack {
@@ -59,7 +60,7 @@ namespace parametric{
         void update_dig(double lambda);
         void slice(Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3);
         inline Set get_min_cut_sink_side(const lemon::ListDigraph& digraph, Preflow& pf);
-		inline Set get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, lemon::Preflow<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap>& pf);
+		inline Set get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, Preflow_Reverse& pf);
         double compute_lambda_eq_const(Set& S, Set& T);
 		inline void addArc(int u, int v, double w, lemon::ListDigraph& G, ArcMap& arcMap);
 		inline void addFlowArc(int u, int v, double w, FlowMap& flowMap);	
