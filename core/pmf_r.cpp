@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <lemon/adaptors.h>
+#include <thread> 
 #include "core/graph/graph.h"
 #include "core/pmf_r.h"
 namespace parametric {
@@ -357,16 +358,23 @@ namespace parametric {
 		ArcMap newArcMap(newDig);
 		contract(S, T_r, newDig, newArcMap);
 
-		FlowMap newFlowMap;
-		Set T_apostrophe;
-		double new_flow_value;
+		FlowMap newFlowLeftMap, newFlowRightMap;
+		Set T_apostrophe_left, T_apostrophe_right;
+		double new_flow_value_left, new_flow_value_right;
 
 		// Todo: use a thread to run the code below
 		// and concurrently run execute and execute_reverse
-		executePreflow(newDig, newArcMap, leftArcMap, S, T_r, T_apostrophe, new_flow_value, newFlowMap);
-		if(2 * T_apostrophe.Cardinality() <= lemon::countNodes(newDig))
-			executePreflow_reverse(newDig, newArcMap, rightArcMap, S, T_r, T_apostrophe, new_flow_value, newFlowMap);
-		Set T_apostrophe_total = T_apostrophe.Union(T_r);
+		
+		std::thread left(&PMF_R::executePreflow, this, newDig, newArcMap, leftArcMap, S, T_r, T_apostrophe_left, new_flow_value_left, newFlowLeftMap);
+		std::thread right(&PMF_R::executePreflow_reverse, this, newDig, newArcMap, rightArcMap, S, T_r, T_apostrophe_right, new_flow_value_right, newFlowRightMap);
+		left.join();
+		right.join();
+		double new_flow_value = new_flow_value_left;
+		Set T_apostrophe_total = T_apostrophe_left.Union(T_r);
+		FlowMap& newFlowMap = newFlowLeftMap;
+		if (2 * T_apostrophe_left.Cardinality() <= lemon::countNodes(newDig))
+			newFlowMap = newFlowRightMap;
+
         if(T_apostrophe_total != T_r && T_apostrophe_total != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
             set_list.push_back(T_apostrophe_total);
             slice(T_l, T_apostrophe_total, leftArcMap, newFlowMap, lambda_1, lambda_2);
