@@ -50,6 +50,8 @@ namespace parametric {
 		double n_a;
 		PMF_R::FlowMap n_fm;
 		pmfR.executePreflow_reverse(digraph, cap, fm, S, T, T_a, n_a, n_fm);
+		EXPECT_DOUBLE_EQ(n_a, 3);
+		EXPECT_EQ(T_a, stl::CSet("1111"));
 	}
 	TEST(PMF_R, contract) {
 		PMF_R pmfR;
