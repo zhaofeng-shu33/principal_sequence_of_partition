@@ -273,8 +273,16 @@ namespace parametric {
             dig_aM[arc] = sink_capacity[i] + std::max<double>(0, std::min<double>(a_i - lambda, b_i));
         }
     }
-	void PMF_R::executePreflow(const lemon::ListDigraph& newDig, const ArcMap& newArcMap, const FlowMap& leftArcMap, const Set& S, const Set& T, Set& T_apostrophe, double& new_flow_value, FlowMap& newFlowMap) {
+	void PMF_R::executePreflow(ThreadArgumentPack& TAP) {
 		FlowMap new_leftFlowMap;
+		lemon::ListDigraph& newDig = *TAP.newDig;
+		ArcMap& newArcMap = *TAP.newArcMap;
+		FlowMap& leftArcMap = *TAP.flowMap;
+		Set& S = *TAP.S;
+		Set& T = *TAP.T;
+		Set& T_apostrophe = *TAP.T_apostrophe;
+		double& new_flow_value = *TAP.new_flow_value;
+		FlowMap& newFlowMap = *TAP.newFlowMap;
 		modify_flow(S, T, newDig, newArcMap, leftArcMap, new_leftFlowMap);
 		Preflow::FlowMap inner_new_leftFlowMap(newDig);
 		get_preflow_flowMap(newDig, new_leftFlowMap, inner_new_leftFlowMap);
@@ -294,7 +302,15 @@ namespace parametric {
 		new_flow_value = pf_instance.flowValue();
 		T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
 	}
-	void PMF_R::executePreflow_reverse(lemon::ListDigraph& newDig, const ArcMap& newArcMap, const FlowMap& rightArcMap, const Set& S, const Set& T, Set& T_apostrophe, double& new_flow_value, FlowMap& newFlowMap) {
+	void PMF_R::executePreflow_reverse(ThreadArgumentPack& TAP) {
+		lemon::ListDigraph& newDig = *TAP.newDig;
+		ArcMap& newArcMap = *TAP.newArcMap;
+		FlowMap& rightArcMap = *TAP.flowMap;
+		Set& S = *TAP.S;
+		Set& T = *TAP.T;
+		Set& T_apostrophe = *TAP.T_apostrophe;
+		double& new_flow_value = *TAP.new_flow_value;
+		FlowMap& newFlowMap = *TAP.newFlowMap;
 		lemon::ReverseDigraph<lemon::ListDigraph> reverse_newDig(newDig);
 		lemon::Preflow<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap> pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
 		FlowMap new_rightFlowMap;
@@ -317,7 +333,7 @@ namespace parametric {
 		T_apostrophe = get_min_cut_sink_side_reverse(reverse_newDig, pf_reverse_instance);
 	}
 
-    void PMF_R::slice(Set& T_l, Set& T_r, const FlowMap& leftArcMap, const FlowMap& rightArcMap, double lambda_1, double lambda_3) {
+    void PMF_R::slice(Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3) {
 #if _DEBUG
 
 			update_dig(lambda_1);
@@ -360,13 +376,16 @@ namespace parametric {
 
 		FlowMap newFlowLeftMap, newFlowRightMap;
 		Set T_apostrophe_left, T_apostrophe_right;
-		double new_flow_value_left, new_flow_value_right;
+		double new_flow_value_left = 0;
+		double new_flow_value_right;
 
 		// Todo: use a thread to run the code below
 		// and concurrently run execute and execute_reverse
-		
-		std::thread left(&PMF_R::executePreflow, this, newDig, newArcMap, leftArcMap, S, T_r, T_apostrophe_left, new_flow_value_left, newFlowLeftMap);
-		std::thread right(&PMF_R::executePreflow_reverse, this, newDig, newArcMap, rightArcMap, S, T_r, T_apostrophe_right, new_flow_value_right, newFlowRightMap);
+		ThreadArgumentPack TAP_Left(newDig, newArcMap, leftArcMap, S, T_r, T_apostrophe_left, new_flow_value_left, newFlowLeftMap);
+		ThreadArgumentPack TAP_Right(newDig, newArcMap, rightArcMap, S, T_r, T_apostrophe_right, new_flow_value_right, newFlowRightMap);
+
+		std::thread left(&PMF_R::executePreflow, this, TAP_Left);
+		std::thread right(&PMF_R::executePreflow_reverse, this, TAP_Right);
 		left.join();
 		right.join();
 		double new_flow_value = new_flow_value_left;
