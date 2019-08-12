@@ -22,6 +22,12 @@ Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to co
 
 You need to enable C++11 to compile the code.
 
+### Dependency Install Guide
+* If you use CentOS/Fedora based system, you can install the pre-built binary package `liblemon` from [copr](https://copr.fedorainfracloud.org/coprs/freewind201301/liblemon/).
+* If you use Ubuntu(<18.04), you can install the pre-built binary package `liblemon` from [launchpad](https://launchpad.net/~zhaofeng-shu33/+archive/ubuntu/liblemon); `liblemon` library is included in Ubuntu from 18.04, see [liblemon-dev](https://packages.ubuntu.com/bionic/liblemon-dev).
+* On Windows platform, [vcpkg](https://github.com/microsoft/vcpkg) is required to fix the dependencies.
+* On MacOS platform, [brew](https://brew.sh) is recommended to fix the dependencies.
+
 ## CMake
 This project uses [CMake](https://cmake.org) build system. We recommand out of source build. From project root directory,
 ```shell
@@ -30,7 +36,7 @@ cd build
 cmake ..
 ```
 If any error occurs, you should fix the dependencies first.
-For example, `lemon` library is included in Ubuntu from 18.04, see [liblemon-dev](https://packages.ubuntu.com/bionic/liblemon-dev). On Windows platform, [vcpkg](https://github.com/microsoft/vcpkg) is required to fix the dependencies.
+ 
 
 
 ### options
