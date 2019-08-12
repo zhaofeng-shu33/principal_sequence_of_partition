@@ -163,23 +163,8 @@ namespace submodular {
         }
         else {                
             psp.push_back(P_apostrophe);
-            try{
-                split(Q, P_apostrophe);
-                split(P_apostrophe, P);
-            }
-            catch (std::exception e) {
-                std::cout << e.what() << std::endl;
-                double q_value = dt.evaluate(Q);
-                double p_a_value = dt.evaluate(P_apostrophe);
-                double p_value = dt.evaluate(P);
-                std::cout << Q.Cardinality() << " at " << Q << " = " << q_value << std::endl;
-                std::cout << P_apostrophe.Cardinality() << " at " << P_apostrophe << " = " << p_a_value << std::endl;
-                std::cout << P.Cardinality() << " at " << P << " = " << p_value << std::endl;
-
-                std::cout << "h: " << h_apostrophe << std::endl;
-                std::cout << "min_value: " << min_value << std::endl;
-                exit(-1);
-            }
+            split(Q, P_apostrophe);
+            split(P_apostrophe, P);
         }
     }
 
