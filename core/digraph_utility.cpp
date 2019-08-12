@@ -18,12 +18,15 @@ namespace lemon {
 	void digraph_contract(ListDigraph& G, ArcMap& A, const stl::CSet& S, int i, Tolerance<double> tol) {
 		// we don't use _g->contract function since it can not handle multiple arcs within two nodes
 		bool is_single = true;
-		std::map<int, double> capacity_map;
+		std::map<int, std::pair<double,double>> capacity_map;
 		for (ListDigraph::NodeIt n(G); n != lemon::INVALID; ++n) {
 			int j = G.id(n);
-			if (j != i && S.HasElement(j))
-				is_single = false;
-			capacity_map[j] = 0;
+			if (S.HasElement(j)) {
+				if(j != i)
+					is_single = false;
+				continue;
+			}
+			capacity_map[j] = std::make_pair(0,0);
 		}
 		if (is_single)
 			return;
@@ -32,10 +35,10 @@ namespace lemon {
 			int s_id = G.id(G.source(a));
 			int t_id = G.id(G.target(a));
 			if (S.HasElement(s_id) && !S.HasElement(t_id)) {
-				capacity_map.at(t_id) += A[a]; //out is positive
+				capacity_map.at(t_id).first += A[a];  // out is first
 			}
 			else if (!S.HasElement(s_id) && S.HasElement(t_id)) {
-				capacity_map.at(s_id) += A[a];
+				capacity_map.at(s_id).second += A[a]; // in is second
 			}
 			if (s_id == i || t_id == i) { // delete all arcs connected with Node(i)
 				G.erase(a);
@@ -49,17 +52,16 @@ namespace lemon {
 		}
 		Node _S = G.nodeFromId(i);
 
-		for (const std::pair<int, double>& val : capacity_map) {
-			if (S.HasElement(val.first) || std::abs(val.second) < tol.epsilon())
-				continue;
+		for (const std::pair<int, std::pair<double, double> >& val : capacity_map) {
 			Arc a;
-			if (val.first > i) {
+			if (val.second.first > tol.epsilon()) {
 				a = G.addArc(_S, G.nodeFromId(val.first));
+				A[a] = val.second.first;
 			}
-			else {
+			else if(std::abs(val.second.second) > tol.epsilon()) {
 				a = G.addArc(G.nodeFromId(val.first), _S);
+				A[a] = val.second.second;
 			}
-			A[a] = std::abs(val.second);
 		}
 	}
 }
