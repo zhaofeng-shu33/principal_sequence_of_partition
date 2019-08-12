@@ -15,7 +15,7 @@ namespace lemon {
 		}
 	}
 	// contract S to i
-	void digraph_contract(ListDigraph& G, ArcMap& A, const stl::CSet& S, int i, Tolerance<double> tol = Tolerance<double>()) {
+	void digraph_contract(ListDigraph& G, ArcMap& A, const stl::CSet& S, int i, Tolerance<double> tol) {
 		// we don't use _g->contract function since it can not handle multiple arcs within two nodes
 		bool is_single = true;
 		std::map<int, double> capacity_map;

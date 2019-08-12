@@ -4,6 +4,7 @@
 #include <lemon/preflow.h>
 #include "core/psp_i.h"
 #include "core/dt.h"
+#include "core/digraph_utility.h"
 #include <cassert>
 namespace psp {
 	void DilworthTruncation::minimize(std::vector<double>& xl) {
@@ -193,46 +194,7 @@ namespace psp {
 			}
 		}
 	}
-	void PSP::contract(const stl::CSet& S, int i) {
-		// we don't use _g->contract function since it can not handle multiple arcs within two nodes
-		std::map<int, double> capacity_map;
-		for (Digraph::NodeIt n(*_g); n != lemon::INVALID; ++n)
-			capacity_map[_g->id(n)] = 0;
-		// iterate over all arcs
-		for (Digraph::ArcIt a(*_g); a != lemon::INVALID; ++a) {
-			int s_id = _g->id(_g->source(a));
-			int t_id = _g->id(_g->target(a));
-			if (S.HasElement(s_id) && !S.HasElement(t_id)) {
-				capacity_map.at(t_id) += (*_edge_map)[a]; //out is positive
-			}
-			else if (!S.HasElement(s_id) && S.HasElement(t_id)) {
-				capacity_map.at(s_id) += (*_edge_map)[a];
-			}
-			if (s_id == i || t_id == i) { // delete all arcs connected with Node(i)
-				_g->erase(a);
-			}
-		}
-		//delete S\{i} in _g
-		for (int j : S) {
-			Node J = _g->nodeFromId(j);
-			if (_g->valid(J) && j != i)
-				_g->erase(J);
-		}
-		Node _S = _g->nodeFromId(i);
-				
-		for (const std::pair<int, double>& val : capacity_map) {
-			if (S.HasElement(val.first) || std::abs(val.second) < _tolerance.epsilon())
-				continue;
-			Arc a;
-			if (val.first > i) {
-				a = _g->addArc(_S, _g->nodeFromId(val.first));
-			}
-			else {
-				a = _g->addArc(_g->nodeFromId(val.first), _S);
-			}
-			(*_edge_map)[a] = std::abs(val.second);
-		}
-	}
+
 	void PSP::split(int i) {
 		lemon::ListDigraph::NodeMap<bool> node_filter(*_g);
 		int num_of_children = 0;
@@ -291,7 +253,7 @@ namespace psp {
 				K.push_back(S_apostrophe);
 				split(s);
 				// contract the graph
-				contract(S, *S.begin());
+				lemon::digraph_contract(*_g, *_edge_map, S, *S.begin());
 			}
 			split(i);
 		}

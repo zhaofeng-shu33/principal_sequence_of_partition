@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 // Graph tests
 #include "graph/test_graph.h"
@@ -12,3 +12,5 @@
 #include "test_psp_i.h"
 
 #include "test_pmf_r.h"
+
+#include "test_utility.h"
