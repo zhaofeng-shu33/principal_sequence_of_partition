@@ -141,15 +141,28 @@ namespace parametric {
         set_list.push_back(T_1);
 		FlowMap leftFlowMap;
 		set_flowMap(dig, pf.flowMap(), leftFlowMap);
-		FlowMap rightFlowMap;
-		// construct rightFlowMap
-		for (int i = 0; i < sink_capacity.size(); i++) {
-			if (sink_capacity[i] > tolerance.epsilon()) {
-				rightFlowMap[source_node_id][i] = sink_capacity[i];
-				rightFlowMap[i][sink_node_id] = sink_capacity[i];
-			}
+
+		double lambda_3 = 0;
+		for (int i = 0; i < _y_lambda.size(); i++) {
+			// get the next node id
+			double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
+			if (a_i - b_i > lambda_3)
+				lambda_3 = a_i - b_i;
+			if (a_i > lambda_3)
+				lambda_3 = a_i;
+			if (sink_capacity[i] > lambda_3)
+				lambda_3 = sink_capacity[i];
 		}
-        slice(T_0, T_1, leftFlowMap, rightFlowMap, init_lambda, std::numeric_limits<double>::infinity());
+		// run the reverse Preflow at lambda_3
+		update_dig(lambda_3);
+		lemon::ReverseDigraph<lemon::ListDigraph> reverse_newDig(dig);
+		Preflow_Reverse pf_reverse_instance(reverse_newDig, dig_aM, sink_node, source_node);
+		pf_reverse_instance.run();
+		// construct rightFlowMap
+		FlowMap rightFlowMap;
+		set_flowMap(dig, pf_reverse_instance.flowMap(), rightFlowMap);
+
+        slice(T_0, T_1, leftFlowMap, rightFlowMap, init_lambda, lambda_3);
         lambda_list.sort();
         auto is_superset = [](const Set& A, const Set& B){return B.IsSubSet(A);};
         set_list.sort(is_superset);
