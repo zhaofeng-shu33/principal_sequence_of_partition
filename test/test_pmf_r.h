@@ -49,7 +49,7 @@ namespace parametric {
 		stl::CSet T_a;
 		double n_a;
 		PMF_R::FlowMap n_fm;
-		PMF_R::ThreadArgumentPack TAP(digraph, cap, fm, S, T, T_a, n_a, n_fm);
+		PMF_R::ThreadArgumentPack TAP(digraph, cap, fm, S, T, T_a, n_a, n_fm, NULL, NULL);
 		pmfR.executePreflow_reverse(TAP);
 		EXPECT_DOUBLE_EQ(n_a, 3);
 		EXPECT_EQ(T_a, stl::CSet("1111"));
