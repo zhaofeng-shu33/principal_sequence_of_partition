@@ -6,7 +6,7 @@
 #include <lemon/list_graph.h>
 #include <unordered_set>
 #include "set/set_stl.h"
-#include <lemon/preflow.h>
+#include "preflow/mf_base.h"
 typedef std::pair<double, double> pair;
 namespace parametric{
 	typedef lemon::ListDigraph::ArcMap<double> ArcMap;
@@ -16,8 +16,8 @@ namespace parametric{
 
     public:
         using Set = stl::CSet;
-        typedef lemon::Preflow<lemon::ListDigraph, ArcMap> Preflow;
-		typedef lemon::Preflow<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap> Preflow_Reverse;
+        typedef lemon::Preflow_Relabel<lemon::ListDigraph, ArcMap> Preflow;
+		typedef lemon::Preflow_Relabel<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap> Preflow_Reverse;
         typedef std::map<int, std::map<int, double>> FlowMap;
         typedef Preflow::Elevator Elevator;
 		struct ThreadArgumentPack {
