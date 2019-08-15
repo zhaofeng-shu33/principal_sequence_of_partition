@@ -435,14 +435,17 @@ namespace parametric {
 		FlowMap& newFlowMap = newFlowLeftMap;
 		bool left_contract = true, right_contract = true;
 
-		if (2 * T_apostrophe_left.Cardinality() <= lemon::countNodes(newDig)) {
+		if (2 * T_apostrophe_left.Cardinality() <= lemon::countNodes(*newDig)) {
 			newFlowMap = newFlowRightMap;
 			left_contract = false;
 		}
 		else {
 			right_contract = false;
 		}
-
+		if(is_contract){
+			delete newArcMap;
+			delete newDig;
+		}
         if(T_apostrophe_total != T_r && T_apostrophe_total != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
             set_list.push_back(T_apostrophe_total);
             slice(T_l, T_apostrophe_total, leftArcMap, newFlowMap, lambda_1, lambda_2, left_ele, right_ele, left_contract);
