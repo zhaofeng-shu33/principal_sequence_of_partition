@@ -409,7 +409,7 @@ namespace parametric {
         target_value -= submodular::get_cut_value(*g_ptr, *aM, T_r);
         return target_value;
     }
-	double PMF_R::contract(const Set& S, const Set& T, lemon::ListDigraph& G, ArcMap& arcMap) {
+	void PMF_R::contract(const Set& S, const Set& T, lemon::ListDigraph& G, ArcMap& arcMap) {
 #if _DEBUG
 		// check s \in S and t \in T
 		if (!S.HasElement(source_node_id) || !T.HasElement(sink_node_id)) {

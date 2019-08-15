@@ -48,7 +48,7 @@ namespace parametric{
 		void set_source_node_id(int new_id);
 		void set_sink_node_id(int new_id);
 		void set_tilde_G_size(int new_size);
-		double contract(const Set& S, const Set& T, lemon::ListDigraph& G, ArcMap& arcMap);
+		void contract(const Set& S, const Set& T, lemon::ListDigraph& G, ArcMap& arcMap);
 		//! convert Preflow flowMap to double dic flowMap
 		void set_flowMap(const lemon::ListDigraph& G, const Preflow::FlowMap& pfm, FlowMap& flowMap);
 		void get_preflow_flowMap(const lemon::ListDigraph& G, const FlowMap& flowMapDic, Preflow::FlowMap& flowMap);
