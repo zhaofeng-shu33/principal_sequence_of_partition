@@ -150,14 +150,15 @@ namespace parametric {
 				lambda_3 = a_i - b_i;
 			if (a_i > lambda_3)
 				lambda_3 = a_i;
-			if (sink_capacity[i] > lambda_3)
-				lambda_3 = sink_capacity[i];
+			if (sink_capacity[i] + a_i > lambda_3)
+				lambda_3 = sink_capacity[i] + a_i;
 		}
 		// run the reverse Preflow at lambda_3
 		update_dig(lambda_3);
 		lemon::ReverseDigraph<lemon::ListDigraph> reverse_newDig(dig);
 		Preflow_Reverse pf_reverse_instance(reverse_newDig, dig_aM, sink_node, source_node);
 		pf_reverse_instance.run();
+
 		// construct rightFlowMap
 		FlowMap rightFlowMap;
 		set_flowMap(dig, pf_reverse_instance.flowMap(), rightFlowMap);
