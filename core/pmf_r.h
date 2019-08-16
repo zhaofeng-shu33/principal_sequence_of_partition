@@ -30,7 +30,9 @@ namespace parametric{
 			Set* T_apostrophe;
 			double* new_flow_value;
 			Elevator* ele;
+			Elevator* ele_out = NULL;
 			Elevator_Reverse* ele_reverse;
+			Elevator_Reverse* ele_reverse_out = NULL;
 			FlowMap* newFlowMap;
 			ThreadArgumentPack(lemon::ListDigraph& newDig1, ArcMap& newArcMap1, FlowMap& flowMap1, Set& S1, Set& T1, Set& T_apostrophe_1, double& new_flow_value_1, 
 				FlowMap& newflowMap1, Elevator* ele1, Elevator_Reverse* ele_reverse_1) :

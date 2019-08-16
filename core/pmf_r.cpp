@@ -307,8 +307,10 @@ namespace parametric {
 		bool isValid;
 		if (ele == NULL)
 			isValid = pf_instance.init(inner_new_leftFlowMap);
-		else
-			isValid = pf_instance.init(inner_new_leftFlowMap, ele);
+		else{
+			TAP.ele_out = new Elevator(*ele);
+			isValid = pf_instance.init(inner_new_leftFlowMap, TAP.ele_out);
+		}
 #if _DEBUG
 		if (!isValid)
 			throw std::logic_error("not valid flow map to init.");
@@ -343,8 +345,10 @@ namespace parametric {
 		bool isValid; 
 		if(ele == NULL)
 			isValid = pf_reverse_instance.init(inner_new_rightFlowMap);
-		else
-			isValid = pf_reverse_instance.init(inner_new_rightFlowMap, ele);
+		else{
+			TAP.ele_reverse_out = new Elevator_Reverse(*ele);
+			isValid = pf_reverse_instance.init(inner_new_rightFlowMap, TAP.ele_reverse_out);
+		}
 #if _DEBUG
 		if (!isValid)
 			throw std::logic_error("not valid flow map to init.");
@@ -432,6 +436,12 @@ namespace parametric {
 		right.join();
 		double new_flow_value = new_flow_value_left;
 		Set T_apostrophe_total = T_apostrophe_left.Union(T_r);
+#if _DEBUG
+		// check s \in S and t \in T
+		if (!T_apostrophe_left.IsSubSet(T_l)) {
+			throw std::logic_error("T_a is not subset of T_l");
+		}
+#endif
 		FlowMap& newFlowMap = newFlowLeftMap;
 		bool left_contract = true, right_contract = true;
 
@@ -448,10 +458,16 @@ namespace parametric {
 		}
         if(T_apostrophe_total != T_r && T_apostrophe_total != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
             set_list.push_back(T_apostrophe_total);
-            slice(T_l, T_apostrophe_total, leftArcMap, newFlowMap, lambda_1, lambda_2, left_ele, right_ele, left_contract);
-            slice(T_apostrophe_total, T_r, newFlowMap, rightArcMap, lambda_2, lambda_3, left_ele, right_ele, right_contract);
+            slice(T_l, T_apostrophe_total, leftArcMap, newFlowMap, lambda_1, lambda_2, left_ele, TAP_Right.ele_reverse_out, left_contract);
+            slice(T_apostrophe_total, T_r, newFlowMap, rightArcMap, lambda_2, lambda_3, TAP_Left.ele_out, right_ele, right_contract);
         }
         else {
+			// house keeping
+			if (TAP_Left.ele_out)
+				delete TAP_Left.ele_out;
+			if (TAP_Right.ele_reverse_out)
+				delete TAP_Right.ele_reverse_out;
+
             lambda_list.push_back(lambda_2);
         }
     }
