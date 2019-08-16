@@ -417,14 +417,12 @@ namespace parametric {
             lambda_list.push_back(lambda_2);
 			return;
 		}
-        update_dig(lambda_2, *G, *arcMap, update_base);
+        
 		if (lambda_2 < lambda_1 || lambda_2 > lambda_3) {
 			std::stringstream ss;
 			ss << "lambda value mismatch " << lambda_1 << ' ' << lambda_2 << ' ' << lambda_3;
 			throw std::logic_error(ss.str());
 		}
-		// compute original value
-		double original_flow_value = submodular::get_cut_value(*G, *arcMap, T_r);
 		
 		Set S = T_l.Complement(tilde_G_size);
 
@@ -457,6 +455,10 @@ namespace parametric {
 			left_inner = left_ele;
 			right_inner = right_ele;
 		}
+		update_dig(lambda_2, *newDig, *newArcMap, *new_update_base);
+		// compute original value
+		double original_flow_value = submodular::get_cut_value(*newDig, *newArcMap, T_r);
+
 		reverse_newDig = new lemon::ReverseDigraph<lemon::ListDigraph>(*newDig);
 		FlowMap newFlowLeftMap, newFlowRightMap;
 		Set T_apostrophe_left, T_apostrophe_right;
@@ -545,15 +547,11 @@ namespace parametric {
 			if (i != sink_node_id)
 				G.erase(G.nodeFromId(i));
 		}
-		
-		std::map<int, std::pair<double, double>> s_capacity_map;
-		std::map<int, std::pair<double, double>> t_capacity_map;
-		for (lemon::ListDigraph::NodeIt n(G); n != lemon::INVALID; ++n) {
-			int tmp_id = G.id(n);
-			if (tmp_id == source_node_id || tmp_id == sink_node_id)
-				continue;
-			s_capacity_map[tmp_id] = std::make_pair(0.0, 0.0);
-			t_capacity_map[tmp_id] = std::make_pair(0.0, 0.0);
+		std::vector<std::pair<double, double>> s_capacity_map;
+		std::vector<std::pair<double, double>> t_capacity_map;
+		for (int i = 0; i < tilde_G_size; i++) {
+			s_capacity_map.push_back(std::make_pair(0.0, 0.0));
+			t_capacity_map.push_back(std::make_pair(0.0, 0.0));
 		}
 		double s_t_cost = 0, t_s_cost = 0;
 		// compute cost
@@ -563,6 +561,8 @@ namespace parametric {
 			int u_id = dig.id(u);
 			int v_id = dig.id(v);
 			double cv = dig_aM[a]; // capacity value
+			if (cv < tolerance.epsilon())
+				continue;
 			if (S.HasElement(u_id)) {
 				if (T.HasElement(v_id)) {
 					s_t_cost += cv;
@@ -596,22 +596,21 @@ namespace parametric {
 		// add necessary s-t arc
 		addArc(source_node_id, sink_node_id, s_t_cost, G, arcMap);
 		addArc(sink_node_id, source_node_id, t_s_cost, G, arcMap);
-		// add source -> others
-		for (std::pair<int, std::pair<double, double>> kvp : s_capacity_map) {
-			addArc(source_node_id, kvp.first, kvp.second.first, G, arcMap);
-			addArc(kvp.first, source_node_id, kvp.second.second, G, arcMap);
-		}
-		// add others -> sink
-		for (std::pair<int, std::pair<double, double>> kvp : t_capacity_map) {
-			addArc(kvp.first, sink_node_id, kvp.second.first, G, arcMap);
-			addArc(sink_node_id, kvp.first, kvp.second.second, G, arcMap);
+		// add source -> others and add others -> sink
+		for (int i = 0; i < tilde_G_size; i++) {
+			if (i == sink_node_id || i == source_node_id || !G.valid(G.nodeFromId(i)))
+				continue;
+			addArc(source_node_id, i, s_capacity_map[i].first, G, arcMap);
+			if(s_capacity_map[i].second > tolerance.epsilon())
+				addArc(i, source_node_id, s_capacity_map[i].second, G, arcMap);
+			addArc(i, sink_node_id, t_capacity_map[i].first, G, arcMap);
+			if (t_capacity_map[i].second > tolerance.epsilon())
+				addArc(sink_node_id, i, t_capacity_map[i].second, G, arcMap);
 		}
 	}
 	inline void PMF_R::addArc(int u, int v, double w, lemon::ListDigraph& G, ArcMap& arcMap) {
-		if (w > tolerance.epsilon()) {
-			lemon::ListDigraph::Arc newA = G.addArc(G.nodeFromId(u), G.nodeFromId(v));
-			arcMap[newA] = w;
-		}
+		lemon::ListDigraph::Arc newA = G.addArc(G.nodeFromId(u), G.nodeFromId(v));
+		arcMap[newA] = w;
 	}
 	void PMF_R::set_flowMap(const lemon::ListDigraph& G, const Preflow::FlowMap& pfm, FlowMap& flowMap) {
 		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; ++a) {
