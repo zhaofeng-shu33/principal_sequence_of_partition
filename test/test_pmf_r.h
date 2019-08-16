@@ -72,7 +72,7 @@ namespace parametric {
 		Set S("00101"), T("01010");
 		lemon::ListDigraph new_digraph;
 		ArcMap new_cap(new_digraph);
-		pmfR.contract(S, T, new_digraph, new_cap);
+		pmfR.contract(S, T, digraph, cap, new_digraph, new_cap);
 		EXPECT_EQ(lemon::countNodes(new_digraph), 3);
 		EXPECT_EQ(lemon::countArcs(new_digraph), 4);
 		PMF_R::FlowMap flowMap;
@@ -123,7 +123,7 @@ namespace parametric {
 		Set S("00101"), T("01010");
 		lemon::ListDigraph new_digraph;
 		ArcMap new_cap(new_digraph);
-		pmfR.contract(S, T, new_digraph, new_cap);
+		pmfR.contract(S, T, digraph, cap, new_digraph, new_cap);
 		lemon::ListDigraph::Node source_node = digraph.nodeFromId(4);
 		lemon::ListDigraph::Node sink_node = digraph.nodeFromId(3);
 		PMF_R::Preflow pf(digraph, cap, source_node, sink_node);

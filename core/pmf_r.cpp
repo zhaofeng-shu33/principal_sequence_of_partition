@@ -436,7 +436,7 @@ namespace parametric {
 		if (is_contract) {
 			newDig = new lemon::ListDigraph();
 			newArcMap = new ArcMap(*newDig);
-			contract(S, T_r, *newDig, *newArcMap);		
+			contract(S, T_r, *G, *arcMap, *newDig, *newArcMap);
 			new_update_base = new std::map<int, std::pair<double, double>>();
 			construct_new_update_base(*newDig, S, T_r, *new_update_base);
 			leftArcMap_inner = new FlowMap();
@@ -522,7 +522,7 @@ namespace parametric {
         target_value -= submodular::get_cut_value(*g_ptr, *aM, T_r);
         return target_value;
     }
-	void PMF_R::contract(const Set& S, const Set& T, lemon::ListDigraph& G, ArcMap& arcMap) {
+	void PMF_R::contract(const Set& S, const Set& T, const lemon::ListDigraph& old_G, const ArcMap& old_arcMap, lemon::ListDigraph& G, ArcMap& arcMap) {
 #if _DEBUG
 		// check s \in S and t \in T
 		if (!S.HasElement(source_node_id) || !T.HasElement(sink_node_id)) {
@@ -555,12 +555,12 @@ namespace parametric {
 		}
 		double s_t_cost = 0, t_s_cost = 0;
 		// compute cost
-		for (lemon::ListDigraph::ArcIt a(dig); a != lemon::INVALID; ++a) {
-			lemon::ListDigraph::Node u = dig.source(a);
-			lemon::ListDigraph::Node v = dig.target(a);
-			int u_id = dig.id(u);
-			int v_id = dig.id(v);
-			double cv = dig_aM[a]; // capacity value
+		for (lemon::ListDigraph::ArcIt a(old_G); a != lemon::INVALID; ++a) {
+			lemon::ListDigraph::Node u = old_G.source(a);
+			lemon::ListDigraph::Node v = old_G.target(a);
+			int u_id = old_G.id(u);
+			int v_id = old_G.id(v);
+			double cv = old_arcMap[a]; // capacity value
 			if (cv < tolerance.epsilon())
 				continue;
 			if (S.HasElement(u_id)) {
