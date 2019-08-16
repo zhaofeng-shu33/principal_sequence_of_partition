@@ -163,7 +163,7 @@ namespace parametric {
 		FlowMap rightFlowMap;
 		set_flowMap(dig, pf_reverse_instance.flowMap(), rightFlowMap);
 
-        slice(T_0, T_1, leftFlowMap, rightFlowMap, init_lambda, lambda_3, pf.elevator(), pf_reverse_instance.elevator(), false);
+        slice(&dig, &dig_aM, T_0, T_1, leftFlowMap, rightFlowMap, init_lambda, lambda_3, pf.elevator(), pf_reverse_instance.elevator(), false);
         lambda_list.sort();
         auto is_superset = [](const Set& A, const Set& B){return B.IsSubSet(A);};
         set_list.sort(is_superset);
@@ -268,7 +268,32 @@ namespace parametric {
 		}
 #endif
 	}
+	void PMF_R::modify_flow(const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap) {
 
+		for (lemon::ListDigraph::ArcIt a(G); a != lemon::INVALID; ++a) {
+			int u = G.id(G.source(a));
+			int v = G.id(G.target(a));
+			try{
+				newFlowMap[u][v] = flowMap.at(u).at(v);
+			}
+			catch (std::out_of_range) {
+				newFlowMap[u][v] = 0;
+			}
+		}
+		// not exceeds capMap
+		for (lemon::ListDigraph::InArcIt a(G, sink_node); a != lemon::INVALID; ++a) {
+			int u = G.id(G.source(a));
+			if (newFlowMap[u][sink_node_id] > capMap[a]) {
+				newFlowMap[u][sink_node_id] = capMap[a];
+			}
+		}
+		for (lemon::ListDigraph::OutArcIt a(G, source_node); a != lemon::INVALID; ++a) {
+			int u = G.id(G.target(a));
+			if (newFlowMap[source_node_id][u] > capMap[a]) {
+				newFlowMap[source_node_id][u] = capMap[a];
+			}
+		}
+	}
     void PMF_R::update_dig(double lambda) {
         for (lemon::ListDigraph::OutArcIt arc(dig, source_node); arc != lemon::INVALID; ++arc) {
             // get the next node id
@@ -301,11 +326,7 @@ namespace parametric {
 		if(ele == NULL)
 			modify_flow(S, T, newDig, newArcMap, leftArcMap, new_leftFlowMap);
 		else {
-			Set S_1;
-			S_1.AddElement(newDig.id(source_node));
-			Set T_1;
-			T_1.AddElement(newDig.id(sink_node));
-			modify_flow(S_1, T_1, newDig, newArcMap, leftArcMap, new_leftFlowMap);
+			modify_flow(newDig, newArcMap, leftArcMap, new_leftFlowMap);
 		}
 		Preflow::FlowMap inner_new_leftFlowMap(newDig);
 		get_preflow_flowMap(newDig, new_leftFlowMap, inner_new_leftFlowMap);
@@ -326,7 +347,7 @@ namespace parametric {
 		pf_instance.startFirstPhase();
 		pf_instance.startSecondPhase();
 		if (ele == NULL)
-			ele = pf_instance.elevator();
+			TAP.ele_out = pf_instance.elevator();
 
 		set_flowMap(newDig, pf_instance.flowMap(), newFlowMap);
 
@@ -343,17 +364,13 @@ namespace parametric {
 		double& new_flow_value = *TAP.new_flow_value;
 		FlowMap& newFlowMap = *TAP.newFlowMap;
 		Elevator_Reverse* ele = TAP.ele_reverse;
-		lemon::ReverseDigraph<lemon::ListDigraph> reverse_newDig(newDig);
+		lemon::ReverseDigraph<lemon::ListDigraph>& reverse_newDig = *TAP.reverse_newDig;
 		Preflow_Reverse pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
 		FlowMap new_rightFlowMap;
 		if (ele == NULL)
 			modify_flow(S, T, newDig, newArcMap, rightArcMap, new_rightFlowMap);
 		else{
-			Set S_1;
-			S_1.AddElement(newDig.id(source_node));
-			Set T_1;
-			T_1.AddElement(newDig.id(sink_node));
-			modify_flow(S_1, T_1, newDig, newArcMap, rightArcMap, new_rightFlowMap);
+			modify_flow(newDig, newArcMap, rightArcMap, new_rightFlowMap);
 		}
 		Preflow_Reverse::FlowMap inner_new_rightFlowMap(newDig);
 		get_preflow_flowMap(newDig, new_rightFlowMap, inner_new_rightFlowMap);
@@ -375,13 +392,13 @@ namespace parametric {
 
 		set_flowMap(newDig, pf_reverse_instance.flowMap(), newFlowMap);
 		if (ele == NULL)
-			ele = pf_reverse_instance.elevator();
+			TAP.ele_reverse_out = pf_reverse_instance.elevator();
 
 		new_flow_value = pf_reverse_instance.flowValue();
 		T_apostrophe = get_min_cut_sink_side_reverse(reverse_newDig, pf_reverse_instance);
 	}
 
-    void PMF_R::slice(Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract) {
+    void PMF_R::slice(lemon::ListDigraph* G, ArcMap* arcMap, Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract) {
 #if _DEBUG
 
 			update_dig(lambda_1);
@@ -420,6 +437,7 @@ namespace parametric {
 		Set S = T_l.Complement(tilde_G_size);
 
 		lemon::ListDigraph* newDig;
+		lemon::ReverseDigraph<lemon::ListDigraph>* reverse_newDig = NULL;
 		ArcMap* newArcMap;
 		Elevator* left_inner;
 		Elevator_Reverse* right_inner;
@@ -431,11 +449,12 @@ namespace parametric {
 			right_inner = NULL;
 		}
 		else {
-			newDig = &dig;
-			newArcMap = &dig_aM;
+			newDig = G;
+			newArcMap = arcMap;
 			left_inner = left_ele;
 			right_inner = right_ele;
 		}
+		reverse_newDig = new lemon::ReverseDigraph<lemon::ListDigraph>(*newDig);
 		FlowMap newFlowLeftMap, newFlowRightMap;
 		Set T_apostrophe_left, T_apostrophe_right;
 		double new_flow_value_left = 0;
@@ -443,8 +462,8 @@ namespace parametric {
 
 		// Todo: use a thread to run the code below
 		// and concurrently run execute and execute_reverse
-		ThreadArgumentPack TAP_Left(*newDig, *newArcMap, leftArcMap, S, T_r, T_apostrophe_left, new_flow_value_left, newFlowLeftMap, left_inner, NULL);
-		ThreadArgumentPack TAP_Right(*newDig, *newArcMap, rightArcMap, S, T_r, T_apostrophe_right, new_flow_value_right, newFlowRightMap, NULL, right_inner);
+		ThreadArgumentPack TAP_Left(*newDig, *newArcMap, leftArcMap, S, T_r, T_apostrophe_left, new_flow_value_left, newFlowLeftMap, left_inner, NULL, NULL);
+		ThreadArgumentPack TAP_Right(*newDig, *newArcMap, rightArcMap, S, T_r, T_apostrophe_right, new_flow_value_right, newFlowRightMap, NULL, right_inner, reverse_newDig);
 
 		std::thread left(&PMF_R::executePreflow, this, std::ref(TAP_Left));
 		std::thread right(&PMF_R::executePreflow_reverse, this, std::ref(TAP_Right));
@@ -468,14 +487,11 @@ namespace parametric {
 		else {
 			right_contract = false;
 		}
-		if(is_contract){
-			delete newArcMap;
-			delete newDig;
-		}
+
         if(T_apostrophe_total != T_r && T_apostrophe_total != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
             set_list.push_back(T_apostrophe_total);
-            slice(T_l, T_apostrophe_total, leftArcMap, newFlowMap, lambda_1, lambda_2, left_ele, TAP_Right.ele_reverse_out, left_contract);
-            slice(T_apostrophe_total, T_r, newFlowMap, rightArcMap, lambda_2, lambda_3, TAP_Left.ele_out, right_ele, right_contract);
+            slice(newDig, newArcMap, T_l, T_apostrophe_total, leftArcMap, newFlowMap, lambda_1, lambda_2, left_ele, TAP_Right.ele_reverse_out, left_contract);
+            slice(newDig, newArcMap, T_apostrophe_total, T_r, newFlowMap, rightArcMap, lambda_2, lambda_3, TAP_Left.ele_out, right_ele, right_contract);
         }
         else {
 			// house keeping
@@ -483,7 +499,12 @@ namespace parametric {
 				delete TAP_Left.ele_out;
 			if (TAP_Right.ele_reverse_out)
 				delete TAP_Right.ele_reverse_out;
-
+			if (reverse_newDig)
+				delete reverse_newDig;
+			if (is_contract) {
+				delete newArcMap;
+				delete newDig;
+			}
             lambda_list.push_back(lambda_2);
         }
     }

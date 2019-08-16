@@ -23,6 +23,7 @@ namespace parametric{
 		typedef Preflow_Reverse::Elevator Elevator_Reverse;
 		struct ThreadArgumentPack {
 			lemon::ListDigraph* newDig;
+			lemon::ReverseDigraph<lemon::ListDigraph>* reverse_newDig;
 			ArcMap* newArcMap;
 			FlowMap* flowMap;
 			Set* S;
@@ -35,11 +36,11 @@ namespace parametric{
 			Elevator_Reverse* ele_reverse_out = NULL;
 			FlowMap* newFlowMap;
 			ThreadArgumentPack(lemon::ListDigraph& newDig1, ArcMap& newArcMap1, FlowMap& flowMap1, Set& S1, Set& T1, Set& T_apostrophe_1, double& new_flow_value_1, 
-				FlowMap& newflowMap1, Elevator* ele1, Elevator_Reverse* ele_reverse_1) :
+				FlowMap& newflowMap1, Elevator* ele1, Elevator_Reverse* ele_reverse_1, lemon::ReverseDigraph<lemon::ListDigraph>* reverse_newDig1) :
 				newDig(&newDig1), newArcMap(&newArcMap1), flowMap(&flowMap1),
 				S(&S1), T(&T1), T_apostrophe(&T_apostrophe_1),
 				new_flow_value(&new_flow_value_1), newFlowMap(&newflowMap1), 
-				ele(ele1), ele_reverse(ele_reverse_1){}
+				ele(ele1), ele_reverse(ele_reverse_1), reverse_newDig(reverse_newDig1){}
 		};
         PMF_R(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda);
 		PMF_R();
@@ -61,11 +62,12 @@ namespace parametric{
 		void get_preflow_flowMap(const lemon::ListDigraph& G, const FlowMap& flowMapDic, Preflow::FlowMap& flowMap);
 		//! modify flow given current dig_aM
 		void modify_flow(const Set& S, const Set& T, const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap);
+		void PMF_R::modify_flow(const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap);
 		void executePreflow(ThreadArgumentPack& TAP);
 		void executePreflow_reverse(ThreadArgumentPack& TAP);
     private:    
         void update_dig(double lambda);
-        void slice(Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract=true);
+        void slice(lemon::ListDigraph* G, ArcMap* arcMap, Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract=true);
         inline Set get_min_cut_sink_side(const lemon::ListDigraph& digraph, Preflow& pf);
 		inline Set get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, Preflow_Reverse& pf);
         double compute_lambda_eq_const(Set& S, Set& T);
