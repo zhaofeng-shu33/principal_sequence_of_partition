@@ -298,7 +298,15 @@ namespace parametric {
 		double& new_flow_value = *TAP.new_flow_value;
 		FlowMap& newFlowMap = *TAP.newFlowMap;
 		Elevator* ele = TAP.ele;
-		modify_flow(S, T, newDig, newArcMap, leftArcMap, new_leftFlowMap);
+		if(ele == NULL)
+			modify_flow(S, T, newDig, newArcMap, leftArcMap, new_leftFlowMap);
+		else {
+			Set S_1;
+			S_1.AddElement(newDig.id(source_node));
+			Set T_1;
+			T_1.AddElement(newDig.id(sink_node));
+			modify_flow(S_1, T_1, newDig, newArcMap, leftArcMap, new_leftFlowMap);
+		}
 		Preflow::FlowMap inner_new_leftFlowMap(newDig);
 		get_preflow_flowMap(newDig, new_leftFlowMap, inner_new_leftFlowMap);
 
@@ -338,7 +346,15 @@ namespace parametric {
 		lemon::ReverseDigraph<lemon::ListDigraph> reverse_newDig(newDig);
 		Preflow_Reverse pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
 		FlowMap new_rightFlowMap;
-		modify_flow(S, T, newDig, newArcMap, rightArcMap, new_rightFlowMap);
+		if (ele == NULL)
+			modify_flow(S, T, newDig, newArcMap, rightArcMap, new_rightFlowMap);
+		else{
+			Set S_1;
+			S_1.AddElement(newDig.id(source_node));
+			Set T_1;
+			T_1.AddElement(newDig.id(sink_node));
+			modify_flow(S_1, T_1, newDig, newArcMap, rightArcMap, new_rightFlowMap);
+		}
 		Preflow_Reverse::FlowMap inner_new_rightFlowMap(newDig);
 		get_preflow_flowMap(newDig, new_rightFlowMap, inner_new_rightFlowMap);
 
