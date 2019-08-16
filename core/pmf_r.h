@@ -50,7 +50,6 @@ namespace parametric{
         void reset_j(std::size_t j);
         void reset_y_lambda(std::vector<pair> parameter_list) { 
             _y_lambda = parameter_list; 
-            sink_capacity.resize(_y_lambda.size());
         }
         double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
 		void set_source_node_id(int new_id);
@@ -66,19 +65,20 @@ namespace parametric{
 		void executePreflow(ThreadArgumentPack& TAP);
 		void executePreflow_reverse(ThreadArgumentPack& TAP);
     private:    
-        void update_dig(double lambda);
-        void slice(lemon::ListDigraph* G, ArcMap* arcMap, Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract=true);
+        void update_dig(double lambda, lemon::ListDigraph& G, ArcMap& cap, std::map<int, std::pair<double, double>>& update_base);
+        void slice(lemon::ListDigraph* G, ArcMap* arcMap, std::map<int, std::pair<double, double>>& update_base, Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract=true);
         inline Set get_min_cut_sink_side(const lemon::ListDigraph& digraph, Preflow& pf);
 		inline Set get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, Preflow_Reverse& pf);
         double compute_lambda_eq_const(Set& S, Set& T);
+		void construct_new_update_base(const lemon::ListDigraph& G, const Set& S, const Set& T, std::map<int, std::pair<double, double>>& new_update_base);
 		inline void addArc(int u, int v, double w, lemon::ListDigraph& G, ArcMap& arcMap);
 		inline void addFlowArc(int u, int v, double w, FlowMap& flowMap);	
     private:    
         lemon::ListDigraph* g_ptr;
         ArcMap* aM;
         std::vector<pair> _y_lambda;
-        std::vector<double> sink_capacity;
-        std::list<double> lambda_list;
+		std::map<int, std::pair<double, double>> sink_capacity;
+		std::list<double> lambda_list;
         std::list<Set> set_list;
         lemon::ListDigraph::Node source_node;
         lemon::ListDigraph::Node sink_node;
