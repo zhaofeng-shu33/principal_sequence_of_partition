@@ -61,7 +61,7 @@ namespace parametric{
 		void get_preflow_flowMap(const lemon::ListDigraph& G, const FlowMap& flowMapDic, Preflow::FlowMap& flowMap);
 		//! modify flow given current dig_aM
 		void modify_flow(const Set& S, const Set& T, const lemon::ListDigraph& G, const lemon::ListDigraph& old_G, const FlowMap& flowMap, FlowMap& newFlowMap);
-		void PMF_R::modify_flow(const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap);
+		void modify_flow(const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap);
 		void executePreflow(ThreadArgumentPack& TAP);
 		void executePreflow_reverse(ThreadArgumentPack& TAP);
 		void construct_new_update_base(const lemon::ListDigraph& G, const Set& S, const Set& T, std::map<int, std::pair<double, double>>& new_update_base);
