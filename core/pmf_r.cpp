@@ -424,7 +424,7 @@ namespace parametric {
 			throw std::logic_error(ss.str());
 		}
 		// compute original value
-		double original_flow_value = submodular::get_cut_value(dig, dig_aM, T_r);
+		double original_flow_value = submodular::get_cut_value(*G, *arcMap, T_r);
 		
 		Set S = T_l.Complement(tilde_G_size);
 
