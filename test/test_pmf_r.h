@@ -200,6 +200,33 @@ namespace parametric {
 		p++;
 		EXPECT_EQ(*p, Partition::makeFine(3));
 	}
+	TEST(PMF_R, construct_new_base) {
+		lemon::ListDigraph digraph;
+		ArcMap cap(digraph);
+		std::string lgf_str = "@nodes\nlabel\n0\n1\n2\n3\n@arcs\n\t\tlabel\tcapacity\n0\t1\t0\t2\n0\t2\t1\t3\n0\t3\t2\t5\n1\t3\t3\t4\n1\t2\t4\t1\n2\t3\t5\t7";
+		std::stringstream ss;
+		ss << lgf_str;
+		lemon::digraphReader(digraph, ss)
+			.arcMap("capacity", cap)
+			.run();
+		std::vector<pair> y;
+		PMF_R pmfR(&digraph, &cap, 3, y);
+		pmfR.set_source_node_id(4);
+		pmfR.set_sink_node_id(3);
+		lemon::ListDigraph g;
+		for (int i = 0; i < 5; i++)
+			g.addNode();
+		stl::CSet S("10001");
+		stl::CSet T("0001");
+		g.erase(g.nodeFromId(0));
+		g.erase(g.nodeFromId(3));
+		std::map<int, pair> new_update_base;
+		pmfR.construct_new_update_base(g, S, T, new_update_base);
+		ASSERT_DOUBLE_EQ(new_update_base[1].first, 2);
+		ASSERT_DOUBLE_EQ(new_update_base[1].second, 4);
+		ASSERT_DOUBLE_EQ(new_update_base[2].first, 3);
+		ASSERT_DOUBLE_EQ(new_update_base[2].second, 7);
+	}
 }
 namespace demo {
 	TEST_F(Graph4PointTest, PDT_R) {

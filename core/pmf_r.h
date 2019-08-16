@@ -64,13 +64,13 @@ namespace parametric{
 		void PMF_R::modify_flow(const lemon::ListDigraph& G, const ArcMap& capMap, const FlowMap& flowMap, FlowMap& newFlowMap);
 		void executePreflow(ThreadArgumentPack& TAP);
 		void executePreflow_reverse(ThreadArgumentPack& TAP);
+		void construct_new_update_base(const lemon::ListDigraph& G, const Set& S, const Set& T, std::map<int, std::pair<double, double>>& new_update_base);
     private:    
         void update_dig(double lambda, lemon::ListDigraph& G, ArcMap& cap, std::map<int, std::pair<double, double>>& update_base);
         void slice(lemon::ListDigraph* G, ArcMap* arcMap, std::map<int, std::pair<double, double>>& update_base, Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract=true);
         inline Set get_min_cut_sink_side(const lemon::ListDigraph& digraph, Preflow& pf);
 		inline Set get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, Preflow_Reverse& pf);
         double compute_lambda_eq_const(Set& S, Set& T);
-		void construct_new_update_base(const lemon::ListDigraph& G, const Set& S, const Set& T, std::map<int, std::pair<double, double>>& new_update_base);
 		inline void addArc(int u, int v, double w, lemon::ListDigraph& G, ArcMap& arcMap);
 		inline void addFlowArc(int u, int v, double w, FlowMap& flowMap);	
     private:    
