@@ -35,12 +35,7 @@ namespace parametric {
 			.arcMap("capacity", cap)
 			.run();
 		// construct a maximum flow map
-		PMF_R::FlowMap fm;
-		fm[4][0] = 1;
-		fm[4][2] = 2;
-		fm[0][1] = 1;
-		fm[1][3] = 1;
-		fm[2][3] = 2;
+		PMF_R::FlowMap fm(digraph);
 		pmfR.set_source_node_id(4);
 		pmfR.set_sink_node_id(3);
 		pmfR.set_tilde_G_size(5);
@@ -48,7 +43,7 @@ namespace parametric {
 		stl::CSet T("00010");
 		stl::CSet T_a;
 		double n_a;
-		PMF_R::FlowMap n_fm;
+		PMF_R::FlowMap n_fm(digraph);
 		lemon::ReverseDigraph<lemon::ListDigraph> reverse_newDig(digraph);
 		PMF_R::ThreadArgumentPack TAP(digraph, cap, fm, S, T, T_a, n_a, n_fm, NULL, NULL, &reverse_newDig);
 		pmfR.executePreflow_reverse(TAP);
@@ -75,37 +70,19 @@ namespace parametric {
 		pmfR.contract(S, T, digraph, cap, new_digraph, new_cap);
 		EXPECT_EQ(lemon::countNodes(new_digraph), 3);
 		EXPECT_EQ(lemon::countArcs(new_digraph), 4);
-		PMF_R::FlowMap flowMap;
-		pmfR.set_flowMap(new_digraph, new_cap, flowMap);
+		std::map<int,std::map<int, double>> flowMap;
+		for (lemon::ListDigraph::ArcIt a(new_digraph); a != lemon::INVALID; ++a) {
+			int u_id = new_digraph.id(new_digraph.source(a));
+			int v_id = new_digraph.id(new_digraph.target(a));
+			flowMap[u_id][v_id] = new_cap[a];
+		}
+			
 		EXPECT_DOUBLE_EQ(flowMap[4][0], 6);
 		EXPECT_DOUBLE_EQ(flowMap[4][3], 6);
 		EXPECT_DOUBLE_EQ(flowMap[3][4], 4);
 		EXPECT_DOUBLE_EQ(flowMap[0][3], 3);
 	}
-	TEST(PMF_R, flowMap) {
-		PMF_R pmfR;
-		lemon::ListDigraph& digraph = pmfR.dig;
-		ArcMap& cap = pmfR.dig_aM;
-		std::string lgf_str = "@nodes\nlabel\n0\n1\n2\n3\n4\n@arcs\n\t\tlabel\tcapacity\n4\t0\t0\t1\n4\t2\t1\t2\n0\t1\t2\t3\n2\t0\t3\t5\n2\t3\t4\t6\n1\t2\t5\t4\n1\t3\t6\t7";
-		std::stringstream ss;
-		ss << lgf_str;
-		lemon::digraphReader(digraph, ss)
-			.arcMap("capacity", cap)
-			.run();
-		lemon::ListDigraph::Node source_node = digraph.nodeFromId(4);
-		lemon::ListDigraph::Node sink_node = digraph.nodeFromId(3);
-		PMF_R::Preflow pf(digraph, cap, source_node, sink_node);
-		pf.run();
-		PMF_R::FlowMap newFlowMap;
-		pmfR.set_flowMap(digraph, pf.flowMap(), newFlowMap);
-		EXPECT_TRUE(newFlowMap.size() > 0);
-		PMF_R::Preflow::FlowMap backFlowMap(digraph);
-		pmfR.get_preflow_flowMap(digraph, newFlowMap, backFlowMap);
-		const PMF_R::Preflow::FlowMap& originalFlowMap = pf.flowMap();
-		for (lemon::ListDigraph::ArcIt a(digraph); a != lemon::INVALID; ++a) {
-			EXPECT_EQ(backFlowMap[a], originalFlowMap[a]);
-		}
-	}
+
 	TEST(PMF_R, modifyFlow) {
 		PMF_R pmfR;
 		lemon::ListDigraph& digraph = pmfR.dig;
@@ -128,13 +105,18 @@ namespace parametric {
 		lemon::ListDigraph::Node sink_node = digraph.nodeFromId(3);
 		PMF_R::Preflow pf(digraph, cap, source_node, sink_node);
 		pf.run();
-		PMF_R::FlowMap flowMap, newFlowMap;
-		pmfR.set_flowMap(digraph, pf.flowMap(), flowMap);
-		pmfR.modify_flow(S, T, new_digraph, new_cap, flowMap, newFlowMap);
-		EXPECT_DOUBLE_EQ(newFlowMap[4][0], 1);
-		EXPECT_DOUBLE_EQ(newFlowMap[4][3], 2);
-		EXPECT_DOUBLE_EQ(newFlowMap[0][3], 1);
-		EXPECT_DOUBLE_EQ(newFlowMap[3][4], 0);
+		PMF_R::FlowMap newFlowMap(digraph);
+		pmfR.modify_flow(S, T, new_digraph, digraph, pf.flowMap(), newFlowMap);
+		std::map<int, std::map<int, double>> flowMap;
+		for (lemon::ListDigraph::ArcIt a(new_digraph); a != lemon::INVALID; ++a) {
+			int u_id = new_digraph.id(new_digraph.source(a));
+			int v_id = new_digraph.id(new_digraph.target(a));
+			flowMap[u_id][v_id] = newFlowMap[a];
+		}
+		EXPECT_DOUBLE_EQ(flowMap[4][0], 1);
+		EXPECT_DOUBLE_EQ(flowMap[4][3], 2);
+		EXPECT_DOUBLE_EQ(flowMap[0][3], 1);
+		EXPECT_DOUBLE_EQ(flowMap[3][4], 0);
 	}
 	TEST(PMF_R, PMClass) {
 		using Set = stl::CSet;
