@@ -275,6 +275,8 @@ namespace parametric {
         for (lemon::ListDigraph::OutArcIt arc(G, source_node); arc != lemon::INVALID; ++arc) {
             // get the next node id
             int i = G.id(G.target(arc));
+			if (i == sink_node_id)
+				continue;
             double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
 			double candidate = std::min<double>(a_i - lambda, b_i);
 			double cap_arc_value = candidate < 0 ? -candidate : 0;
@@ -284,6 +286,8 @@ namespace parametric {
 
         for (lemon::ListDigraph::InArcIt arc(G, sink_node); arc != lemon::INVALID; ++arc) {
             int i = G.id(G.source(arc));
+			if (i == source_node_id)
+				continue;
             double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
 			cap[arc] = update_base[i].second + std::max<double>(0, std::min<double>(a_i - lambda, b_i));
         }
