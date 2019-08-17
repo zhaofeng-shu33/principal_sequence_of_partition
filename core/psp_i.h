@@ -38,6 +38,7 @@ namespace psp {
 		void run();
 	private:
 		void split(int i);
+		void contract(const stl::CSet& S, int i);
 		int node_size;
 		std::vector<stl::CSet> K;
 		Digraph tree;
