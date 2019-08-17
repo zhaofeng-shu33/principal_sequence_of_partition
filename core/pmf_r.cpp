@@ -5,7 +5,6 @@
 #include <iostream>
 #include <sstream>
 #include <lemon/adaptors.h>
-#include <thread> 
 #include "core/graph/graph.h"
 #include "core/pmf_r.h"
 namespace parametric {
@@ -313,32 +312,42 @@ namespace parametric {
 		double& new_flow_value = *TAP.new_flow_value;
 		FlowMap& newFlowMap = *TAP.newFlowMap;
 		Elevator* ele = TAP.ele;
-		modify_flow(newDig, newArcMap, leftArcMap, new_leftFlowMap);
-		Preflow::FlowMap inner_new_leftFlowMap(newDig);
-		get_preflow_flowMap(newDig, new_leftFlowMap, inner_new_leftFlowMap);
-
-		Preflow pf_instance(newDig, newArcMap, source_node, sink_node);
-
 		bool isValid;
-		if (ele == NULL)
-			isValid = pf_instance.init(inner_new_leftFlowMap);
-		else{
-			TAP.ele_out = new Elevator(*ele);
-			isValid = pf_instance.init(inner_new_leftFlowMap, TAP.ele_out);
-		}
+		try{
+			modify_flow(newDig, newArcMap, leftArcMap, new_leftFlowMap);
+			Preflow::FlowMap inner_new_leftFlowMap(newDig);
+			get_preflow_flowMap(newDig, new_leftFlowMap, inner_new_leftFlowMap);
+			Preflow pf_instance(newDig, newArcMap, source_node, sink_node);
+			if (ele == NULL)
+				isValid = pf_instance.init(inner_new_leftFlowMap);
+			else{
+				TAP.ele_out = new Elevator(*ele);
+				isValid = pf_instance.init(inner_new_leftFlowMap, TAP.ele_out);
+			}
 #if _DEBUG
-		if (!isValid)
-			throw std::logic_error("not valid flow map to init.");
+			if (!isValid)
+				throw std::logic_error("not valid flow map to init.");
 #endif
-		pf_instance.startFirstPhase();
-		pf_instance.startSecondPhase();
-		if (ele == NULL)
-			TAP.ele_out = pf_instance.elevator();
+			pf_instance.startFirstPhase();
+			pf_instance.startSecondPhase();
+			if (ele == NULL)
+				TAP.ele_out = pf_instance.elevator();
 
-		set_flowMap(newDig, pf_instance.flowMap(), newFlowMap);
+			set_flowMap(newDig, pf_instance.flowMap(), newFlowMap);
 
-		new_flow_value = pf_instance.flowValue();
-		T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
+			new_flow_value = pf_instance.flowValue();
+			T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
+			if (2 * T_apostrophe.Cardinality() > lemon::countNodes(newDig) && TAP.another_thread != NULL) {
+				// kill another thread
+				TAP.another_thread->interrupt();
+			}
+		}
+		catch (boost::thread_interrupted&) {
+			return;
+		}
+		catch (...) {
+			TAP.thread_exception_ptr = std::current_exception();
+		}
 	}
 	void PMF_R::executePreflow_reverse(ThreadArgumentPack& TAP) {
 		lemon::ListDigraph& newDig = *TAP.newDig;
@@ -351,33 +360,44 @@ namespace parametric {
 		FlowMap& newFlowMap = *TAP.newFlowMap;
 		Elevator_Reverse* ele = TAP.ele_reverse;
 		lemon::ReverseDigraph<lemon::ListDigraph>& reverse_newDig = *TAP.reverse_newDig;
-		Preflow_Reverse pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
-		FlowMap new_rightFlowMap(newDig);
-		modify_flow(newDig, newArcMap, rightArcMap, new_rightFlowMap);
-		Preflow_Reverse::FlowMap inner_new_rightFlowMap(newDig);
-		get_preflow_flowMap(newDig, new_rightFlowMap, inner_new_rightFlowMap);
-
-		bool isValid; 
-		if(ele == NULL)
-			isValid = pf_reverse_instance.init(inner_new_rightFlowMap);
-		else{
-			TAP.ele_reverse_out = new Elevator_Reverse(*ele);
-			isValid = pf_reverse_instance.init(inner_new_rightFlowMap, TAP.ele_reverse_out);
-		}
+		bool isValid;
+		try{	
+			Preflow_Reverse pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
+			FlowMap new_rightFlowMap(newDig);
+			modify_flow(newDig, newArcMap, rightArcMap, new_rightFlowMap);
+			Preflow_Reverse::FlowMap inner_new_rightFlowMap(newDig);
+			get_preflow_flowMap(newDig, new_rightFlowMap, inner_new_rightFlowMap);
+			if(ele == NULL)
+				isValid = pf_reverse_instance.init(inner_new_rightFlowMap);
+			else{
+				TAP.ele_reverse_out = new Elevator_Reverse(*ele);
+				isValid = pf_reverse_instance.init(inner_new_rightFlowMap, TAP.ele_reverse_out);
+			}
 #if _DEBUG
-		if (!isValid)
-			throw std::logic_error("not valid flow map to init.");
+			if (!isValid)
+				throw std::logic_error("not valid flow map to init.");
 #endif
-		pf_reverse_instance.startFirstPhase();
-		pf_reverse_instance.startSecondPhase();
+			pf_reverse_instance.startFirstPhase();
+			pf_reverse_instance.startSecondPhase();
 
 
-		set_flowMap(newDig, pf_reverse_instance.flowMap(), newFlowMap);
-		if (ele == NULL)
-			TAP.ele_reverse_out = pf_reverse_instance.elevator();
+			set_flowMap(newDig, pf_reverse_instance.flowMap(), newFlowMap);
+			if (ele == NULL)
+				TAP.ele_reverse_out = pf_reverse_instance.elevator();
 
-		new_flow_value = pf_reverse_instance.flowValue();
-		T_apostrophe = get_min_cut_sink_side_reverse(reverse_newDig, pf_reverse_instance);
+			new_flow_value = pf_reverse_instance.flowValue();
+			T_apostrophe = get_min_cut_sink_side_reverse(reverse_newDig, pf_reverse_instance);
+			if (2 * T_apostrophe.Cardinality() <= lemon::countNodes(newDig) && TAP.another_thread != NULL) {
+				// kill another thread
+				TAP.another_thread->interrupt();
+			}
+		}
+		catch (boost::thread_interrupted&) {
+			return;
+		}
+		catch (...) {
+			TAP.thread_exception_ptr = std::current_exception();
+		}
 	}
 
     void PMF_R::slice(lemon::ListDigraph* G, ArcMap* arcMap, std::map<int, std::pair<double, double>>& update_base, Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract) {
@@ -452,34 +472,49 @@ namespace parametric {
 		reverse_newDig = new lemon::ReverseDigraph<lemon::ListDigraph>(*newDig);
 		FlowMap newFlowLeftMap(*newDig), newFlowRightMap(*newDig);
 		Set T_apostrophe_left, T_apostrophe_right;
-		double new_flow_value_left = 0;
-		double new_flow_value_right;
+		double new_flow_value_left = -1;
+		double new_flow_value_right = -1;
 
-		// Todo: use a thread to run the code below
+		boost::thread * left = NULL, * right = NULL;
 		// and concurrently run execute and execute_reverse
 		ThreadArgumentPack TAP_Left(*newDig, *newArcMap, *leftArcMap_inner, S, T_r, T_apostrophe_left, new_flow_value_left, newFlowLeftMap, left_inner, NULL, NULL);
 		ThreadArgumentPack TAP_Right(*newDig, *newArcMap, *rightArcMap_inner, S, T_r, T_apostrophe_right, new_flow_value_right, newFlowRightMap, NULL, right_inner, reverse_newDig);
 
-		std::thread left(&PMF_R::executePreflow, this, std::ref(TAP_Left));
-		std::thread right(&PMF_R::executePreflow_reverse, this, std::ref(TAP_Right));
-		left.join();
-		right.join();
-		double new_flow_value = new_flow_value_left;
-		Set T_apostrophe_total = T_apostrophe_left.Union(T_r);
+		left = new boost::thread(&PMF_R::executePreflow, this, std::ref(TAP_Left));
+		right = new boost::thread(&PMF_R::executePreflow_reverse, this, std::ref(TAP_Right));
+		TAP_Left.another_thread = right;
+		TAP_Right.another_thread = left;
+		left->join();
+		right->join();
+		// check any error
+		if (TAP_Left.thread_exception_ptr)
+			std::rethrow_exception(TAP_Left.thread_exception_ptr);
+		if (TAP_Right.thread_exception_ptr)
+			std::rethrow_exception(TAP_Right.thread_exception_ptr);
+
+		delete left, right;
+
+		double new_flow_value;
+		Set T_apostrophe_total;
 #if _DEBUG
 		// check s \in S and t \in T
 		if (!T_apostrophe_left.IsSubSet(T_l)) {
 			throw std::logic_error("T_a is not subset of T_l");
 		}
 #endif
-		FlowMap* newFlowMap = &newFlowLeftMap;
+		FlowMap* newFlowMap;
 		bool left_contract = true, right_contract = true;
 
 		if (2 * T_apostrophe_left.Cardinality() <= lemon::countNodes(*newDig)) {
 			newFlowMap = &newFlowRightMap;
+			new_flow_value = new_flow_value_right;
+			T_apostrophe_total = T_apostrophe_right.Union(T_r);
 			left_contract = false;
 		}
 		else {
+			newFlowMap = &newFlowLeftMap;
+			new_flow_value = new_flow_value_left;
+			T_apostrophe_total = T_apostrophe_left.Union(T_r);
 			right_contract = false;
 		}
 

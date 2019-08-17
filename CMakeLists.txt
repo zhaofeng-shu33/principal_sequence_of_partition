@@ -29,7 +29,9 @@ find_package(lemon REQUIRED)
 
 add_executable(main main.cpp)
 
-find_package(Boost REQUIRED program_options)
+find_package(Boost REQUIRED program_options thread)
+add_definitions(-DINTERRUPT)
+
 target_include_directories(main PUBLIC ${Boost_INCLUDE_DIRS})
 
 if(WIN32)
@@ -38,7 +40,7 @@ if(WIN32)
 else()    
     target_link_libraries(main ${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE})
 endif()
-
+target_link_libraries(main ${Boost_THREAD_LIBRARY})
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${LEMON_INCLUDE_DIR})
 

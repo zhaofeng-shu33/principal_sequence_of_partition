@@ -2,9 +2,9 @@
 #include <tuple>
 #include <numeric>
 #include <iostream>
-
+#include <stdexcept>
 #include <lemon/list_graph.h>
-#include <unordered_set>
+#include <boost/thread.hpp>
 #include "set/set_stl.h"
 #include "preflow/mf_base.h"
 typedef std::pair<double, double> pair;
@@ -34,13 +34,17 @@ namespace parametric{
 			Elevator* ele_out = NULL;
 			Elevator_Reverse* ele_reverse;
 			Elevator_Reverse* ele_reverse_out = NULL;
+			std::exception_ptr thread_exception_ptr = nullptr;
 			FlowMap* newFlowMap;
-			ThreadArgumentPack(lemon::ListDigraph& newDig1, ArcMap& newArcMap1, FlowMap& flowMap1, Set& S1, Set& T1, Set& T_apostrophe_1, double& new_flow_value_1, 
-				FlowMap& newflowMap1, Elevator* ele1, Elevator_Reverse* ele_reverse_1, lemon::ReverseDigraph<lemon::ListDigraph>* reverse_newDig1) :
+			boost::thread* another_thread;
+			ThreadArgumentPack(lemon::ListDigraph& newDig1, ArcMap& newArcMap1, FlowMap& flowMap1, Set& S1, Set& T1, 
+				Set& T_apostrophe_1, double& new_flow_value_1, 
+				FlowMap& newflowMap1, Elevator* ele1, Elevator_Reverse* ele_reverse_1, lemon::ReverseDigraph<lemon::ListDigraph>* reverse_newDig1):
 				newDig(&newDig1), newArcMap(&newArcMap1), flowMap(&flowMap1),
 				S(&S1), T(&T1), T_apostrophe(&T_apostrophe_1),
 				new_flow_value(&new_flow_value_1), newFlowMap(&newflowMap1), 
-				ele(ele1), ele_reverse(ele_reverse_1), reverse_newDig(reverse_newDig1){}
+				ele(ele1), ele_reverse(ele_reverse_1), reverse_newDig(reverse_newDig1)
+				{}
 		};
         PMF_R(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda);
 		PMF_R();

@@ -15,10 +15,6 @@ matrix:
           - libgtest-dev
           - libboost-all-dev
           - lcov
-    cache:
-      - directories:
-        - /usr/src/gtest
-      - pip3
   - os: osx
   
 before_install:

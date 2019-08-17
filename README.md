@@ -9,14 +9,14 @@ Currently, four methods are available:
 1. Traditional Canonical Method based on Dilworth truncation and Graph Maximal Flow
 2. Parametric computing scheme combined with Parametric Maximal Flow
 3. Graph Contraction combined with rapid jump (under development)
-  Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to compute maximal flow for graph.
+    Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to compute maximal flow for graph.
 4. Parametric Dilworth truncation used in paper 2010.
 
 # How to build
 
 ## Dependencies
 
-* LEMON (required)
+* LEMON (required), boost-thread
 * boost-program-options is required to build the executable program `main`
 * googletest (optional, used in unit-test)
 
