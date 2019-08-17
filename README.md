@@ -4,19 +4,20 @@
 
 # Introduction
 This repository contains code to compute the principal sequence of partition for Dilworth truncation function.
-Currently, three methods are available:
+Currently, four methods are available:
 
 1. Traditional Canonical Method based on Dilworth truncation and Graph Maximal Flow
 2. Parametric computing scheme combined with Parametric Maximal Flow
 3. Graph Contraction combined with rapid jump (under development)
-Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to compute maximal flow for graph.
+  Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to compute maximal flow for graph.
+4. Parametric Dilworth truncation used in paper 2010.
 
 # How to build
 
 ## Dependencies
 
 * LEMON (required)
-* boost-program-options is required to build the executable program 
+* boost-program-options is required to build the executable program `main`
 * googletest (optional, used in unit-test)
 
 
@@ -36,7 +37,7 @@ cd build
 cmake ..
 ```
 If any error occurs, you should fix the dependencies first.
- 
+
 
 
 ### options
@@ -53,7 +54,8 @@ use `-DEnable_Testing=ON` to compile the test binary (requiring `googletest`).
 See [contributing.md](./contributing.md)
 
 # ChangeLog
-* Version 1.1: expose `Gaussian2DGraph` (C++) class, which can be used directly in python.
-* Version 1.2: expose `PSP` (C++) class, which is high customizable in python.
-* Version 1.3: expose `PyGraphPDT` (C++) class, which has similar api as `PyGraph` but different inner implementation.
-* Version 1.4: expose `psp_i` method.
+* Version 1.2: implementation of `PSP` (C++) class, which uses traditional Dilworth truncation.
+* Version 1.3: implementation of `PDT` (C++) class, which has similar API as `PSP` but different inner implementation.
+* Version 1.4: implement `psp_i` method.
+* Version 1.5: implement `pdt_r` method. 
+
