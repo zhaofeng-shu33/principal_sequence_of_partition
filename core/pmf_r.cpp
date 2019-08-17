@@ -505,7 +505,7 @@ namespace parametric {
 		FlowMap* newFlowMap;
 		bool left_contract = true, right_contract = true;
 
-		if (2 * T_apostrophe_left.Cardinality() <= lemon::countNodes(*newDig)) {
+		if (T_apostrophe_left.Cardinality() == 0) {
 			newFlowMap = &newFlowRightMap;
 			new_flow_value = new_flow_value_right;
 			T_apostrophe_total = T_apostrophe_right.Union(T_r);
