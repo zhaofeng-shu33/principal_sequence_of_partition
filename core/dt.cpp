@@ -53,7 +53,7 @@ namespace submodular {
 		for (int i = graph_size + 1; i < lemon::countNodes(*_g); i++) {
 			node_filter[_g->nodeFromId(i)] = false;
 		}
-		lemon::FilterNodes<Digraph> subgraph(*_g, node_filter);
+		SubDigraph subgraph(*_g, node_filter);
 		std::vector<double> sink_node_cost_map;
 		sink_node_cost_map.resize(graph_size);
 		for (lemon::FilterNodes<Digraph>::InArcIt a(subgraph, subgraph.nodeFromId(graph_size)); a != lemon::INVALID; ++a) {

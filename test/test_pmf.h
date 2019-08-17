@@ -12,8 +12,9 @@ TEST(PMF, EquationSolve) {
     parameter_list.push_back(std::make_pair(0, 0));
     std::vector<pair> y_lambda;
     lemon::ListDigraph g;
+	g.addNode();
     lemon::ListDigraph::ArcMap<double> aM(g);
-    PMF pmf(&g, &aM, 0, y_lambda);
+    PMF pmf(&g, &aM, 1, y_lambda);
     double lambda_1 = pmf.compute_lambda(parameter_list, -0.5);
     EXPECT_DOUBLE_EQ(lambda_1, 0.5);
     double lambda_2 = pmf.compute_lambda(parameter_list, -3.0);
@@ -63,6 +64,7 @@ TEST(PMF, PMClass) {
     aM[a3] = 5;
     aM[a5] = 1;
     PMF pmf(&g, &aM, 2, parameter_list);
+	pmf.set_node_filter(true);
     pmf.run();
 
     std::list<Set> sL = pmf.get_set_list();
@@ -81,10 +83,6 @@ TEST(PMF, PMClass) {
 	it_2++;
 	EXPECT_DOUBLE_EQ(*it_2, 5);
 
-    pmf.reset_j(0);
-    pmf.run();
-    for (Set& s : pmf.get_set_list())
-        std::cout << s << std::endl;
 }
 
 

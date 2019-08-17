@@ -17,6 +17,7 @@ namespace parametric{
     public:
         using Set = stl::CSet;
         typedef lemon::Preflow<lemon::ListDigraph, ArcMap> Preflow;
+		typedef typename lemon::FilterNodes<lemon::ListDigraph> SubDigraph;
         typedef Preflow::FlowMap FlowMap;
         typedef Preflow::Elevator Elevator;
         PMF(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda);
@@ -29,6 +30,7 @@ namespace parametric{
             sink_capacity.resize(_y_lambda.size());
         }
         double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
+		void set_node_filter(bool value);
     private:    
         void update_dig(double lambda);
         void slice(Set& S, Set& T, const FlowMap& arcMap, double lambda_1, double lambda_3);
@@ -38,6 +40,8 @@ namespace parametric{
         double compute_lambda_eq_const(Set& S, Set& T);
     private:    
         lemon::ListDigraph* g_ptr;
+		SubDigraph sub_digraph;
+		lemon::ListDigraph::NodeMap<bool> node_filter;
         ArcMap* aM;
         lemon::ListDigraph dig; //directed graph
         ArcMap dig_aM; //directed graph arcMap
