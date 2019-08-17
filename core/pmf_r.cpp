@@ -73,7 +73,7 @@ namespace parametric {
 	Set PMF_R::get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, Preflow_Reverse& pf) {
 		Set t = Set::MakeEmpty(tilde_G_size);
 		for (lemon::ReverseDigraph<lemon::ListDigraph>::NodeIt n(digraph); n != lemon::INVALID; ++n) {
-			if (pf.minCut(n))
+			if (pf.minCutSource(n))
 				t.AddElement(dig.id(n));
 		}
 		return t;
@@ -378,7 +378,7 @@ namespace parametric {
 				throw std::logic_error("not valid flow map to init.");
 #endif
 			pf_reverse_instance.startFirstPhase();
-			pf_reverse_instance.startSecondPhase();
+			pf_reverse_instance.startSecondPhase(true);
 
 
 			set_flowMap(newDig, pf_reverse_instance.flowMap(), newFlowMap);
