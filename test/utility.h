@@ -19,8 +19,8 @@ namespace demo {
     class Graph4PointTest : public testing::Test {
     protected:
         EdgeListTuple edge_list_tuple_1;
-		lemon::ListDigraph g;
-		lemon::ListDigraph::ArcMap<double> edge_map;
+        lemon::ListDigraph g;
+        lemon::ListDigraph::ArcMap<double> edge_map;
         Graph4PointTest(): edge_map(g){}
         virtual void SetUp() {
             construct_edge_list_tuple_4(edge_list_tuple_1);

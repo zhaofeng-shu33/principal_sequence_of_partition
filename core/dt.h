@@ -14,22 +14,22 @@ namespace submodular {
     class DilworthTruncation {
     public:
         typedef lemon::ListDigraph Digraph;
-		typedef typename Digraph::ArcMap<double> ArcMap;
-		typedef typename lemon::FilterNodes<Digraph> SubDigraph;
-		typedef typename lemon::PreflowDefaultTraits<SubDigraph, ArcMap> PreflowSubgraphTraits;
-		typedef typename lemon::Preflow<Digraph, ArcMap, PreflowSubgraphTraits> Preflow;
-	
+        typedef typename Digraph::ArcMap<double> ArcMap;
+        typedef typename lemon::FilterNodes<Digraph> SubDigraph;
+        typedef typename lemon::PreflowDefaultTraits<SubDigraph, ArcMap> PreflowSubgraphTraits;
+        typedef typename lemon::Preflow<Digraph, ArcMap, PreflowSubgraphTraits> Preflow;
+    
         DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map);
         double get_min_value();
         stl::Partition& get_min_partition();
         double evaluate(stl::Partition& partition);
         void run();
     private:
-		void minimize(std::vector<double>& xl);
+        void minimize(std::vector<double>& xl);
         Digraph* _g;
         ArcMap* _edge_map;
         double min_value;
-		stl::CSet Tl;
+        stl::CSet Tl;
         stl::Partition _partition;
         double lambda_;
         int NodeSize;
@@ -60,10 +60,10 @@ namespace submodular {
         double evaluate(const stl::Partition& P);
 
         int NodeSize;
-		lemon::Tolerance<double> _tolerance;
+        lemon::Tolerance<double> _tolerance;
         std::list<double> critical_values;
         std::list<stl::Partition> psp;
-		Digraph* _g;
-		ArcMap* _edge_map;
+        Digraph* _g;
+        ArcMap* _edge_map;
     };
 }

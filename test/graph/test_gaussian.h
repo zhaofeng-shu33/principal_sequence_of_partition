@@ -20,11 +20,11 @@ TEST(Gaussian2D, GivenPoint) {
     EXPECT_DOUBLE_EQ(y_pos[2], 3);
     g2g.run();
     std::list<stl::Partition> psp_list = g2g.get_psp();
-	EXPECT_EQ(psp_list.size(), 2);
-	std::list<stl::Partition>::iterator it = psp_list.begin();
-	EXPECT_EQ(it->Cardinality(), 1);
-	it++;
-	EXPECT_EQ(it->Cardinality(), 4);
+    EXPECT_EQ(psp_list.size(), 2);
+    std::list<stl::Partition>::iterator it = psp_list.begin();
+    EXPECT_EQ(it->Cardinality(), 1);
+    it++;
+    EXPECT_EQ(it->Cardinality(), 4);
 
     std::vector<int> cat = g2g.get_category(2);
     std::cout << cat << std::endl;
@@ -46,19 +46,19 @@ TEST(Gaussian2D, GivenPoint8) {
                        {-3.1, 2.6}
                      };
     Gaussian2DGraph g2g(8, 1.0, a);
-	g2g.run_pdt();
+    g2g.run_pdt();
     std::list<double> gamma_list = g2g.get_gamma_list();
     std::list<stl::Partition> psp_list = g2g.get_psp();
     g2g.run();
     std::list<double> gamma_list_2 = g2g.get_gamma_list();
     std::list<stl::Partition> psp_list_2 = g2g.get_psp();
-	std::list<double>::iterator it_2 = gamma_list_2.begin();
-	for (std::list<double>::iterator it = gamma_list.begin(); it != gamma_list.end(); it++) {
-		lemon::Tolerance<double> _tolerance;
-		EXPECT_FALSE(_tolerance.different(*it, *it_2));
-		it_2++;
-	}
-	EXPECT_EQ(psp_list, psp_list_2);
+    std::list<double>::iterator it_2 = gamma_list_2.begin();
+    for (std::list<double>::iterator it = gamma_list.begin(); it != gamma_list.end(); it++) {
+        lemon::Tolerance<double> _tolerance;
+        EXPECT_FALSE(_tolerance.different(*it, *it_2));
+        it_2++;
+    }
+    EXPECT_EQ(psp_list, psp_list_2);
 }
 
 // This test is used to verify that MaxFlow algorithm works
@@ -67,12 +67,12 @@ TEST_F(Graph4PointTest, TwoCase) {
     psp_class.run();
     std::list<double> gamma_list = psp_class.get_critical_values();
     std::list<stl::Partition> psp_list = psp_class.get_psp();
-	std::list<stl::Partition>::iterator it = psp_list.begin();
+    std::list<stl::Partition>::iterator it = psp_list.begin();
     EXPECT_DOUBLE_EQ(*gamma_list.begin(),1+2/3.0);    
 
-	EXPECT_EQ(psp_list.size(), 2);
+    EXPECT_EQ(psp_list.size(), 2);
     EXPECT_EQ(it->Cardinality(), 1);
-	it++;
+    it++;
     EXPECT_EQ(it->Cardinality(), 4);
 }
 

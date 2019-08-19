@@ -47,9 +47,9 @@ namespace parametric {
                 return (target_value - intersept) / (slope);
         }
 
-		if (!tolerance.different(target_value, sum)) {
-			return last_tp;
-		}
+        if (!tolerance.different(target_value, sum)) {
+            return last_tp;
+        }
         // compute values at the other breakpoints
         for (double& tp : turning_points) {
             sum += slope * (tp - last_tp);
@@ -68,13 +68,13 @@ namespace parametric {
         dig_aM(dig), node_filter(*g_ptr), sub_digraph(*g_ptr, node_filter)
     {        
         sink_capacity.resize(_y_lambda.size());
-		node_filter[g_ptr->nodeFromId(0)] = true;
+        node_filter[g_ptr->nodeFromId(0)] = true;
     }
-	void PMF::set_node_filter(bool value) {
-		for (lemon::ListDigraph::NodeIt n(*g_ptr); n != lemon::INVALID; ++n) {
-			node_filter[n] = value;
-		}
-	}
+    void PMF::set_node_filter(bool value) {
+        for (lemon::ListDigraph::NodeIt n(*g_ptr); n != lemon::INVALID; ++n) {
+            node_filter[n] = value;
+        }
+    }
     Set PMF::get_min_cut_sink_side(Preflow& pf) {
         Set t = Set::MakeEmpty(tilde_G_size);
         for (lemon::ListDigraph::NodeIt n(dig); n != lemon::INVALID; ++n) {
@@ -87,7 +87,7 @@ namespace parametric {
     void PMF::run() {
         //set sink_capacity
         int a = g_ptr->maxNodeId();
-		std::fill(sink_capacity.begin(), sink_capacity.end(), 0);
+        std::fill(sink_capacity.begin(), sink_capacity.end(), 0);
         if (a != -1 && _j <= a) {
             for (SubDigraph::InArcIt arc(sub_digraph, sub_digraph.nodeFromId(_j)); arc != lemon::INVALID; ++arc) {
                 int i = sub_digraph.id(sub_digraph.source(arc));
@@ -115,11 +115,11 @@ namespace parametric {
             if (n == sink_node || n == source_node)
                 continue;
             dig.addArc(source_node, n);  
-			if (sink_capacity[dig.id(n)] < tolerance.epsilon()) {
-				dig.addArc(n, sink_node);
-			}
+            if (sink_capacity[dig.id(n)] < tolerance.epsilon()) {
+                dig.addArc(n, sink_node);
+            }
         }
-		double init_lambda = -0.1;
+        double init_lambda = -0.1;
         Preflow pf(dig, dig_aM, source_node, sink_node);
         //find S_0 and T_0
         update_dig(init_lambda);
@@ -140,32 +140,32 @@ namespace parametric {
 
     void PMF::reset_j(std::size_t j) { 
         _j = j; 
-		node_filter[g_ptr->nodeFromId(_j)] = true;
+        node_filter[g_ptr->nodeFromId(_j)] = true;
         set_list.clear();
         lambda_list.clear();    
-	}
-	void PMF::modify_flow(const FlowMap& flowMap, FlowMap& newFlowMap){
-		for (lemon::ListDigraph::ArcIt arc(dig); arc != lemon::INVALID; ++arc) {
-			newFlowMap[arc] = flowMap[arc];
-		}
-		for (lemon::ListDigraph::OutArcIt e(dig, source_node); e != lemon::INVALID; ++e) {
-			newFlowMap[e] = dig_aM[e];
-		}
-		for (lemon::ListDigraph::InArcIt e(dig, sink_node); e != lemon::INVALID; ++e) {
-			if(flowMap[e] > dig_aM[e])
-				newFlowMap[e] = dig_aM[e];
-		}
-	}
+    }
+    void PMF::modify_flow(const FlowMap& flowMap, FlowMap& newFlowMap){
+        for (lemon::ListDigraph::ArcIt arc(dig); arc != lemon::INVALID; ++arc) {
+            newFlowMap[arc] = flowMap[arc];
+        }
+        for (lemon::ListDigraph::OutArcIt e(dig, source_node); e != lemon::INVALID; ++e) {
+            newFlowMap[e] = dig_aM[e];
+        }
+        for (lemon::ListDigraph::InArcIt e(dig, sink_node); e != lemon::INVALID; ++e) {
+            if(flowMap[e] > dig_aM[e])
+                newFlowMap[e] = dig_aM[e];
+        }
+    }
 
     void PMF::update_dig(double lambda) {
         for (lemon::ListDigraph::OutArcIt arc(dig, source_node); arc != lemon::INVALID; ++arc) {
             // get the next node id
             int i = dig.id(dig.target(arc));
             double a_i = _y_lambda[i].first, b_i = _y_lambda[i].second;
-			double candidate = std::min<double>(a_i - lambda, b_i);
-			dig_aM[arc] = 0;
-			if (candidate < 0)
-				dig_aM[arc] = -candidate;
+            double candidate = std::min<double>(a_i - lambda, b_i);
+            dig_aM[arc] = 0;
+            if (candidate < 0)
+                dig_aM[arc] = -candidate;
 
         }
 
@@ -179,16 +179,16 @@ namespace parametric {
     void PMF::slice(Set& T_l, Set& T_r, const FlowMap& flowMap, double lambda_1, double lambda_3) {
 #if _DEBUG
 
-			update_dig(lambda_1);
-			double value_1 = submodular::get_cut_value(dig, dig_aM, T_r) - submodular::get_cut_value(dig, dig_aM, T_l);
-			if (value_1 < -1 * tolerance.epsilon()) {
-				throw std::logic_error("value 1");
-			}
-			update_dig(lambda_3);
-			double value_2 = submodular::get_cut_value(dig, dig_aM, T_r) - submodular::get_cut_value(dig, dig_aM, T_l);
-			if (value_2 > tolerance.epsilon()) {
-				throw std::logic_error("value 2");
-			}
+            update_dig(lambda_1);
+            double value_1 = submodular::get_cut_value(dig, dig_aM, T_r) - submodular::get_cut_value(dig, dig_aM, T_l);
+            if (value_1 < -1 * tolerance.epsilon()) {
+                throw std::logic_error("value 1");
+            }
+            update_dig(lambda_3);
+            double value_2 = submodular::get_cut_value(dig, dig_aM, T_r) - submodular::get_cut_value(dig, dig_aM, T_l);
+            if (value_2 > tolerance.epsilon()) {
+                throw std::logic_error("value 2");
+            }
 #endif
 
         // compute lambda_2
@@ -196,41 +196,41 @@ namespace parametric {
         std::vector<pair> y_lambda_filter;
         for (int i = 0; i < tilde_G_size - 1; i++) {
             if (T_l.HasElement(i) && !T_r.HasElement(i))
-	            y_lambda_filter.push_back(_y_lambda[i]);
+                y_lambda_filter.push_back(_y_lambda[i]);
         }
         double lambda_2 = compute_lambda(y_lambda_filter, lambda_const);
-		if (!tolerance.different(lambda_2, lambda_1) || !tolerance.different(lambda_2, lambda_3)) {
+        if (!tolerance.different(lambda_2, lambda_1) || !tolerance.different(lambda_2, lambda_3)) {
             lambda_list.push_back(lambda_2);
-			return;
-		}
+            return;
+        }
         update_dig(lambda_2);
-		if (lambda_2 < lambda_1 || lambda_2 > lambda_3) {
-			std::stringstream ss;
-			ss << "lambda value mismatch " << lambda_1 << ' ' << lambda_2 << ' ' << lambda_3;
-			throw std::logic_error(ss.str());
-		}
-		// compute original value
-		double original_flow_value = submodular::get_cut_value(dig, dig_aM, T_r);
+        if (lambda_2 < lambda_1 || lambda_2 > lambda_3) {
+            std::stringstream ss;
+            ss << "lambda value mismatch " << lambda_1 << ' ' << lambda_2 << ' ' << lambda_3;
+            throw std::logic_error(ss.str());
+        }
+        // compute original value
+        double original_flow_value = submodular::get_cut_value(dig, dig_aM, T_r);
 
-		FlowMap newFlowMap(dig);
-		modify_flow(flowMap, newFlowMap);
+        FlowMap newFlowMap(dig);
+        modify_flow(flowMap, newFlowMap);
         // do not use graph contraction
         Preflow pf_instance(dig, dig_aM, source_node, sink_node);
-		// pf_instance.init();
-		// bool isValid = true;
+        // pf_instance.init();
+        // bool isValid = true;
         bool isValid = pf_instance.init(newFlowMap);
 #if _DEBUG
-		if (!isValid)
-			throw std::logic_error("not valid flow map to init.");
+        if (!isValid)
+            throw std::logic_error("not valid flow map to init.");
 #endif
         pf_instance.startFirstPhase();
         pf_instance.startSecondPhase();
-		double new_flow_value = pf_instance.flowValue();
+        double new_flow_value = pf_instance.flowValue();
         Set T_apostrophe = get_min_cut_sink_side(pf_instance);
 #if _DEBUG
-		if (!T_apostrophe.IsSubSet(T_l) || !T_r.IsSubSet(T_apostrophe)) {
-			throw std::logic_error("not subset");
-		}
+        if (!T_apostrophe.IsSubSet(T_l) || !T_r.IsSubSet(T_apostrophe)) {
+            throw std::logic_error("not subset");
+        }
 #endif
         if(T_apostrophe != T_r && T_apostrophe != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
@@ -261,12 +261,12 @@ namespace parametric {
         pmf(g, arcMap, 0, _y_lambda){
     }
     void PDT::run() {
-		partition_list.clear();
-		Lambda_list.clear();
-		Partition initial_partition;
-		initial_partition.AddElement(Set("1"));
-		partition_list.push_back(initial_partition);
-		Lambda_list.push_back(INFINITY);
+        partition_list.clear();
+        Lambda_list.clear();
+        Partition initial_partition;
+        initial_partition.AddElement(Set("1"));
+        partition_list.push_back(initial_partition);
+        Lambda_list.push_back(INFINITY);
         _y_lambda.resize(lemon::countNodes(*_g), pair(0, INFINITY));
         for (int j = 1; j < _y_lambda.size(); j++) {
             pmf.reset_y_lambda(_y_lambda);
@@ -315,7 +315,7 @@ namespace parametric {
                     std::reverse_iterator<std::list<double>::iterator> last_it = Lambda_list_apostrophe.rbegin();
                     *last_it = std::min(*d_i, *d_k);
                 }
-				double d_i_v = *d_i, d_k_v = *d_k;
+                double d_i_v = *d_i, d_k_v = *d_k;
                 if (d_i_v <= d_k_v) {
                     i++;
                     d_i++;
@@ -330,6 +330,6 @@ namespace parametric {
             Lambda_list = Lambda_list_apostrophe;
             partition_list = partition_list_apostrophe;
         }
-		Lambda_list.pop_back();
+        Lambda_list.pop_back();
     }
 }

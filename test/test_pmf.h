@@ -12,7 +12,7 @@ TEST(PMF, EquationSolve) {
     parameter_list.push_back(std::make_pair(0, 0));
     std::vector<pair> y_lambda;
     lemon::ListDigraph g;
-	g.addNode();
+    g.addNode();
     lemon::ListDigraph::ArcMap<double> aM(g);
     PMF pmf(&g, &aM, 1, y_lambda);
     double lambda_1 = pmf.compute_lambda(parameter_list, -0.5);
@@ -36,11 +36,11 @@ TEST(PMF, EquationSolve) {
     double lambda_9 = pmf.compute_lambda(parameter_list, 2);
     EXPECT_DOUBLE_EQ(lambda_9, -1);
 
-	// test left value
-	parameter_list.pop_back();
-	parameter_list[0] = std::make_pair(1,-1);
-	double lambda_11 = pmf.compute_lambda(parameter_list, -1);
-	EXPECT_DOUBLE_EQ(lambda_11, 2);
+    // test left value
+    parameter_list.pop_back();
+    parameter_list[0] = std::make_pair(1,-1);
+    double lambda_11 = pmf.compute_lambda(parameter_list, -1);
+    EXPECT_DOUBLE_EQ(lambda_11, 2);
 }
 
 TEST(PMF, PMClass) {
@@ -64,7 +64,7 @@ TEST(PMF, PMClass) {
     aM[a3] = 5;
     aM[a5] = 1;
     PMF pmf(&g, &aM, 2, parameter_list);
-	pmf.set_node_filter(true);
+    pmf.set_node_filter(true);
     pmf.run();
 
     std::list<Set> sL = pmf.get_set_list();
@@ -76,22 +76,22 @@ TEST(PMF, PMClass) {
     it++;
     EXPECT_EQ(*it, Set(std::string("001"))); // { 2 }
 
-	std::list<double> lambda_list = pmf.get_lambda_list();
-	EXPECT_EQ(lambda_list.size(), 2);
-	std::list<double>::iterator it_2 = lambda_list.begin();
-	EXPECT_DOUBLE_EQ(*it_2, 1);
-	it_2++;
-	EXPECT_DOUBLE_EQ(*it_2, 5);
+    std::list<double> lambda_list = pmf.get_lambda_list();
+    EXPECT_EQ(lambda_list.size(), 2);
+    std::list<double>::iterator it_2 = lambda_list.begin();
+    EXPECT_DOUBLE_EQ(*it_2, 1);
+    it_2++;
+    EXPECT_DOUBLE_EQ(*it_2, 5);
 
 }
 
 
 TEST(PDT, RUN) {
-	std::vector<std::tuple<std::size_t, std::size_t, double>> elt;
-	elt.push_back(std::make_tuple(0, 1, 1));
-	elt.push_back(std::make_tuple(0, 2, 5));
-	elt.push_back(std::make_tuple(1, 2, 1));
-	submodular::InfoCluster ic(elt, 3);
+    std::vector<std::tuple<std::size_t, std::size_t, double>> elt;
+    elt.push_back(std::make_tuple(0, 1, 1));
+    elt.push_back(std::make_tuple(0, 2, 5));
+    elt.push_back(std::make_tuple(1, 2, 1));
+    submodular::InfoCluster ic(elt, 3);
     ic.run_pdt();
     std::list<double> lambda_list = ic.get_critical_values();
     std::list<Partition> partition_list = ic.get_psp();
@@ -128,8 +128,8 @@ TEST(PMF, ComputeCut) {
 }
 namespace demo {
     TEST_F(Graph4PointTest, PDT) {
-		submodular::InfoCluster ic(edge_list_tuple_1, 4);
-		ic.run_pdt();
+        submodular::InfoCluster ic(edge_list_tuple_1, 4);
+        ic.run_pdt();
         std::list<double> lambda_list = ic.get_critical_values();
         std::list<parametric::Partition> partition_list = ic.get_psp();
         EXPECT_EQ(lambda_list.size(), 1);
@@ -157,8 +157,8 @@ namespace demo {
         };
         Gaussian2DGraphBase g2g(8, 0.1, a);
         EdgeListTuple elt = g2g.get_edge_list_tuple();
-		submodular::InfoCluster ic(elt, 8);
-		ic.run_pdt();
+        submodular::InfoCluster ic(elt, 8);
+        ic.run_pdt();
         std::list<double> lambda_list = ic.get_critical_values();
         std::list<parametric::Partition> partition_list = ic.get_psp();
 
@@ -171,107 +171,107 @@ namespace demo {
         lemon::Tolerance<double> Tol;
         
         std::list<double>::iterator it = lambda_list.begin();
-		;
+        ;
         for (std::list<double>::iterator it_2 = lambda_list_2.begin(); it_2 != lambda_list_2.end(); it_2++) {
             EXPECT_NEAR(*it, *it_2, Tol.epsilon());
             it++;
         }
-		EXPECT_EQ(partition_list, partition_list_2);
+        EXPECT_EQ(partition_list, partition_list_2);
     }
-	TEST(ThreePointComplete, PDT) {
-		std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
-		edges.push_back(std::make_tuple(0, 1, 1.0));
-		edges.push_back(std::make_tuple(0, 2, 1.0));
-		edges.push_back(std::make_tuple(1, 2, 5.0));
-		submodular::InfoCluster ic(edges, 3);
-		ic.run_pdt();
-		std::list<double> lambda_list = ic.get_critical_values();
-		std::list<parametric::Partition> partition_list = ic.get_psp();
-		std::list<double>::iterator it = lambda_list.begin();
-		EXPECT_DOUBLE_EQ(*it, 2);
-		it++;
-		EXPECT_DOUBLE_EQ(*it, 5);
+    TEST(ThreePointComplete, PDT) {
+        std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
+        edges.push_back(std::make_tuple(0, 1, 1.0));
+        edges.push_back(std::make_tuple(0, 2, 1.0));
+        edges.push_back(std::make_tuple(1, 2, 5.0));
+        submodular::InfoCluster ic(edges, 3);
+        ic.run_pdt();
+        std::list<double> lambda_list = ic.get_critical_values();
+        std::list<parametric::Partition> partition_list = ic.get_psp();
+        std::list<double>::iterator it = lambda_list.begin();
+        EXPECT_DOUBLE_EQ(*it, 2);
+        it++;
+        EXPECT_DOUBLE_EQ(*it, 5);
 
-		EXPECT_EQ(lambda_list.size(), 2); 
-		EXPECT_EQ(partition_list.size(), 3);
+        EXPECT_EQ(lambda_list.size(), 2); 
+        EXPECT_EQ(partition_list.size(), 3);
 
-		stl::Partition p = stl::Partition::makeDense(3);
-		
-		std::list<parametric::Partition>::iterator it_p = partition_list.begin();
-		EXPECT_EQ(*it_p, p);
+        stl::Partition p = stl::Partition::makeDense(3);
+        
+        std::list<parametric::Partition>::iterator it_p = partition_list.begin();
+        EXPECT_EQ(*it_p, p);
 
-		it_p++;
-		p.clear();
-		p.AddElement(stl::CSet(std::string("011")));
-		p.AddElement(stl::CSet(std::string("100")));
-		EXPECT_EQ(*it_p, p);
+        it_p++;
+        p.clear();
+        p.AddElement(stl::CSet(std::string("011")));
+        p.AddElement(stl::CSet(std::string("100")));
+        EXPECT_EQ(*it_p, p);
 
-		p = stl::Partition::makeFine(3);
-		it_p++;
-		EXPECT_EQ(*it_p, p);
+        p = stl::Partition::makeFine(3);
+        it_p++;
+        EXPECT_EQ(*it_p, p);
 
-	}
+    }
 
-	TEST(ThreePointNotComplete, PDT) {
-		std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
-		edges.push_back(std::make_tuple(0, 1, 1.0));
-		submodular::InfoCluster ic(edges, 3);
-		ic.run_pdt();
-		std::list<double> lambda_list = ic.get_critical_values();
-		std::list<parametric::Partition> partition_list = ic.get_psp();
-		std::list<double>::iterator it = lambda_list.begin();
-		EXPECT_DOUBLE_EQ(*it, 0);
-		it++;
-		EXPECT_DOUBLE_EQ(*it, 1);
+    TEST(ThreePointNotComplete, PDT) {
+        std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
+        edges.push_back(std::make_tuple(0, 1, 1.0));
+        submodular::InfoCluster ic(edges, 3);
+        ic.run_pdt();
+        std::list<double> lambda_list = ic.get_critical_values();
+        std::list<parametric::Partition> partition_list = ic.get_psp();
+        std::list<double>::iterator it = lambda_list.begin();
+        EXPECT_DOUBLE_EQ(*it, 0);
+        it++;
+        EXPECT_DOUBLE_EQ(*it, 1);
 
-		EXPECT_EQ(lambda_list.size(), 2); 
-		EXPECT_EQ(partition_list.size(), 3);
+        EXPECT_EQ(lambda_list.size(), 2); 
+        EXPECT_EQ(partition_list.size(), 3);
 
-		stl::Partition p = stl::Partition::makeDense(3);
+        stl::Partition p = stl::Partition::makeDense(3);
 
-		std::list<parametric::Partition>::iterator it_p = partition_list.begin();
-		EXPECT_EQ(*it_p, p);
+        std::list<parametric::Partition>::iterator it_p = partition_list.begin();
+        EXPECT_EQ(*it_p, p);
 
-		it_p++;
-		p.clear();
-		p.AddElement(stl::CSet(std::string("110")));
-		p.AddElement(stl::CSet(std::string("001")));
-		EXPECT_EQ(*it_p, p);
+        it_p++;
+        p.clear();
+        p.AddElement(stl::CSet(std::string("110")));
+        p.AddElement(stl::CSet(std::string("001")));
+        EXPECT_EQ(*it_p, p);
 
-		p = stl::Partition::makeFine(3);
-		it_p++;
-		EXPECT_EQ(*it_p, p);
-	}
+        p = stl::Partition::makeFine(3);
+        it_p++;
+        EXPECT_EQ(*it_p, p);
+    }
 
-	TEST(FourPointNotComplete, PDT) {
-		std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
-		edges.push_back(std::make_tuple(0, 1, 1.0));
-		edges.push_back(std::make_tuple(2, 3, 1.0));
-		submodular::InfoCluster ic(edges, 4);
-		ic.run_pdt();
-		std::list<double> lambda_list = ic.get_critical_values();
-		std::list<parametric::Partition> partition_list = ic.get_psp();
-		std::list<double>::iterator it = lambda_list.begin();
-		EXPECT_DOUBLE_EQ(*it, 0);
-		it++;
-		EXPECT_DOUBLE_EQ(*it, 1);
+    TEST(FourPointNotComplete, PDT) {
+        std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
+        edges.push_back(std::make_tuple(0, 1, 1.0));
+        edges.push_back(std::make_tuple(2, 3, 1.0));
+        submodular::InfoCluster ic(edges, 4);
+        ic.run_pdt();
+        std::list<double> lambda_list = ic.get_critical_values();
+        std::list<parametric::Partition> partition_list = ic.get_psp();
+        std::list<double>::iterator it = lambda_list.begin();
+        EXPECT_DOUBLE_EQ(*it, 0);
+        it++;
+        EXPECT_DOUBLE_EQ(*it, 1);
 
-		EXPECT_EQ(lambda_list.size(), 2);  
-		EXPECT_EQ(partition_list.size(), 3);
+        EXPECT_EQ(lambda_list.size(), 2);  
+        EXPECT_EQ(partition_list.size(), 3);
 
-		stl::Partition p = stl::Partition::makeDense(4);
+        stl::Partition p = stl::Partition::makeDense(4);
 
-		std::list<parametric::Partition>::iterator it_p = partition_list.begin();
-		EXPECT_EQ(*it_p, p);
+        std::list<parametric::Partition>::iterator it_p = partition_list.begin();
+        EXPECT_EQ(*it_p, p);
 
-		it_p++;
-		p.clear();
-		p.AddElement(stl::CSet(std::string("1100")));
-		p.AddElement(stl::CSet(std::string("0011")));
-		EXPECT_EQ(*it_p, p);
+        it_p++;
+        p.clear();
+        p.AddElement(stl::CSet(std::string("1100")));
+        p.AddElement(stl::CSet(std::string("0011")));
+        EXPECT_EQ(*it_p, p);
 
-		p = stl::Partition::makeFine(4);
-		it_p++;
-		EXPECT_EQ(*it_p, p);
-	}
+        p = stl::Partition::makeFine(4);
+        it_p++;
+        EXPECT_EQ(*it_p, p);
+    }
 }
