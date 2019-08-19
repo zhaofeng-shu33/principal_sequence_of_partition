@@ -281,11 +281,6 @@ namespace parametric {
 			cap[arc] = update_base[i].second + std::max<double>(0, std::min<double>(a_i - lambda, b_i));
         }
     }
-	void PMF_R::notify() {
-		boost::unique_lock<boost::mutex> lock(mutex);
-		cond.wait(lock);
-		cond.notify_all();
-	}
 	void PMF_R::construct_new_update_base(const lemon::ListDigraph& G, const Set& S, const Set& T, std::map<int, std::pair<double, double>>& new_update_base) {
 		for (lemon::ListDigraph::NodeIt n(G); n != lemon::INVALID; ++n) {
 			if (n == source_node || n == sink_node)
@@ -307,9 +302,6 @@ namespace parametric {
 	}
 
 	void PMF_R::executePreflow(ThreadArgumentPack& TAP) {
-		boost::unique_lock<boost::mutex> lock(mutex);
-		cond.wait(lock);
-		cond.notify_all();
 		lemon::ListDigraph& newDig = *TAP.newDig;
 		FlowMap new_leftFlowMap(newDig);
 		ArcMap& newArcMap = *TAP.newArcMap;
@@ -345,10 +337,7 @@ namespace parametric {
 
 			new_flow_value = pf_instance.flowValue();
 			T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
-			if (2 * T_apostrophe.Cardinality() > lemon::countNodes(newDig) && TAP.another_thread != NULL) {
-				// kill another thread
-				TAP.another_thread->interrupt();
-			}
+			cond.notify_all();
 		}
 		catch (boost::thread_interrupted&) {
 			return;
@@ -358,9 +347,6 @@ namespace parametric {
 		}
 	}
 	void PMF_R::executePreflow_reverse(ThreadArgumentPack& TAP) {
-		boost::unique_lock<boost::mutex> lock(mutex);
-		cond.notify_all();
-		cond.wait(lock);
 		lemon::ListDigraph& newDig = *TAP.newDig;
 		ArcMap& newArcMap = *TAP.newArcMap;
 		FlowMap& rightArcMap = *TAP.flowMap;
@@ -399,10 +385,7 @@ namespace parametric {
 
 			new_flow_value = pf_reverse_instance.flowValue();
 			T_apostrophe = get_min_cut_sink_side_reverse(reverse_newDig, pf_reverse_instance);
-			if (2 * T_apostrophe.Cardinality() <= lemon::countNodes(newDig) && TAP.another_thread != NULL) {
-				// kill another thread
-				TAP.another_thread->interrupt();
-			}
+			cond.notify_all();
 		}
 		catch (boost::thread_interrupted&) {
 			return;
@@ -494,10 +477,27 @@ namespace parametric {
 
 		left = new boost::thread(&PMF_R::executePreflow, this, std::ref(TAP_Left));
 		right = new boost::thread(&PMF_R::executePreflow_reverse, this, std::ref(TAP_Right));
-		TAP_Left.another_thread = right;
-		TAP_Right.another_thread = left;
-		left->join();
-		right->join();
+
+		if (new_flow_value_left < 0 || new_flow_value_right < 0) {
+			boost::unique_lock<boost::mutex> lock(mutex);
+			cond.wait(lock);
+			if (new_flow_value_left < 0) { // right terminate first
+				if (2 * T_apostrophe_right.Cardinality() <= lemon::countNodes(newDig)) {
+					// interrupt left thread
+					left->interrupt();
+				}
+			}
+			else { // left terminate first
+				if (2 * T_apostrophe_left.Cardinality() > lemon::countNodes(newDig)) {
+					// interrupt right thread
+					right->interrupt();
+				}
+			}
+		}
+		else { // both thread has finished
+			left->join();
+			right->join();
+		}
 		// check any error
 		if (TAP_Left.thread_exception_ptr)
 			std::rethrow_exception(TAP_Left.thread_exception_ptr);

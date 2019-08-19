@@ -36,7 +36,6 @@ namespace parametric{
 			Elevator_Reverse* ele_reverse_out = NULL;
 			std::exception_ptr thread_exception_ptr = nullptr;
 			FlowMap* newFlowMap;
-			boost::thread* another_thread;
 			ThreadArgumentPack(lemon::ListDigraph& newDig1, ArcMap& newArcMap1, FlowMap& flowMap1, Set& S1, Set& T1, 
 				Set& T_apostrophe_1, double& new_flow_value_1, 
 				FlowMap& newflowMap1, Elevator* ele1, Elevator_Reverse* ele_reverse_1, lemon::ReverseDigraph<lemon::ListDigraph>* reverse_newDig1):
@@ -69,7 +68,6 @@ namespace parametric{
 		void executePreflow(ThreadArgumentPack& TAP);
 		void executePreflow_reverse(ThreadArgumentPack& TAP);
 		void construct_new_update_base(const lemon::ListDigraph& G, const Set& S, const Set& T, std::map<int, std::pair<double, double>>& new_update_base);
-		void notify();
     private:    
         void update_dig(double lambda, lemon::ListDigraph& G, ArcMap& cap, std::map<int, std::pair<double, double>>& update_base);
         void slice(lemon::ListDigraph* G, ArcMap* arcMap, std::map<int, std::pair<double, double>>& update_base, Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract=true);
