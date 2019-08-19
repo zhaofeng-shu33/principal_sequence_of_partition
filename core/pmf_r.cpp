@@ -359,7 +359,6 @@ namespace parametric {
 		lemon::ReverseDigraph<lemon::ListDigraph>& reverse_newDig = *TAP.reverse_newDig;
 		bool isValid;		
 		try{	
-			boost::this_thread::interruption_point();
 			Preflow_Reverse pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
 			FlowMap new_rightFlowMap(newDig);
 			modify_flow(newDig, newArcMap, rightArcMap, new_rightFlowMap);
@@ -494,10 +493,8 @@ namespace parametric {
 				}
 			}
 		}
-		else { // both thread has finished
-			left->join();
-			right->join();
-		}
+		left->join();
+		right->join();
 		// check any error
 		if (TAP_Left.thread_exception_ptr)
 			std::rethrow_exception(TAP_Left.thread_exception_ptr);
