@@ -3,6 +3,7 @@
 *   Example from Literature "Minimum Average Cost Clustering"
 **/
 #include <lemon/list_graph.h>
+#include <lemon/preflow.h>
 #include "core/graph/graph.h"
 #include "set/set_stl.h"
 namespace submodular {
@@ -13,7 +14,10 @@ namespace submodular {
     class DilworthTruncation {
     public:
         typedef lemon::ListDigraph Digraph;
-        typedef typename Digraph::ArcMap<double> ArcMap;
+		typedef typename Digraph::ArcMap<double> ArcMap;
+		typedef typename lemon::FilterNodes<Digraph> SubDigraph;
+		typedef typename lemon::PreflowDefaultTraits<SubDigraph, ArcMap> PreflowSubgraphTraits;
+		typedef typename lemon::Preflow<Digraph, ArcMap, PreflowSubgraphTraits> Preflow;
 	
         DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map);
         double get_min_value();

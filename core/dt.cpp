@@ -1,5 +1,4 @@
 #include <sstream>
-#include <lemon/preflow.h>
 #include "core/dt.h"
 namespace submodular {
 
@@ -41,8 +40,6 @@ namespace submodular {
     }
     
 	void DilworthTruncation::minimize(std::vector<double>& xl) {
-		typedef typename lemon::FilterNodes<Digraph> SubDigraph;
-		typedef typename lemon::PreflowDefaultTraits<SubDigraph, ArcMap> PreflowSubgraphTraits;
 
 		int graph_size = xl.size();
 
@@ -83,7 +80,7 @@ namespace submodular {
 		}
 		subgraph.enable(source_node);
 		subgraph.enable(sink_node);
-		lemon::Preflow<Digraph, ArcMap, PreflowSubgraphTraits> pf(subgraph, *_edge_map, source_node, sink_node);
+		Preflow pf(subgraph, *_edge_map, source_node, sink_node);
 		pf.run();
 		double minimum_value = pf.flowValue() - const_difference;
 		stl::CSet X;
