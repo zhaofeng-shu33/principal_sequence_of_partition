@@ -5,9 +5,8 @@
 #include "test/utility.h"
 namespace parametric {
 	TEST(PMF_R, reverse) {
-		PMF_R pmfR;
-		lemon::ListDigraph& digraph = pmfR.dig;
-		ArcMap& cap = pmfR.dig_aM;
+		lemon::ListDigraph digraph;
+		ArcMap cap(digraph);
 		std::string lgf_str = "@nodes\nlabel\n0\n1\n2\n3\n4\n@arcs\n\t\tlabel\tcapacity\n4\t0\t0\t1\n4\t2\t1\t2\n0\t1\t2\t3\n2\t0\t3\t5\n2\t3\t4\t6\n1\t2\t5\t4\n1\t3\t6\t7";
 		std::stringstream ss;
 		ss << lgf_str;
@@ -25,15 +24,16 @@ namespace parametric {
 		EXPECT_FALSE(pf.minCut(rdig.nodeFromId(4)));
 	}
 	TEST(PMF_R, execute_reverse) {
-		PMF_R pmfR;
-		lemon::ListDigraph& digraph = pmfR.dig;
-		ArcMap& cap = pmfR.dig_aM;
+		lemon::ListDigraph digraph;
+		ArcMap cap(digraph);
+		std::vector<pair> y_lambda;
 		std::string lgf_str = "@nodes\nlabel\n0\n1\n2\n3\n4\n@arcs\n\t\tlabel\tcapacity\n4\t0\t0\t1\n4\t2\t1\t2\n0\t1\t2\t3\n2\t0\t3\t5\n2\t3\t4\t6\n1\t2\t5\t4\n1\t3\t6\t7";
 		std::stringstream ss;
 		ss << lgf_str;
 		lemon::digraphReader(digraph, ss)
 			.arcMap("capacity", cap)
 			.run();
+		PMF_R pmfR(&digraph, &cap, 1, y_lambda);
 		// construct a maximum flow map
 		PMF_R::FlowMap fm(digraph);
 		pmfR.set_source_node_id(4);
@@ -52,15 +52,16 @@ namespace parametric {
 		EXPECT_EQ(T_a, stl::CSet("1111"));
 	}
 	TEST(PMF_R, contract) {
-		PMF_R pmfR;
-		lemon::ListDigraph& digraph = pmfR.dig;
-		ArcMap& cap = pmfR.dig_aM;
+		lemon::ListDigraph digraph;
+		ArcMap cap(digraph);
+		std::vector<pair> y_lambda;
 		std::string lgf_str = "@nodes\nlabel\n0\n1\n2\n3\n4\n@arcs\n\t\tlabel\tcapacity\n4\t0\t0\t1\n4\t2\t1\t2\n0\t1\t2\t3\n2\t0\t3\t5\n2\t3\t4\t6\n1\t2\t5\t4\n1\t3\t6\t7";
 		std::stringstream ss;
 		ss << lgf_str;
 		lemon::digraphReader(digraph, ss)
 			.arcMap("capacity", cap)
 			.run();
+		PMF_R pmfR(&digraph, &cap, 1, y_lambda);
 		pmfR.set_source_node_id(4);
 		pmfR.set_sink_node_id(3);
 		pmfR.set_tilde_G_size(5);
@@ -85,15 +86,16 @@ namespace parametric {
 	}
 
 	TEST(PMF_R, modifyFlow) {
-		PMF_R pmfR;
-		lemon::ListDigraph& digraph = pmfR.dig;
-		ArcMap& cap = pmfR.dig_aM;
+		lemon::ListDigraph digraph;
+		ArcMap cap(digraph);
+		std::vector<pair> y_lambda;
 		std::string lgf_str = "@nodes\nlabel\n0\n1\n2\n3\n4\n@arcs\n\t\tlabel\tcapacity\n4\t0\t0\t1\n4\t2\t1\t2\n0\t1\t2\t3\n2\t0\t3\t5\n2\t3\t4\t6\n1\t2\t5\t4\n1\t3\t6\t7";
 		std::stringstream ss;
 		ss << lgf_str;
 		lemon::digraphReader(digraph, ss)
 			.arcMap("capacity", cap)
 			.run();
+		PMF_R pmfR(&digraph, &cap, 1, y_lambda);
 		pmfR.set_source_node_id(4);
 		pmfR.set_sink_node_id(3);
 		pmfR.set_tilde_G_size(5);
@@ -140,6 +142,7 @@ namespace parametric {
 		aM[a3] = 5;
 		aM[a5] = 1;
 		PMF_R pmf(&g, &aM, 2, parameter_list);
+		pmf.set_node_filter(true);
 		pmf.run();
 
 		std::list<Set> sL = pmf.get_set_list();

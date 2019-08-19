@@ -66,10 +66,15 @@ namespace parametric {
     PMF_R::PMF_R(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda) :
         g_ptr(g), aM(arcMap), _j(j),
         _y_lambda(y_lambda),
-        dig_aM(dig)
+        dig_aM(dig), node_filter(*g_ptr), sub_digraph(*g_ptr, node_filter)
     {                
+		node_filter[g_ptr->nodeFromId(0)] = true;
     }
-	PMF_R::PMF_R():dig_aM(dig){}
+	void PMF_R::set_node_filter(bool value) {
+		for (lemon::ListDigraph::NodeIt n(*g_ptr); n != lemon::INVALID; ++n) {
+			node_filter[n] = value;
+		}
+	}
 	Set PMF_R::get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, Preflow_Reverse& pf) {
 		Set t = Set::MakeEmpty(tilde_G_size);
 		for (lemon::ReverseDigraph<lemon::ListDigraph>::NodeIt n(digraph); n != lemon::INVALID; ++n) {
@@ -92,8 +97,8 @@ namespace parametric {
 		sink_capacity.clear();
         int a = g_ptr->maxNodeId();		
         if (a != -1 && _j <= a) {
-            for (lemon::ListDigraph::InArcIt arc(*g_ptr, g_ptr->nodeFromId(_j)); arc != lemon::INVALID; ++arc) {
-                int i = g_ptr->id(g_ptr->source(arc));
+            for (SubDigraph::InArcIt arc(sub_digraph, sub_digraph.nodeFromId(_j)); arc != lemon::INVALID; ++arc) {
+                int i = sub_digraph.id(sub_digraph.source(arc));
                 sink_capacity[i] = std::make_pair(0, (*aM)[arc]);
             }
         }
@@ -103,11 +108,11 @@ namespace parametric {
 
         dig.clear();
         // copy the graph
-        for (int i = 0; i <= g_ptr->maxNodeId(); i++)
+        for (int i = 0; i <= _j; i++)
             dig.addNode();
-        for (lemon::ListDigraph::ArcIt a(*g_ptr); a != lemon::INVALID; ++a) {
-            lemon::ListDigraph::Node s = dig.nodeFromId(g_ptr->id(g_ptr->source(a)));
-            lemon::ListDigraph::Node t = dig.nodeFromId(g_ptr->id(g_ptr->target(a)));
+        for (SubDigraph::ArcIt a(sub_digraph); a != lemon::INVALID; ++a) {
+            lemon::ListDigraph::Node s = sub_digraph.source(a);
+            lemon::ListDigraph::Node t = sub_digraph.target(a);
             lemon::ListDigraph::Arc a1 = dig.addArc(s, t);
             dig_aM[a1] = (*aM)[a];
         }
@@ -169,6 +174,7 @@ namespace parametric {
 	
     void PMF_R::reset_j(std::size_t j) { 
         _j = j; 
+		node_filter[g_ptr->nodeFromId(_j)] = true;
         set_list.clear();
         lambda_list.clear();    
 	}
@@ -678,16 +684,18 @@ namespace parametric {
 	void PDT_R::run() {
 		partition_list.clear();
 		Lambda_list.clear();
-		partition_list.push_back(Partition());
+		Partition initial_partition;
+		initial_partition.AddElement(Set("1"));
+		partition_list.push_back(initial_partition);
 		Lambda_list.push_back(INFINITY);
 		_y_lambda.resize(lemon::countNodes(*_g), pair(0, INFINITY));
-		for (int j = 0; j < _y_lambda.size(); j++) {
+		for (int j = 1; j < _y_lambda.size(); j++) {
 			pmf.reset_y_lambda(_y_lambda);
 			pmf.reset_j(j);
 			pmf.run();
 			std::list<Set> t_list = pmf.get_set_list();
 			std::list<double> lambda_list = pmf.get_lambda_list();
-			for (int u = 0; u < _y_lambda.size(); u++) {
+			for (int u = 0; u <= j; u++) {
 				if (u == j) {
 					stl::CSet t;
 					t.AddElement(j);

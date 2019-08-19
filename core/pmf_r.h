@@ -18,6 +18,7 @@ namespace parametric{
         using Set = stl::CSet;
         typedef lemon::Preflow_Relabel<lemon::ListDigraph, ArcMap> Preflow;
 		typedef lemon::Preflow_Relabel<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap> Preflow_Reverse;
+		typedef typename lemon::FilterNodes<lemon::ListDigraph> SubDigraph;
         typedef Preflow::FlowMap FlowMap;
         typedef Preflow::Elevator Elevator;
 		typedef Preflow_Reverse::Elevator Elevator_Reverse;
@@ -46,7 +47,6 @@ namespace parametric{
 				{}
 		};
         PMF_R(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda);
-		PMF_R();
         void run();
         std::list<Set> get_set_list() { return set_list; }
         std::list<double> get_lambda_list() { return lambda_list; }
@@ -68,6 +68,7 @@ namespace parametric{
 		void executePreflow(ThreadArgumentPack& TAP);
 		void executePreflow_reverse(ThreadArgumentPack& TAP);
 		void construct_new_update_base(const lemon::ListDigraph& G, const Set& S, const Set& T, std::map<int, std::pair<double, double>>& new_update_base);
+		void set_node_filter(bool value);
     private:    
         void update_dig(double lambda, lemon::ListDigraph& G, ArcMap& cap, std::map<int, std::pair<double, double>>& update_base);
         void slice(lemon::ListDigraph* G, ArcMap* arcMap, std::map<int, std::pair<double, double>>& update_base, Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract=true);
@@ -92,6 +93,8 @@ namespace parametric{
         std::size_t _j;
 		boost::mutex mutex;
 		boost::condition_variable cond;
+		SubDigraph sub_digraph;
+		lemon::ListDigraph::NodeMap<bool> node_filter;
 	public:
 		lemon::ListDigraph dig; //directed graph
 		ArcMap dig_aM; //directed graph arcMap
