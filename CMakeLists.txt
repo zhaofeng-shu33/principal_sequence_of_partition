@@ -40,7 +40,6 @@ if(WIN32)
 else()    
     target_link_libraries(main ${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE})
 endif()
-target_link_libraries(main ${Boost_THREAD_LIBRARY})
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${LEMON_INCLUDE_DIR})
 
