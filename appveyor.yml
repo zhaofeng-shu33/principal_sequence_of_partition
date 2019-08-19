@@ -7,7 +7,7 @@ environment:
 install:
 - cmd: >-
 
-    IF NOT EXIST "C:\Tools\vcpkg\installed\x64-windows\include\boost\version.hpp" vcpkg install gtest:x64-windows boost-program-options:x64-windows liblemon:x64-windows
+    IF NOT EXIST "C:\Tools\vcpkg\installed\x64-windows\lib\boost_thread-vc140-mt.lib" vcpkg install gtest:x64-windows boost-thread:x64-windows boost-program-options:x64-windows liblemon:x64-windows
     
     curl https://gitee.com/freewind201301/appveyor-patch-liblemon/raw/master/preflow.h -o preflow.h
     
