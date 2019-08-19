@@ -91,6 +91,8 @@ namespace parametric{
 		int sink_node_id;
         lemon::Tolerance<double> tolerance;
         std::size_t _j;
+		boost::mutex mutex;
+		boost::condition_variable cond;
 	public:
 		lemon::ListDigraph dig; //directed graph
 		ArcMap dig_aM; //directed graph arcMap

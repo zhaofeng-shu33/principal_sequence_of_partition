@@ -338,6 +338,8 @@ namespace parametric {
 			new_flow_value = pf_instance.flowValue();
 			T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
 			if (2 * T_apostrophe.Cardinality() > lemon::countNodes(newDig) && TAP.another_thread != NULL) {
+				boost::unique_lock<boost::mutex> lock(mutex);
+				cond.wait(lock);
 				// kill another thread
 				TAP.another_thread->interrupt();
 			}
@@ -350,6 +352,7 @@ namespace parametric {
 		}
 	}
 	void PMF_R::executePreflow_reverse(ThreadArgumentPack& TAP) {
+		
 		lemon::ListDigraph& newDig = *TAP.newDig;
 		ArcMap& newArcMap = *TAP.newArcMap;
 		FlowMap& rightArcMap = *TAP.flowMap;
@@ -362,6 +365,7 @@ namespace parametric {
 		lemon::ReverseDigraph<lemon::ListDigraph>& reverse_newDig = *TAP.reverse_newDig;
 		bool isValid;
 		try{	
+			boost::this_thread::interruption_point();
 			Preflow_Reverse pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
 			FlowMap new_rightFlowMap(newDig);
 			modify_flow(newDig, newArcMap, rightArcMap, new_rightFlowMap);
@@ -484,6 +488,7 @@ namespace parametric {
 		right = new boost::thread(&PMF_R::executePreflow_reverse, this, std::ref(TAP_Right));
 		TAP_Left.another_thread = right;
 		TAP_Right.another_thread = left;
+		cond.notify_one();
 		left->join();
 		right->join();
 		// check any error
