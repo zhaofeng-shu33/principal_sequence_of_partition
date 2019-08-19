@@ -281,6 +281,11 @@ namespace parametric {
 			cap[arc] = update_base[i].second + std::max<double>(0, std::min<double>(a_i - lambda, b_i));
         }
     }
+	void PMF_R::notify() {
+		boost::unique_lock<boost::mutex> lock(mutex);
+		cond.wait(lock);
+		cond.notify_all();
+	}
 	void PMF_R::construct_new_update_base(const lemon::ListDigraph& G, const Set& S, const Set& T, std::map<int, std::pair<double, double>>& new_update_base) {
 		for (lemon::ListDigraph::NodeIt n(G); n != lemon::INVALID; ++n) {
 			if (n == source_node || n == sink_node)
@@ -302,6 +307,9 @@ namespace parametric {
 	}
 
 	void PMF_R::executePreflow(ThreadArgumentPack& TAP) {
+		boost::unique_lock<boost::mutex> lock(mutex);
+		cond.wait(lock);
+		cond.notify_all();
 		lemon::ListDigraph& newDig = *TAP.newDig;
 		FlowMap new_leftFlowMap(newDig);
 		ArcMap& newArcMap = *TAP.newArcMap;
@@ -338,8 +346,6 @@ namespace parametric {
 			new_flow_value = pf_instance.flowValue();
 			T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
 			if (2 * T_apostrophe.Cardinality() > lemon::countNodes(newDig) && TAP.another_thread != NULL) {
-				boost::unique_lock<boost::mutex> lock(mutex);
-				cond.wait(lock);
 				// kill another thread
 				TAP.another_thread->interrupt();
 			}
@@ -352,7 +358,9 @@ namespace parametric {
 		}
 	}
 	void PMF_R::executePreflow_reverse(ThreadArgumentPack& TAP) {
-		
+		boost::unique_lock<boost::mutex> lock(mutex);
+		cond.notify_all();
+		cond.wait(lock);
 		lemon::ListDigraph& newDig = *TAP.newDig;
 		ArcMap& newArcMap = *TAP.newArcMap;
 		FlowMap& rightArcMap = *TAP.flowMap;
@@ -363,7 +371,7 @@ namespace parametric {
 		FlowMap& newFlowMap = *TAP.newFlowMap;
 		Elevator_Reverse* ele = TAP.ele_reverse;
 		lemon::ReverseDigraph<lemon::ListDigraph>& reverse_newDig = *TAP.reverse_newDig;
-		bool isValid;
+		bool isValid;		
 		try{	
 			boost::this_thread::interruption_point();
 			Preflow_Reverse pf_reverse_instance(reverse_newDig, newArcMap, sink_node, source_node);
@@ -401,7 +409,7 @@ namespace parametric {
 		}
 		catch (...) {
 			TAP.thread_exception_ptr = std::current_exception();
-		}
+		}		
 	}
 
     void PMF_R::slice(lemon::ListDigraph* G, ArcMap* arcMap, std::map<int, std::pair<double, double>>& update_base, Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract) {
@@ -488,7 +496,6 @@ namespace parametric {
 		right = new boost::thread(&PMF_R::executePreflow_reverse, this, std::ref(TAP_Right));
 		TAP_Left.another_thread = right;
 		TAP_Right.another_thread = left;
-		cond.notify_one();
 		left->join();
 		right->join();
 		// check any error

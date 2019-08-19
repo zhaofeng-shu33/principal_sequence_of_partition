@@ -69,6 +69,7 @@ namespace parametric{
 		void executePreflow(ThreadArgumentPack& TAP);
 		void executePreflow_reverse(ThreadArgumentPack& TAP);
 		void construct_new_update_base(const lemon::ListDigraph& G, const Set& S, const Set& T, std::map<int, std::pair<double, double>>& new_update_base);
+		void notify();
     private:    
         void update_dig(double lambda, lemon::ListDigraph& G, ArcMap& cap, std::map<int, std::pair<double, double>>& update_base);
         void slice(lemon::ListDigraph* G, ArcMap* arcMap, std::map<int, std::pair<double, double>>& update_base, Set& T_l, Set& T_r, FlowMap& leftArcMap, FlowMap& rightArcMap, double lambda_1, double lambda_3, Elevator* left_ele, Elevator_Reverse* right_ele, bool is_contract=true);
