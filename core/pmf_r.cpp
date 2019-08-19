@@ -482,13 +482,13 @@ namespace parametric {
 			boost::unique_lock<boost::mutex> lock(mutex);
 			cond.wait(lock);
 			if (new_flow_value_left < 0) { // right terminate first
-				if (2 * T_apostrophe_right.Cardinality() <= lemon::countNodes(newDig)) {
+				if (2 * T_apostrophe_right.Cardinality() <= lemon::countNodes(*newDig)) {
 					// interrupt left thread
 					left->interrupt();
 				}
 			}
 			else { // left terminate first
-				if (2 * T_apostrophe_left.Cardinality() > lemon::countNodes(newDig)) {
+				if (2 * T_apostrophe_left.Cardinality() > lemon::countNodes(*newDig)) {
 					// interrupt right thread
 					right->interrupt();
 				}
