@@ -16,8 +16,8 @@ namespace parametric{
 
     public:
         using Set = stl::CSet;
-        typedef lemon::Preflow_Relabel<lemon::ListDigraph, ArcMap> Preflow;
-        typedef lemon::Preflow_Relabel<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap> Preflow_Reverse;
+        typedef lemon::Preflow_HL<lemon::ListDigraph, ArcMap> Preflow;
+        typedef lemon::Preflow_HL<lemon::ReverseDigraph<lemon::ListDigraph>, ArcMap> Preflow_Reverse;
         typedef typename lemon::FilterNodes<lemon::ListDigraph> SubDigraph;
         typedef Preflow::FlowMap FlowMap;
         typedef Preflow::Elevator Elevator;

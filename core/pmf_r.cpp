@@ -88,7 +88,7 @@ namespace parametric {
         for (lemon::ListDigraph::NodeIt n(digraph); n != lemon::INVALID; ++n) {
             if (!pf.minCut(n))
                 t.AddElement(dig.id(n));
-        }
+            }
         return t;
     }
     
