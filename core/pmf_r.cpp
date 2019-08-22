@@ -74,6 +74,7 @@ namespace parametric {
         for (lemon::ListDigraph::NodeIt n(*g_ptr); n != lemon::INVALID; ++n) {
             node_filter[n] = value;
         }
+        node_filter[g_ptr->nodeFromId(0)] = true;
     }
     Set PMF_R::get_min_cut_sink_side_reverse(const lemon::ReverseDigraph<lemon::ListDigraph>& digraph, Preflow_Reverse& pf) {
         Set t = Set::MakeEmpty(tilde_G_size);
@@ -682,8 +683,11 @@ namespace parametric {
         _arcMap(arcMap),
         pmf(g, arcMap, 0, _y_lambda) {}
     void PDT_R::run() {
-        partition_list.clear();
-        Lambda_list.clear();
+        if (partition_list.size() > 0) {
+            partition_list.clear();
+            Lambda_list.clear();
+            pmf.set_node_filter(false);
+        }
         Partition initial_partition;
         initial_partition.AddElement(Set("1"));
         partition_list.push_back(initial_partition);
