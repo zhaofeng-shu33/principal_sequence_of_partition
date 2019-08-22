@@ -21,7 +21,6 @@ if(UNIX)
 target_link_libraries(TestAll ${GTEST_MAIN_LIBRARY} ${GTEST_LIBRARY})
 target_link_libraries(TestAll set_stl)
 endif()
-target_link_libraries(TestAll InterruptibleThread)
 target_link_libraries(TestAll ${LEMON_LIBRARY})
 
 add_test(NAME TestAll COMMAND TestAll)
