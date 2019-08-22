@@ -21,7 +21,6 @@ if(UNIX)
 target_link_libraries(TestAll ${GTEST_MAIN_LIBRARY} ${GTEST_LIBRARY})
 target_link_libraries(TestAll set_stl)
 endif()
-target_compile_definitions(TestAll PRIVATE -DINTERRUPT)
 target_link_libraries(TestAll InterruptibleThread)
 target_link_libraries(TestAll ${LEMON_LIBRARY})
 

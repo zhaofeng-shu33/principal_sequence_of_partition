@@ -484,22 +484,23 @@ namespace parametric {
         left = new InterruptibleThread::thread(&PMF_R::executePreflow, this, std::ref(TAP_Left));
         right = new InterruptibleThread::thread(&PMF_R::executePreflow_reverse, this, std::ref(TAP_Right));
 
-        if (new_flow_value_left < 0 || new_flow_value_right < 0) {
+        if (new_flow_value_left < 0 && new_flow_value_right < 0) {
             std::unique_lock<std::mutex> lock(mutex);
             cond.wait(lock);
-            if (new_flow_value_left < 0) { // right terminate first
-                if (2 * T_apostrophe_right.Cardinality() <= lemon::countNodes(*newDig)) {
-                    // interrupt left thread
-                    left->interrupt();
-                }
-            }
-            else { // left terminate first
-                if (2 * T_apostrophe_left.Cardinality() > lemon::countNodes(*newDig)) {
-                    // interrupt right thread
-                    right->interrupt();
-                }
+        }
+        if (new_flow_value_left < 0) { // right terminate first
+            if (2 * T_apostrophe_right.Cardinality() <= lemon::countNodes(*newDig)) {
+                // interrupt left thread
+                left->interrupt();
             }
         }
+        else { // left terminate first
+            if (2 * T_apostrophe_left.Cardinality() > lemon::countNodes(*newDig)) {
+                // interrupt right thread
+                right->interrupt();
+            }
+        }
+        
         left->join();
         right->join();
         // check any error
