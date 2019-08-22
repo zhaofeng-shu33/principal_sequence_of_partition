@@ -46,7 +46,7 @@ namespace parametric {
         PMF_R::FlowMap n_fm(digraph);
         lemon::ReverseDigraph<lemon::ListDigraph> reverse_newDig(digraph);
         PMF_R::ThreadArgumentPack TAP(digraph, cap, fm, S, T, T_a, n_a, n_fm, NULL, NULL, &reverse_newDig);
-        boost::thread right(&PMF_R::executePreflow_reverse, &pmfR, std::ref(TAP));
+        InterruptibleThread::thread right(&PMF_R::executePreflow_reverse, &pmfR, std::ref(TAP));
         right.join();
         EXPECT_DOUBLE_EQ(n_a, 3);
         EXPECT_EQ(T_a, stl::CSet("1111"));

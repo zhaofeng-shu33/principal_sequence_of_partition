@@ -30,7 +30,7 @@ find_package(lemon REQUIRED)
 add_executable(main main.cpp)
 
 find_package(Boost REQUIRED program_options)
-add_definitions(-DINTERRUPT)
+target_compile_definitions(main PRIVATE -DINTERRUPT)
 
 target_include_directories(main PUBLIC ${Boost_INCLUDE_DIRS})
 
@@ -53,6 +53,7 @@ endif()
 add_subdirectory(set)
 add_subdirectory(core)
 add_subdirectory(preflow)
+target_link_libraries(main InterruptibleThread)
 target_link_libraries(main ic_static)
 target_link_libraries(main set_stl)
 target_link_libraries(main ${LEMON_LIBRARY})
