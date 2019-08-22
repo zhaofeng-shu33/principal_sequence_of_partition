@@ -346,7 +346,7 @@ namespace parametric {
             T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
             cond.notify_all();
         }
-        catch (boost::thread_interrupted&) {
+        catch (InterruptibleThread::thread_interrupted&) {
             return;
         }
         catch (...) {
@@ -393,7 +393,7 @@ namespace parametric {
             T_apostrophe = get_min_cut_sink_side_reverse(reverse_newDig, pf_reverse_instance);
             cond.notify_all();
         }
-        catch (boost::thread_interrupted&) {
+        catch (InterruptibleThread::thread_interrupted&) {
             return;
         }
         catch (...) {
@@ -476,16 +476,16 @@ namespace parametric {
         double new_flow_value_left = -1;
         double new_flow_value_right = -1;
 
-        boost::thread * left = NULL, * right = NULL;
+        InterruptibleThread::thread * left = NULL, * right = NULL;
         // and concurrently run execute and execute_reverse
         ThreadArgumentPack TAP_Left(*newDig, *newArcMap, *leftArcMap_inner, S, T_r, T_apostrophe_left, new_flow_value_left, newFlowLeftMap, left_inner, NULL, NULL);
         ThreadArgumentPack TAP_Right(*newDig, *newArcMap, *rightArcMap_inner, S, T_r, T_apostrophe_right, new_flow_value_right, newFlowRightMap, NULL, right_inner, reverse_newDig);
 
-        left = new boost::thread(&PMF_R::executePreflow, this, std::ref(TAP_Left));
-        right = new boost::thread(&PMF_R::executePreflow_reverse, this, std::ref(TAP_Right));
+        left = new InterruptibleThread::thread(&PMF_R::executePreflow, this, std::ref(TAP_Left));
+        right = new InterruptibleThread::thread(&PMF_R::executePreflow_reverse, this, std::ref(TAP_Right));
 
         if (new_flow_value_left < 0 || new_flow_value_right < 0) {
-            boost::unique_lock<boost::mutex> lock(mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             cond.wait(lock);
             if (new_flow_value_left < 0) { // right terminate first
                 if (2 * T_apostrophe_right.Cardinality() <= lemon::countNodes(*newDig)) {

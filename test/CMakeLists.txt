@@ -23,6 +23,5 @@ target_link_libraries(TestAll set_stl)
 endif()
 
 target_link_libraries(TestAll ${LEMON_LIBRARY})
-target_link_libraries(TestAll ${Boost_THREAD_LIBRARY})
 
 add_test(NAME TestAll COMMAND TestAll)

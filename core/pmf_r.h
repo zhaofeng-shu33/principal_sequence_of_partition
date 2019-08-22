@@ -4,9 +4,10 @@
 #include <iostream>
 #include <stdexcept>
 #include <lemon/list_graph.h>
-#include <boost/thread.hpp>
 #include "set/set_stl.h"
 #include "preflow/mf_base.h"
+#include "preflow/InterruptibleThread/InterruptibleThread.h"
+
 typedef std::pair<double, double> pair;
 namespace parametric{
     typedef lemon::ListDigraph::ArcMap<double> ArcMap;
@@ -91,8 +92,8 @@ namespace parametric{
         int sink_node_id;
         lemon::Tolerance<double> tolerance;
         std::size_t _j;
-        boost::mutex mutex;
-        boost::condition_variable cond;
+        std::mutex mutex;
+        std::condition_variable cond;
         SubDigraph sub_digraph;
         lemon::ListDigraph::NodeMap<bool> node_filter;
     public:

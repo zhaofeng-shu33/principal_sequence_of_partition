@@ -16,7 +16,7 @@ Currently, four methods are available:
 
 ## Dependencies
 
-* LEMON (required), boost-thread
+* LEMON (required)
 * boost-program-options is required to build the executable program `main`
 * googletest (optional, used in unit-test)
 

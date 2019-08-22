@@ -29,7 +29,7 @@ find_package(lemon REQUIRED)
 
 add_executable(main main.cpp)
 
-find_package(Boost REQUIRED program_options thread)
+find_package(Boost REQUIRED program_options)
 add_definitions(-DINTERRUPT)
 
 target_include_directories(main PUBLIC ${Boost_INCLUDE_DIRS})
