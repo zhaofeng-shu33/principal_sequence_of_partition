@@ -341,7 +341,7 @@ namespace parametric {
                 TAP.ele_out = pf_instance.elevator();
 
             set_flowMap(newDig, pf_instance.flowMap(), newFlowMap);
-
+            std::lock_guard<std::mutex> guard(mutex);
             new_flow_value = pf_instance.flowValue();
             T_apostrophe = get_min_cut_sink_side(newDig, pf_instance);
             cond.notify_all();
@@ -389,6 +389,7 @@ namespace parametric {
             if (ele == NULL)
                 TAP.ele_reverse_out = pf_reverse_instance.elevator();
 
+            std::lock_guard<std::mutex> guard(mutex);
             new_flow_value = pf_reverse_instance.flowValue();
             T_apostrophe = get_min_cut_sink_side_reverse(reverse_newDig, pf_reverse_instance);
             cond.notify_all();
@@ -489,16 +490,19 @@ namespace parametric {
                 cond.wait(lock);
             }
         }
-        if (new_flow_value_right >= 0) { // right terminate first
-            if (2 * T_apostrophe_right.Cardinality() <= lemon::countNodes(*newDig) && new_flow_value_left < 0) {
-                // interrupt left thread
-                left->interrupt();
+        {
+            std::unique_lock<std::mutex> lock(mutex);
+            if (new_flow_value_right >= 0) { // right terminate first
+                if (2 * T_apostrophe_right.Cardinality() <= lemon::countNodes(*newDig) && new_flow_value_left < 0) {
+                    // interrupt left thread
+                    left->interrupt();
+                }
             }
-        }
-        else if(new_flow_value_left >= 0){ // left terminate first
-            if (2 * T_apostrophe_left.Cardinality() > lemon::countNodes(*newDig) && new_flow_value_right < 0) {
-                // interrupt right thread
-                right->interrupt();
+            else if (new_flow_value_left >= 0) { // left terminate first
+                if (2 * T_apostrophe_left.Cardinality() > lemon::countNodes(*newDig) && new_flow_value_right < 0) {
+                    // interrupt right thread
+                    right->interrupt();
+                }
             }
         }
         
