@@ -6,11 +6,12 @@
 This repository contains code to compute the principal sequence of partition for Dilworth truncation function.
 Currently, four methods are available:
 
-1. Traditional Canonical Method based on Dilworth truncation and Graph Maximal Flow
-2. Parametric computing scheme combined with Parametric Maximal Flow
-3. Graph Contraction combined with rapid jump (under development)
-    Both method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to compute maximal flow for graph.
-4. Parametric Dilworth truncation used in paper 2010.
+1. Traditional Canonical Method based on Dilworth truncation and Graph Maximal Flow ([mac](https://papers.nips.cc/paper/4106-minimum-average-cost-clustering.pdf)), `dt` in our library;
+2. Parametric computing scheme combined with Parametric Maximal Flow (`pdt`, our algorithm)
+3. Graph Contraction combined with rapid jump (`psp_i`, our algorithm, fastest among all) 
+4. original parametric Dilworth truncation. ([pin](https://arxiv.org/abs/1702.00109), called `pdt_r` in our library)
+
+All method relies on [LEMON](https://lemon.cs.elte.hu/trac/lemon) Library to compute maximal flow for graph.
 
 # How to build
 
