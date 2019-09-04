@@ -20,7 +20,7 @@ if(UNIX)
     add_library(psp SHARED psp.cpp)
     target_link_libraries(psp PRIVATE psp_static)
     target_link_libraries(psp PRIVATE InterruptibleThread)
-    target_link_libraries(psp PRIVATE lemon)
+    target_link_libraries(psp PRIVATE ${LEMON_LIBRARY})
     target_link_libraries(psp PRIVATE set_stl)
     
     INSTALL(TARGETS psp
