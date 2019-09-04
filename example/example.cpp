@@ -8,9 +8,9 @@
 int main() {
     // construct the example graph
     std::vector<std::tuple<std::size_t, std::size_t, double>> arc_list;
+    arc_list.push_back(std::make_tuple(0, 1, 1.0));
+    arc_list.push_back(std::make_tuple(0, 2, 5.0));
     arc_list.push_back(std::make_tuple(1, 2, 1.0));
-    arc_list.push_back(std::make_tuple(1, 3, 5.0));
-    arc_list.push_back(std::make_tuple(2, 3, 1.0));
     // construct the algorithm class instance
     psp::PSP psp_instance(arc_list, 3);
     psp_instance.run();
