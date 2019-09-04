@@ -8,10 +8,10 @@
 #include <sstream>
 #include <boost/program_options.hpp>
 #include <lemon/lgf_reader.h>
-#include "core/dt.h"
-#include "core/pmf.h"
-#include "core/pmf_r.h"
-#include "core/psp_i.h"
+#include "psp/dt.h"
+#include "psp/pmf.h"
+#include "psp/pmf_r.h"
+#include "psp/psp_i.h"
 
 int main(int argc, const char *argv[]){
     boost::program_options::options_description desc;
@@ -80,7 +80,7 @@ int main(int argc, const char *argv[]){
 		partition_list = pmf.get_psp();
 	}
 	else{
-		submodular::PSP psp_class(&digraph, &cap);
+		submodular::DT psp_class(&digraph, &cap);
 		psp_class.run();
 		critical_values = psp_class.get_critical_values();
 		partition_list = psp_class.get_psp();
