@@ -30,6 +30,6 @@ test_script:
 - cmd: >-
     .\test\Release\TestAll.exe
 
-    .\set\Release\test_set.exe
+    .\psp\set\Release\test_set.exe
 
     .\Release\main.exe --help
