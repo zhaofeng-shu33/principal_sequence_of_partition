@@ -55,8 +55,9 @@ use `-DEnable_Testing=ON` to compile the test binary (requiring `googletest`).
 See [contributing.md](./contributing.md)
 
 # ChangeLog
-* Version 1.2: implementation of `PSP` (C++) class, which uses traditional Dilworth truncation.
-* Version 1.3: implementation of `PDT` (C++) class, which has similar API as `PSP` but different inner implementation.
-* Version 1.4: implement `psp_i` method.
-* Version 1.5: implement `pdt_r` method. 
+* Version 1.2: implement `DT` Class.
+* Version 1.3: implement `PDT`  Class
+* Version 1.4: implement `PSP_I` Class.
+* Version 1.5: implement `PDT_R` Class. 
+* Version 1.6: create uniform wrapper `PSP` Class of the above four methods
 
