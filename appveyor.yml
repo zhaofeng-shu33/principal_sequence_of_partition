@@ -16,9 +16,7 @@ install:
 cache: C:\Tools\vcpkg\installed\x64-windows
 before_build:
 - cmd: >-
-    git submodule init --recursive
-
-    git submodule update --recursive
+    git submodule update --init --recursive
 
     mkdir build
 
