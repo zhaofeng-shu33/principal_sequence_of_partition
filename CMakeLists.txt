@@ -50,7 +50,7 @@ if(ENABLE_TESTING)
   include(CTest)
 endif()
 add_subdirectory(psp)
-target_link_libraries(main ic_static)
+target_link_libraries(main psp)
 target_link_libraries(main set_stl)
 target_link_libraries(main ${LEMON_LIBRARY})
 
