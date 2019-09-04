@@ -21,7 +21,9 @@ namespace psp {
         std::list<double>& get_gamma_list();
         std::list<double> get_critical_values();
         std::vector<double> get_critical_value_vector();
+        //! get the partition number list
         std::vector<int> get_partitions();
+        //! get the partition list
         std::list<stl::Partition>& get_psp();
         //! get the smallest partition whose size >= k
         stl::Partition& get_smallest_partition(int k);
