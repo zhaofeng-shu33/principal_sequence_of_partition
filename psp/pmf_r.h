@@ -5,8 +5,8 @@
 #include <stdexcept>
 #include <lemon/list_graph.h>
 #include "set/set_stl.h"
-#include "preflow/mf_base.h"
-#include "preflow/InterruptibleThread/InterruptibleThread.h"
+#include "psp/preflow/mf_base.h"
+#include "psp/preflow/InterruptibleThread/InterruptibleThread.h"
 
 typedef std::pair<double, double> pair;
 namespace parametric{

@@ -1,8 +1,8 @@
-#include "psp.h"
-#include "dt.h"
-#include "pmf.h"
-#include "psp_i.h"
-#include "pmf_r.h"
+#include "psp/psp.h"
+#include "psp/dt.h"
+#include "psp/pmf.h"
+#include "psp/psp_i.h"
+#include "psp/pmf_r.h"
 
 namespace submodular {
     PSP::PSP(const std::vector<std::tuple<std::size_t, std::size_t, double>>& elt, int np) {

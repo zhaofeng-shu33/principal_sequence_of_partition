@@ -2,11 +2,11 @@
 #include <tuple>
 #include <numeric>
 #include <iostream>
-
 #include <lemon/list_graph.h>
 #include <unordered_set>
 #include <lemon/preflow.h>
 #include "set/set_stl.h"
+
 typedef std::pair<double, double> pair;
 namespace parametric{
     typedef lemon::ListDigraph::ArcMap<double> ArcMap;

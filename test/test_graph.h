@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 #include <lemon/list_graph.h>
 
-#include "set/set_stl.h"
+#include "psp/set/set_stl.h"
 #include "psp/graph.h"
 
 namespace submodular {

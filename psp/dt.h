@@ -4,8 +4,8 @@
 **/
 #include <lemon/list_graph.h>
 #include <lemon/preflow.h>
-#include "graph.h"
-#include "set/set_stl.h"
+#include "psp/graph.h"
+#include "psp/set/set_stl.h"
 namespace submodular {
  
     /**

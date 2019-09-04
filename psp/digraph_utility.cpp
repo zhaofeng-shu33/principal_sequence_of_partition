@@ -1,4 +1,4 @@
-#include "digraph_utility.h"
+#include "psp/digraph_utility.h"
 
 namespace lemon {
 

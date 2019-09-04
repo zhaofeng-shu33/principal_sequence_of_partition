@@ -5,8 +5,8 @@
 #include <iostream>
 #include <sstream>
 #include <lemon/adaptors.h>
-#include "graph.h"
-#include "pmf_r.h"
+#include "psp/graph.h"
+#include "psp/pmf_r.h"
 namespace parametric {
     using Set = stl::CSet;
     double PMF_R::compute_lambda(const std::vector<pair>& parameter_list, const double target_value) {

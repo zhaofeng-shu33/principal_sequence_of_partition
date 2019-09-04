@@ -1,5 +1,5 @@
 #include <sstream>
-#include "dt.h"
+#include "psp/dt.h"
 namespace submodular {
 
     DilworthTruncation::DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map):
