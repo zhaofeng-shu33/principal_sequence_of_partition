@@ -15,3 +15,9 @@ if(UNIX)
 endif()
 add_subdirectory(set)
 add_subdirectory(preflow)
+
+INSTALL(TARGETS ic_static
+ARCHIVE DESTINATION lib)
+
+INSTALL(FILES psp.h DESTINATION include/psp
+set/set_stl.h DESTINATION include/psp/set)

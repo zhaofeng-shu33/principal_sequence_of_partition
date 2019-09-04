@@ -1,6 +1,6 @@
 #pragma once
 #include <lemon/list_graph.h>
-#include "graph.h"
+#include "set/set_stl.h"
 
 namespace submodular {
     class PSP {
