@@ -26,13 +26,13 @@ namespace psp {
     /**
     * improved version of principal sequence of partition
     */
-    class PSP {
+    class PSP_I {
     public:
         typedef lemon::ListDigraph Digraph;
         typedef Digraph::Node Node;
         typedef Digraph::Arc Arc;
         typedef typename Digraph::ArcMap<double> ArcMap;
-        PSP(Digraph* g, ArcMap* edge_map);
+        PSP_I(Digraph* g, ArcMap* edge_map);
         std::list<double>& get_critical_values();
         std::list<stl::Partition>& get_psp();
         void run();

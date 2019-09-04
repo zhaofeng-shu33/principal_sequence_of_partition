@@ -2,7 +2,7 @@
 #include <lemon/list_graph.h>
 #include "set/set_stl.h"
 
-namespace submodular {
+namespace psp {
     class PSP {
     public:
         typedef lemon::ListDigraph Digraph;

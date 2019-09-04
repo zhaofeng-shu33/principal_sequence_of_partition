@@ -10,7 +10,7 @@ namespace demo {
         elt.push_back(std::make_tuple(0, 2, 0.4));
         elt.push_back(std::make_tuple(1, 3, 0.5));
         elt.push_back(std::make_tuple(2, 3, 2));
-        submodular::PSP ic(elt, 4);
+        psp::PSP ic(elt, 4);
         ic.run_psp_i();
         std::list<double> cv = ic.get_critical_values();
         EXPECT_EQ(cv.size(), 3);
@@ -59,7 +59,7 @@ namespace demo {
         lemon::ListDigraph::ArcMap<double> edge_map(g);
         submodular::make_dgraph(8, et, g, edge_map);
 
-        psp::PSP instance(&g, &edge_map);
+        psp::PSP_I instance(&g, &edge_map);
         instance.run();
         std::list<double> gamma_list = instance.get_critical_values();
         std::list<stl::Partition> psp_list = instance.get_psp();

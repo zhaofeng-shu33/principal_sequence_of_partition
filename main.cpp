@@ -62,7 +62,7 @@ int main(int argc, const char *argv[]){
 	if(report_time)
 		start_time = std::chrono::system_clock::now();
 	if (method == "psp_i") {
-		psp::PSP psp_i(&digraph, &cap);
+		psp::PSP_I psp_i(&digraph, &cap);
 		psp_i.run();
 		critical_values = psp_i.get_critical_values();
 		partition_list = psp_i.get_psp();

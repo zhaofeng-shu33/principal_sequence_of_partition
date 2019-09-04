@@ -4,12 +4,12 @@
 #include "psp/psp_i.h"
 #include "psp/pmf_r.h"
 
-namespace submodular {
+namespace psp {
     PSP::PSP(const std::vector<std::tuple<std::size_t, std::size_t, double>>& elt, int np) {
         num_points = np;
         g = new Digraph();
         edge_map = new ArcMap(*g);
-        make_dgraph(np, elt, *g, *edge_map);
+        submodular::make_dgraph(np, elt, *g, *edge_map);
     }
     PSP::PSP(std::vector<int> s_list, std::vector<int> t_list, std::vector<double> weight_list, int np) {
         num_points = np;
@@ -19,7 +19,7 @@ namespace submodular {
         for (int i = 0; i < s_list.size(); i++) {
             elt.push_back(std::make_tuple(s_list[i], t_list[i], weight_list[i]));
         }
-        make_dgraph(num_points, elt, *g, *edge_map);
+        submodular::make_dgraph(num_points, elt, *g, *edge_map);
     }
     PSP::~PSP() {
         delete edge_map;
@@ -30,12 +30,12 @@ namespace submodular {
         return to_category(p);
     }
     stl::Partition PSP::get_partition(int pn) {
-        DT psp_class(g, edge_map);
+        submodular::DT psp_class(g, edge_map);
         stl::Partition p = psp_class.run(pn);
         return p;
     }
     void PSP::run() {
-        DT psp_class(g, edge_map);
+        submodular::DT psp_class(g, edge_map);
         psp_class.run();
         gamma_list = psp_class.get_critical_values();
         psp_list = psp_class.get_psp();
@@ -53,7 +53,7 @@ namespace submodular {
         psp_list = pdt.get_psp();
     }
     void PSP::run_psp_i() {
-        psp::PSP psp_class(g, edge_map);
+        PSP_I psp_class(g, edge_map);
         psp_class.run();
         gamma_list = psp_class.get_critical_values();
         psp_list = psp_class.get_psp();

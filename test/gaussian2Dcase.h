@@ -29,7 +29,7 @@ namespace demo {
         double compute_similarity(double x_1, double y_1, double x_2, double y_2);
     };
 
-    class Gaussian2DGraph : public Gaussian2DGraphBase, public submodular::PSP {
+    class Gaussian2DGraph : public Gaussian2DGraphBase, public psp::PSP {
     public:
         Gaussian2DGraph(int np, double gamma = 1, double a[][2] = NULL);
         std::vector<double> get_x_pos_list();

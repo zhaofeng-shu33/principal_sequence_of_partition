@@ -136,10 +136,10 @@ namespace psp {
         return result - lambda_ * partition.Cardinality();
     }
 
-    PSP::PSP(Digraph* g, ArcMap* edge_map): _g(g), _edge_map(edge_map), tree_edge_map(tree){
+    PSP_I::PSP_I(Digraph* g, ArcMap* edge_map): _g(g), _edge_map(edge_map), tree_edge_map(tree){
         node_size = lemon::countNodes(*g);
     }
-    void PSP::run() {
+    void PSP_I::run() {
         Node root = tree.addNode();
         K.push_back(stl::CSet::MakeDense(node_size));
         for (int i = 0; i < node_size; i++) {
@@ -194,7 +194,7 @@ namespace psp {
         }
     }
 
-    void PSP::split(int i) {
+    void PSP_I::split(int i) {
         lemon::ListDigraph::NodeMap<bool> node_filter(*_g);
         int num_of_children = 0;
         Node root = tree.nodeFromId(i);
@@ -257,7 +257,7 @@ namespace psp {
             split(i);
         }
     }
-    void PSP::contract(const stl::CSet& S, int i) {
+    void PSP_I::contract(const stl::CSet& S, int i) {
         // we don't use _g->contract function since it can not handle multiple arcs within two nodes
         std::map<int, double> capacity_map;
         for (Digraph::NodeIt n(*_g); n != lemon::INVALID; ++n)
@@ -297,11 +297,11 @@ namespace psp {
             (*_edge_map)[a] = std::abs(val.second);
         }
     }
-    std::list<double>& PSP::get_critical_values() {
+    std::list<double>& PSP_I::get_critical_values() {
         return critical_values;
     }
 
-    std::list<stl::Partition>& PSP::get_psp() {
+    std::list<stl::Partition>& PSP_I::get_psp() {
         return psp_list;
     }
 }
