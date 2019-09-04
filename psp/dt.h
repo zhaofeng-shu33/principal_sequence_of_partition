@@ -4,7 +4,7 @@
 **/
 #include <lemon/list_graph.h>
 #include <lemon/preflow.h>
-#include "core/graph/graph.h"
+#include "graph.h"
 #include "set/set_stl.h"
 namespace submodular {
  
@@ -38,11 +38,11 @@ namespace submodular {
     /**
     * computing principal sequence of partition for given submodular function
     */
-    class PSP {
+    class DT {
     public:
         typedef lemon::ListDigraph Digraph;
         typedef typename Digraph::ArcMap<double> ArcMap;
-        PSP(Digraph* g, ArcMap* edge_map);
+        DT(Digraph* g, ArcMap* edge_map);
         //! evaluate and find the finest partition with $\abs{\P} > \texttt{partition_num}$
         stl::Partition split(stl::Partition& Q, stl::Partition& P, int partition_num);
         

@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
 // Graph tests
-#include "graph/test_graph.h"
+#include "test_graph.h"
 // Gaussian test
-#include "graph/test_gaussian.h"
+#include "test_gaussian.h"
 
 #include "test_pmf.h"
 

@@ -1,4 +1,4 @@
-#include "core/digraph_utility.h"
+#include "digraph_utility.h"
 
 namespace lemon {
 

@@ -1,4 +1,4 @@
-#include "core/graph/gaussian2Dcase.h"
+#include "gaussian2Dcase.h"
 namespace demo {
     Gaussian2DGraphBase::Gaussian2DGraphBase(int np, double gamma, double a[][2]) :
         distribution(0, 1),
@@ -36,7 +36,7 @@ namespace demo {
 
     Gaussian2DGraph::Gaussian2DGraph(int np, double gamma, double a[][2]) :
         Gaussian2DGraphBase(np, gamma, a),
-        InfoCluster(edge_list_tuple, np)
+        PSP(edge_list_tuple, np)
     {
     }
     std::vector<double> Gaussian2DGraph::get_x_pos_list() {

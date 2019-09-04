@@ -1,10 +1,10 @@
 #pragma once
 #include <gtest/gtest.h>
 #include <cmath>
-#include "core/pmf.h"
-#include "core/graph/info_cluster.h"
-#include "core/graph/gaussian2Dcase.h"
-#include "test/utility.h"
+#include "psp/pmf.h"
+#include "psp/psp.h"
+#include "gaussian2Dcase.h"
+#include "utility.h"
 namespace parametric {
 TEST(PMF, EquationSolve) {
     std::vector<pair> parameter_list;
@@ -91,7 +91,7 @@ TEST(PDT, RUN) {
     elt.push_back(std::make_tuple(0, 1, 1));
     elt.push_back(std::make_tuple(0, 2, 5));
     elt.push_back(std::make_tuple(1, 2, 1));
-    submodular::InfoCluster ic(elt, 3);
+    submodular::PSP ic(elt, 3);
     ic.run_pdt();
     std::list<double> lambda_list = ic.get_critical_values();
     std::list<Partition> partition_list = ic.get_psp();
@@ -128,7 +128,7 @@ TEST(PMF, ComputeCut) {
 }
 namespace demo {
     TEST_F(Graph4PointTest, PDT) {
-        submodular::InfoCluster ic(edge_list_tuple_1, 4);
+        submodular::PSP ic(edge_list_tuple_1, 4);
         ic.run_pdt();
         std::list<double> lambda_list = ic.get_critical_values();
         std::list<parametric::Partition> partition_list = ic.get_psp();
@@ -157,7 +157,7 @@ namespace demo {
         };
         Gaussian2DGraphBase g2g(8, 0.1, a);
         EdgeListTuple elt = g2g.get_edge_list_tuple();
-        submodular::InfoCluster ic(elt, 8);
+        submodular::PSP ic(elt, 8);
         ic.run_pdt();
         std::list<double> lambda_list = ic.get_critical_values();
         std::list<parametric::Partition> partition_list = ic.get_psp();
@@ -183,7 +183,7 @@ namespace demo {
         edges.push_back(std::make_tuple(0, 1, 1.0));
         edges.push_back(std::make_tuple(0, 2, 1.0));
         edges.push_back(std::make_tuple(1, 2, 5.0));
-        submodular::InfoCluster ic(edges, 3);
+        submodular::PSP ic(edges, 3);
         ic.run_pdt();
         std::list<double> lambda_list = ic.get_critical_values();
         std::list<parametric::Partition> partition_list = ic.get_psp();
@@ -215,7 +215,7 @@ namespace demo {
     TEST(ThreePointNotComplete, PDT) {
         std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
         edges.push_back(std::make_tuple(0, 1, 1.0));
-        submodular::InfoCluster ic(edges, 3);
+        submodular::PSP ic(edges, 3);
         ic.run_pdt();
         std::list<double> lambda_list = ic.get_critical_values();
         std::list<parametric::Partition> partition_list = ic.get_psp();
@@ -247,7 +247,7 @@ namespace demo {
         std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
         edges.push_back(std::make_tuple(0, 1, 1.0));
         edges.push_back(std::make_tuple(2, 3, 1.0));
-        submodular::InfoCluster ic(edges, 4);
+        submodular::PSP ic(edges, 4);
         ic.run_pdt();
         std::list<double> lambda_list = ic.get_critical_values();
         std::list<parametric::Partition> partition_list = ic.get_psp();

@@ -2,8 +2,8 @@
 #include <queue>
 #include <lemon/adaptors.h>
 #include <lemon/preflow.h>
-#include "core/psp_i.h"
-#include "core/dt.h"
+#include "psp_i.h"
+#include "dt.h"
 #include <cassert>
 namespace psp {
     void DilworthTruncation::minimize(std::vector<double>& xl) {

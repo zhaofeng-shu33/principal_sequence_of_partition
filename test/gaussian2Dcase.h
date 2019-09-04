@@ -3,11 +3,11 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
-#include "core/graph/graph.h"
-#include "core/dt.h"
-#include "core/graph/info_cluster.h"
-#include "core/io_utility.h"
-#include "core/pmf.h"
+#include "psp/graph.h"
+#include "psp/dt.h"
+#include "psp/psp.h"
+#include "psp/io_utility.h"
+#include "psp/pmf.h"
 namespace demo {
     typedef std::vector<std::tuple<std::size_t, std::size_t, double>> EdgeListTuple;
     class Gaussian2DGraphBase {
@@ -29,7 +29,7 @@ namespace demo {
         double compute_similarity(double x_1, double y_1, double x_2, double y_2);
     };
 
-    class Gaussian2DGraph : public Gaussian2DGraphBase, public submodular::InfoCluster {
+    class Gaussian2DGraph : public Gaussian2DGraphBase, public submodular::PSP {
     public:
         Gaussian2DGraph(int np, double gamma = 1, double a[][2] = NULL);
         std::vector<double> get_x_pos_list();

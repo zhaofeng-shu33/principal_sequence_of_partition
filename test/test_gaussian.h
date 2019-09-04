@@ -1,9 +1,9 @@
 #pragma once
-#include "gtest/gtest.h"
-#include "core/graph/graph.h"
-#include "core/dt.h"
-#include "core/graph/gaussian2Dcase.h"
-#include "test/utility.h"
+#include <gtest/gtest.h>
+#include "psp/graph.h"
+#include "psp/dt.h"
+#include "gaussian2Dcase.h"
+#include "utility.h"
 namespace demo {
 
 TEST(Gaussian2D, GivenPoint) {
@@ -63,7 +63,7 @@ TEST(Gaussian2D, GivenPoint8) {
 
 // This test is used to verify that MaxFlow algorithm works
 TEST_F(Graph4PointTest, TwoCase) {
-    submodular::PSP psp_class(&g, &edge_map);
+    submodular::DT psp_class(&g, &edge_map);
     psp_class.run();
     std::list<double> gamma_list = psp_class.get_critical_values();
     std::list<stl::Partition> psp_list = psp_class.get_psp();

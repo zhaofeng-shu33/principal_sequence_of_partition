@@ -1,5 +1,5 @@
 #include <sstream>
-#include "core/dt.h"
+#include "dt.h"
 namespace submodular {
 
     DilworthTruncation::DilworthTruncation(double lambda, Digraph* g, ArcMap* edge_map):
@@ -117,12 +117,12 @@ namespace submodular {
         return result - lambda_ * partition.Cardinality();
     }    
     
-    PSP::PSP(Digraph* g, ArcMap* edge_map ) : _g(g), _edge_map(edge_map)
+    DT::DT(Digraph* g, ArcMap* edge_map ) : _g(g), _edge_map(edge_map)
     {
         NodeSize = lemon::countNodes(*_g);
     }    
     
-    stl::Partition PSP::split(stl::Partition& Q, stl::Partition& P, int partition_num){
+    stl::Partition DT::split(stl::Partition& Q, stl::Partition& P, int partition_num){
         if (Q.Cardinality() == P.Cardinality()) {
             throw std::logic_error("Q and P have the same size");
         }
@@ -148,7 +148,7 @@ namespace submodular {
         }
     }
         //! |Q| < |P|
-    void PSP::split(stl::Partition& Q, stl::Partition& P) {
+    void DT::split(stl::Partition& Q, stl::Partition& P) {
         double gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.Cardinality() - Q.Cardinality());
         double h_apostrophe = (P.Cardinality() * evaluate(Q) - Q.Cardinality() * evaluate(P)) / (P.Cardinality() - Q.Cardinality());
         DilworthTruncation dt(gamma_apostrophe, _g, _edge_map);
@@ -165,7 +165,7 @@ namespace submodular {
         }
     }
 
-    stl::Partition PSP::run(int partition_num) {
+    stl::Partition DT::run(int partition_num) {
         stl::CSet V = stl::CSet::MakeDense(NodeSize);
         stl::Partition Q, P;
         Q.AddElement(V);
@@ -173,7 +173,7 @@ namespace submodular {
         return split(Q, P, partition_num);
     }
     
-    void PSP::run() {
+    void DT::run() {
         stl::CSet V = stl::CSet::MakeDense(NodeSize);
         stl::Partition Q, P;
         Q.AddElement(V);
@@ -187,15 +187,15 @@ namespace submodular {
         psp.sort(partition_compare);
     }    
     
-    std::list<double>& PSP::get_critical_values() {
+    std::list<double>& DT::get_critical_values() {
         return critical_values;
     }
     
-    std::list<stl::Partition>& PSP::get_psp() {
+    std::list<stl::Partition>& DT::get_psp() {
         return psp;
     }    
     
-    double PSP::evaluate(const stl::Partition& P) {
+    double DT::evaluate(const stl::Partition& P) {
         return get_partition_value(*_g, *_edge_map, P);
     }    
 }

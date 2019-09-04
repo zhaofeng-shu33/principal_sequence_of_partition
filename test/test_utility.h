@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
-#include "test/utility.h"
-#include "core/digraph_utility.h"
+#include "psp/digraph_utility.h"
+#include "utility.h"
+
 namespace demo {
     TEST_F(Graph4PointTest, Contract) {
         stl::CSet S(std::string("0111"));

@@ -1,6 +1,6 @@
 #pragma once
-#include "core/psp_i.h"
-#include "test/utility.h"
+#include "psp/psp_i.h"
+#include "utility.h"
 namespace demo {
 
 
@@ -10,7 +10,7 @@ namespace demo {
         elt.push_back(std::make_tuple(0, 2, 0.4));
         elt.push_back(std::make_tuple(1, 3, 0.5));
         elt.push_back(std::make_tuple(2, 3, 2));
-        submodular::InfoCluster ic(elt, 4);
+        submodular::PSP ic(elt, 4);
         ic.run_psp_i();
         std::list<double> cv = ic.get_critical_values();
         EXPECT_EQ(cv.size(), 3);

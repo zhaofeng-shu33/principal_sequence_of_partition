@@ -1,7 +1,7 @@
 #pragma once
 #include <gtest/gtest.h>
-#include "core/psp_i.h"
-#include "test/utility.h"
+#include "psp/psp_i.h"
+#include "utility.h"
 namespace demo {
 
 

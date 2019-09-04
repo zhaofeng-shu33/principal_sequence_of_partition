@@ -4,8 +4,8 @@
 #include <cmath>
 #include <iostream>
 #include <sstream>
-#include "core/graph/graph.h"
-#include "core/pmf.h"
+#include "graph.h"
+#include "pmf.h"
 namespace parametric {
     using Set = stl::CSet;
     double PMF::compute_lambda(const std::vector<pair>& parameter_list, const double target_value) {

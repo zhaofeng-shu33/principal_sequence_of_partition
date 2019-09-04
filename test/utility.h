@@ -2,8 +2,9 @@
 #include <vector>
 #include <tuple>
 #include <lemon/list_graph.h>
-#include "core/graph/graph.h"
-#include "core/graph/gaussian2Dcase.h"
+#include "psp/graph.h"
+#include "gaussian2Dcase.h"
+
 namespace demo {
     void construct_edge_list_tuple_4(EdgeListTuple& edges) {
         double edge_1_value = 1.0;
