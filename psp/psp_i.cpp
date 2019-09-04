@@ -58,24 +58,6 @@ namespace psp {
                 X.AddElement(_g->id(enabled_nodes[v]));
         }
         // house keeping, map is handled automatically
-#ifdef  _DEBUG    
-        stl::CSet _X;
-        for (int v = 0; v < graph_size; ++v) {
-            if (!pf.minCut(enabled_nodes[v]))
-                _X.AddElement(v);
-        }
-        _g->disable(source_node);
-        _g->disable(sink_node);
-        _g->enable(enabled_nodes[graph_size]);
-        double minimum_value_2 = -lambda_;
-        for (int i : _X.GetMembers())
-            minimum_value_2 -= xl[i];
-        _X.clear();
-        std::copy(X.begin(), X.end(), std::back_inserter(_X));
-        _X.AddElement(_g->id(enabled_nodes[graph_size]));
-        minimum_value_2 += submodular::get_cut_value(*_g, *_edge_map, _X);
-        assert(std::abs(min_value - minimum_value_2) < 1e-5);
-#endif
         _g->erase(source_node);
         _g->erase(sink_node);
         Tl = X;
@@ -112,28 +94,6 @@ namespace psp {
         for (auto it = xl.begin(); it != xl.end(); it++) {
             min_value += *it;
         }
-#ifdef _DEBUG 
-        for (Node n : enabled_nodes) {
-            _g->enable(n);
-        }
-        double min_value_check = evaluate(_partition);
-        if (std::abs(min_value - min_value_check) > 1e-4) {
-            std::cout << "num of nodes " << lemon::countNodes(*_g) << std::endl;
-            for (Digraph::ArcIt a(*_g); a != lemon::INVALID; ++a) {
-                std::cout << _g->id(_g->source(a)) << ' ' << _g->id(_g->target(a)) << std::endl;
-            }
-            for (Digraph::ArcIt a(*_g); a != lemon::INVALID; ++a)
-                std::cout << (*_edge_map)[a] << std::endl;
-            std::stringstream ss;
-            ss << "min_value_check error: " << min_value << ' ' << min_value_check;
-            throw std::logic_error(ss.str());
-        }
-#endif
-    }
-
-    double DilworthTruncation::evaluate(stl::Partition & partition) {
-        double result = submodular::get_partition_value(*_g, *_edge_map, partition);
-        return result - lambda_ * partition.Cardinality();
     }
 
     PSP_I::PSP_I(Digraph* g, ArcMap* edge_map): _g(g), _edge_map(edge_map), tree_edge_map(tree){
