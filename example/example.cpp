@@ -3,7 +3,6 @@
 #include <vector>
 #include <list>
 #include <psp/psp.h>
-#include <psp/set/set_stl.h>
 
 int main() {
     // construct the example graph
