@@ -19,7 +19,7 @@ namespace psp {
         virtual  ~PSP();
         //! run principal sequence of partition algorithm
         //! default to use improved psp,
-        //! which is the empirically fastest
+        //! which is empirically the fastest method
         void run(std::string method = "psp_i");
         //! get the critical value list
         std::vector<double> get_critical_values();

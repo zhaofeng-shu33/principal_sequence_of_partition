@@ -1,4 +1,4 @@
-How to use our library
+How to use our Library
 ======================
 
 After installation, in your C++ code, you use our library in the following way:
@@ -14,8 +14,8 @@ After installation, in your C++ code, you use our library in the following way:
      // construct the algorithm class instance
      psp::PSP psp_instance(arc_list, 3);
      psp_instance.run();
-     std::list<double> critical_values = psp_instance.get_critical_values();
-     std::list<stl::Partition> partition_list = psp_instance.get_psp();
+     std::vector<double> critical_values = psp_instance.get_critical_values();
+     std::vector<stl::Partition> partition_list = psp_instance.get_partitions();
      // precess the results
      // ...
    }

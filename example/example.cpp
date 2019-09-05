@@ -13,11 +13,11 @@ int main() {
     // construct the algorithm class instance
     psp::PSP psp_instance(arc_list, 3);
     psp_instance.run();
-    std::list<double> critical_values = psp_instance.get_critical_values();
-    std::list<stl::Partition> partition_list = psp_instance.get_psp();
+    std::vector<double> critical_values = psp_instance.get_critical_values();
+    std::vector<stl::Partition> partition_list = psp_instance.get_partitions();
     // output the results to the console
-    std::list<double>::iterator critical_values_iterator = critical_values.begin();
-    std::list<stl::Partition>::iterator partition_list_iterator = partition_list.begin();
+    std::vector<double>::iterator critical_values_iterator = critical_values.begin();
+    std::vector<stl::Partition>::iterator partition_list_iterator = partition_list.begin();
     for (; critical_values_iterator != critical_values.end(); critical_values_iterator++) {
         std::cout << *partition_list_iterator << std::endl;
         std::cout << *critical_values_iterator << std::endl;

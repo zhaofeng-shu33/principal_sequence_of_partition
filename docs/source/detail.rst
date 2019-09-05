@@ -1,4 +1,4 @@
-Algorithm detail
+Algorithm Detail
 ================
 
 Four algorithms are provided:
