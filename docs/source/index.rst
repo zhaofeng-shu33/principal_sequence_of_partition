@@ -33,7 +33,8 @@ This repository contains source code to compute the principal sequence of partit
 
    usage
    detail
-
+   api
+   
 References
 ----------
 .. bibliography:: refs.bib

@@ -25,16 +25,19 @@ namespace psp {
         delete edge_map;
         delete g;
     }
-    std::vector<int> PSP::get_labels(int pn) {
-        stl::Partition p = get_partition(pn);
-        return to_category(p);
+    void PSP::run(std::string method) {
+        if (method == "dt")
+            run_dt();
+        else if (method == "pdt")
+            run_pdt();
+        else if (method == "pdt_r")
+            run_pdt_r();
+        else if (method == "psp_i")
+            run_psp_i();
+        else
+            throw std::logic_error(method + " not allowed");
     }
-    stl::Partition PSP::get_partition(int pn) {
-        submodular::DT psp_class(g, edge_map);
-        stl::Partition p = psp_class.run(pn);
-        return p;
-    }
-    void PSP::run() {
+    void PSP::run_dt() {
         submodular::DT psp_class(g, edge_map);
         psp_class.run();
         gamma_list = psp_class.get_critical_values();
@@ -58,53 +61,18 @@ namespace psp {
         gamma_list = psp_class.get_critical_values();
         psp_list = psp_class.get_psp();
     }
-    std::list<double>& PSP::get_gamma_list() {
-        return gamma_list;
-    }
-    std::list<double> PSP::get_critical_values() {
-        return gamma_list;
-    }
-    std::vector<double> PSP::get_critical_value_vector() {
+ 
+    std::vector<double> PSP::get_critical_values() {
         std::vector<double> gamma_vector(gamma_list.size());
         std::copy(gamma_list.begin(), gamma_list.end(), gamma_vector.begin());
         return gamma_vector;
     }
-    std::vector<int> PSP::get_partitions() {
-        std::vector<int> partitions;
+
+    std::vector<Partition> PSP::get_partitions() {
+        std::vector<Partition> partitions;
         for (std::list<stl::Partition>::iterator it = psp_list.begin(); it != psp_list.end(); it++) {
-            partitions.push_back(it->Cardinality());
+            partitions.push_back(*it);
         }
         return partitions;
-    }
-
-    std::list<stl::Partition>& PSP::get_psp() {
-        return psp_list;
-    }
-    //! get the smallest partition whose size >= k
-    stl::Partition& PSP::get_smallest_partition(int k) {
-        for (stl::Partition& i : psp_list) {
-            if (i.Cardinality() >= k)
-                return i;
-        }
-    }
-    //! get the smallest partition whose size >= k, label each data point with an integer
-    std::vector<int> PSP::get_category(int k) {
-        for (stl::Partition& i : psp_list) {
-            if (i.Cardinality() >= k) {
-                return to_category(i);
-            }
-        }
-        return std::vector<int>();
-    }
-    std::vector<int> PSP::to_category(stl::Partition& partition) {
-        std::vector<int> cat(num_points, 0);
-        int t = 0;
-        for (const stl::CSet& j : partition) {
-            for (int i : j.GetMembers()) {
-                cat[i] = t;
-            }
-            t++;
-        }
-        return cat;
     }
 }

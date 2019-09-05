@@ -29,8 +29,11 @@ author = 'zhaofeng-shu33'
 # ones.
 extensions = [
 'sphinx.ext.mathjax',
-'sphinxcontrib.bibtex'
+'sphinxcontrib.bibtex',
+'breathe'
 ]
+breathe_default_project = "psp"
+breathe_projects = { "psp": "../xml" }
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

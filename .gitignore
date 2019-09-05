@@ -5,3 +5,5 @@
 utility/*.log
 **/__pycache__
 **/.vs
+# doxygen generated
+docs/xml

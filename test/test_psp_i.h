@@ -11,19 +11,19 @@ namespace demo {
         elt.push_back(std::make_tuple(1, 3, 0.5));
         elt.push_back(std::make_tuple(2, 3, 2));
         psp::PSP ic(elt, 4);
-        ic.run_psp_i();
-        std::list<double> cv = ic.get_critical_values();
+        ic.run("psp_i");
+        std::vector<double> cv = ic.get_critical_values();
         EXPECT_EQ(cv.size(), 3);
-        std::list<double>::iterator it = cv.begin();
+        std::vector<double>::iterator it = cv.begin();
         EXPECT_DOUBLE_EQ(*it, 0.9);
         it++;
         EXPECT_DOUBLE_EQ(*it, 1);
         it++;
         EXPECT_DOUBLE_EQ(*it, 2);
 
-        std::list<stl::Partition> psp_list = ic.get_psp();
+        std::vector<stl::Partition> psp_list = ic.get_partitions();
         EXPECT_EQ(psp_list.size(), 4);
-        std::list<stl::Partition>::iterator it_2 = psp_list.begin();
+        std::vector<stl::Partition>::iterator it_2 = psp_list.begin();
         EXPECT_EQ(*it_2, stl::Partition::makeDense(4));
         stl::Partition p2;
         p2.AddElement(stl::CSet(std::string("11")));
@@ -50,25 +50,24 @@ namespace demo {
                            {-3.1, 2.6}
         };
         Gaussian2DGraph g2g(8, 1.0, a);
-        g2g.run();
-        std::list<double> gamma_list_2 = g2g.get_gamma_list();
-        std::list<stl::Partition> psp_list_2 = g2g.get_psp();
+        g2g.run("dt");
+        std::vector<double> gamma_list_2 = g2g.get_critical_values();
+        std::vector<stl::Partition> psp_list_2 = g2g.get_partitions();
 
         demo::EdgeListTuple et = g2g.get_edge_list_tuple();
         lemon::ListDigraph g;
         lemon::ListDigraph::ArcMap<double> edge_map(g);
         submodular::make_dgraph(8, et, g, edge_map);
 
-        psp::PSP_I instance(&g, &edge_map);
-        instance.run();
-        std::list<double> gamma_list = instance.get_critical_values();
-        std::list<stl::Partition> psp_list = instance.get_psp();
+        g2g.run("psp_i");
+        std::vector<double> gamma_list = g2g.get_critical_values();
+        std::vector<stl::Partition> psp_list = g2g.get_partitions();
 
-        std::list<double>::iterator it_2 = gamma_list_2.begin();
+        std::vector<double>::iterator it_2 = gamma_list_2.begin();
 
         EXPECT_EQ(psp_list, psp_list_2);
 
-        for (std::list<double>::iterator it = gamma_list.begin(); it != gamma_list.end(); it++) {
+        for (std::vector<double>::iterator it = gamma_list.begin(); it != gamma_list.end(); it++) {
             EXPECT_DOUBLE_EQ(*it, *it_2);
             it_2++;
         }

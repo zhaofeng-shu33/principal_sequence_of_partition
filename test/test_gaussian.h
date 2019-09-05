@@ -19,21 +19,12 @@ TEST(Gaussian2D, GivenPoint) {
     EXPECT_DOUBLE_EQ(y_pos[1], -3);
     EXPECT_DOUBLE_EQ(y_pos[2], 3);
     g2g.run();
-    std::list<stl::Partition> psp_list = g2g.get_psp();
+    std::vector<stl::Partition> psp_list = g2g.get_partitions();
     EXPECT_EQ(psp_list.size(), 2);
-    std::list<stl::Partition>::iterator it = psp_list.begin();
+    std::vector<stl::Partition>::iterator it = psp_list.begin();
     EXPECT_EQ(it->Cardinality(), 1);
     it++;
     EXPECT_EQ(it->Cardinality(), 4);
-
-    std::vector<int> cat = g2g.get_category(2);
-    std::cout << cat << std::endl;
-    EXPECT_EQ(cat.size(), 4);
-    EXPECT_EQ(cat[0], 0);
-    EXPECT_EQ(cat[1], 1);
-    EXPECT_EQ(cat[2], 2);
-    EXPECT_EQ(cat[3], 3);
-
 }
 TEST(Gaussian2D, GivenPoint8) {
     double a[8][2] = { {3.1, 3.2},
@@ -46,14 +37,14 @@ TEST(Gaussian2D, GivenPoint8) {
                        {-3.1, 2.6}
                      };
     Gaussian2DGraph g2g(8, 1.0, a);
-    g2g.run_pdt();
-    std::list<double> gamma_list = g2g.get_gamma_list();
-    std::list<stl::Partition> psp_list = g2g.get_psp();
-    g2g.run();
-    std::list<double> gamma_list_2 = g2g.get_gamma_list();
-    std::list<stl::Partition> psp_list_2 = g2g.get_psp();
-    std::list<double>::iterator it_2 = gamma_list_2.begin();
-    for (std::list<double>::iterator it = gamma_list.begin(); it != gamma_list.end(); it++) {
+    g2g.run("pdt");
+    std::vector<double> gamma_list = g2g.get_critical_values();
+    std::vector<stl::Partition> psp_list = g2g.get_partitions();
+    g2g.run("dt");
+    std::vector<double> gamma_list_2 = g2g.get_critical_values();
+    std::vector<stl::Partition> psp_list_2 = g2g.get_partitions();
+    std::vector<double>::iterator it_2 = gamma_list_2.begin();
+    for (std::vector<double>::iterator it = gamma_list.begin(); it != gamma_list.end(); it++) {
         lemon::Tolerance<double> _tolerance;
         EXPECT_FALSE(_tolerance.different(*it, *it_2));
         it_2++;
