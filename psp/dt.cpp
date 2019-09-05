@@ -29,14 +29,6 @@ namespace submodular {
         for (auto it = xl.begin(); it != xl.end(); it++) {
             min_value += *it;
         }
-#ifdef _DEBUG            
-        double min_value_check = evaluate(_partition);
-        if (std::abs(min_value - min_value_check) > 1e-4) {
-            std::stringstream ss;
-            ss << "min_value_check error: " << min_value << ' ' << min_value_check;
-            throw std::logic_error(ss.str());
-        }
-#endif
     }
     
     void DilworthTruncation::minimize(std::vector<double>& xl) {
@@ -89,23 +81,6 @@ namespace submodular {
                 X.AddElement(v);
         }
         // house keeping, map is handled automatically
-
-#ifdef  _DEBUG    
-        subgraph.disable(source_node);
-        subgraph.disable(sink_node);
-        stl::CSet _X;
-        std::copy(X.begin(), X.end(), std::back_inserter(_X));
-        _X.AddElement(graph_size);
-        subgraph.enable(_g->nodeFromId(graph_size));
-        double minimum_value_2 = -lambda_ + get_cut_value(subgraph, *_edge_map, _X);
-        for (int i : X.GetMembers())
-            minimum_value_2 -= xl[i];
-        if (std::abs(minimum_value - minimum_value_2) > 1e-5) {
-            std::stringstream ss;
-            ss << "maxflow value differs: " << minimum_value << " != " << minimum_value_2;
-            throw std::logic_error(ss.str());
-        }
-#endif
         subgraph.erase(source_node);
         subgraph.erase(sink_node);
         Tl = X;
