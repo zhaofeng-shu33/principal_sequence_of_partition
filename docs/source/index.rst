@@ -31,6 +31,7 @@ This repository contains source code to compute the principal sequence of partit
    :maxdepth: 2
    :caption: Contents:
 
+   install
    usage
    detail
    api
