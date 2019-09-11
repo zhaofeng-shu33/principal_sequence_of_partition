@@ -8,7 +8,7 @@ For Python Users, use ``pip`` to install the binary distribution::
 
     pip install pspartition
 
-Currently, the latest version is |pipversion|_ and the following version of Python and operating system is supported:
+Currently, the latest version is |pipversion|_ and the following version of Python and operating systems are supported:
 
 .. |pipversion| image:: https://img.shields.io/pypi/v/pspartition.svg
 .. _pipversion: https://pypi.org/project/pspartition
