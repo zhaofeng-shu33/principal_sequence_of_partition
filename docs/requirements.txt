@@ -1,3 +1,4 @@
 sphinxcontrib-bibtex
 breathe
 sphinx==2.2.0
+pspartition
