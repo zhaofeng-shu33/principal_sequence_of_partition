@@ -546,22 +546,24 @@ namespace parametric {
             slice(newDig, newArcMap, *new_update_base, T_apostrophe_total, T_r, *newFlowMap, *rightArcMap_inner, lambda_2, lambda_3, TAP_Left.ele_out, right_ele, right_contract);
         }
         else {
-            // house keeping
-            if (TAP_Left.ele_out)
-                delete TAP_Left.ele_out;
-            if (TAP_Right.ele_reverse_out)
-                delete TAP_Right.ele_reverse_out;
-            if (reverse_newDig)
-                delete reverse_newDig;
-            if (is_contract) {
-                delete new_update_base;
-                delete leftArcMap_inner;
-                delete rightArcMap_inner;
-                delete newArcMap;
-                delete newDig;
-            }
             lambda_list.push_back(lambda_2);
         }
+        // house keeping
+        if (TAP_Left.ele_out)
+            delete TAP_Left.ele_out;
+        if (TAP_Right.ele_reverse_out)
+            delete TAP_Right.ele_reverse_out;
+        if (reverse_newDig)
+            delete reverse_newDig;
+        if (is_contract) {
+            delete new_update_base;
+            delete leftArcMap_inner;
+            delete rightArcMap_inner;
+            delete newArcMap;
+            delete newDig;
+        }
+            
+        
     }
     double PMF_R::compute_lambda_eq_const(Set& T_l, Set& T_r) {
         // compute the target value from original graph
