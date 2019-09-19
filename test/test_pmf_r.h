@@ -49,6 +49,8 @@ namespace parametric {
         PMF_R::ThreadArgumentPack TAP(digraph, cap, fm, S, T, T_a, n_a, n_fm, NULL, NULL, &reverse_newDig);
         InterruptibleThread::thread right(&PMF_R::executePreflow_reverse, &pmfR, std::ref(TAP));
         right.join();
+        if (TAP.ele_reverse_out)
+            delete TAP.ele_reverse_out;
         EXPECT_DOUBLE_EQ(n_a, 3);
         EXPECT_EQ(T_a, stl::CSet("1111"));
     }
