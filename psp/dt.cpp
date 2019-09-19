@@ -101,8 +101,10 @@ namespace submodular {
         if (Q.Cardinality() == P.Cardinality()) {
             throw std::logic_error("Q and P have the same size");
         }
-        double gamma_apostrophe = (evaluate(P) - evaluate(Q)) / (P.Cardinality() - Q.Cardinality());
-        double h_apostrophe = (P.Cardinality() * evaluate(Q) - Q.Cardinality() * evaluate(P)) / (P.Cardinality() - Q.Cardinality());
+        double evaluate_P_value = evaluate(P);
+        double evaluate_Q_value = evaluate(Q);
+        double gamma_apostrophe = (evaluate_P_value - evaluate_Q_value) / (P.Cardinality() - Q.Cardinality());
+        double h_apostrophe = (P.Cardinality() * evaluate_Q_value - Q.Cardinality() * evaluate_P_value) / (P.Cardinality() - Q.Cardinality());
         DilworthTruncation dt(gamma_apostrophe, _g, _edge_map);
         dt.run();
         double min_value = dt.get_min_value();
