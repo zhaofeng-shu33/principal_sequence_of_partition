@@ -21,9 +21,13 @@ namespace psp {
         }
         submodular::make_dgraph(num_points, elt, *g, *edge_map);
     }
+    PSP::PSP(Digraph* _g, ArcMap* _edge_map) : g(_g), edge_map(_edge_map), num_points(0){}
     PSP::~PSP() {
-        delete edge_map;
-        delete g;
+        // do not free the memory if external graph structure and map are used
+        if (num_points > 0) {
+            delete edge_map;
+            delete g;
+        }
     }
     void PSP::run(std::string method) {
         if (method == "dt")

@@ -16,6 +16,7 @@ namespace psp {
         /// \param number_of_node the number of node in the graph
         PSP(const std::vector<std::tuple<std::size_t, std::size_t, double>>& arc_triple_list, int number_of_node);
         PSP(std::vector<int> s_list, std::vector<int> t_list, std::vector<double> weight_list, int number_of_node);
+        PSP(Digraph* _g, ArcMap* _edge_map);
         virtual  ~PSP();
         //! run principal sequence of partition algorithm
         //! default to use improved psp,

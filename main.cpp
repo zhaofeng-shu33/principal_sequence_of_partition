@@ -8,10 +8,7 @@
 #include <sstream>
 #include <boost/program_options.hpp>
 #include <lemon/lgf_reader.h>
-#include "psp/dt.h"
-#include "psp/pmf.h"
-#include "psp/pmf_r.h"
-#include "psp/psp_i.h"
+#include "psp/psp.h"
 
 int main(int argc, const char *argv[]){
     boost::program_options::options_description desc;
@@ -56,35 +53,17 @@ int main(int argc, const char *argv[]){
 		.arcMap("capacity", cap).run();
 
 	std::stringstream result;
-	std::list<double> critical_values;
-	std::list<stl::Partition> partition_list;
+	std::vector<double> critical_values;
+	std::vector<stl::Partition> partition_list;
 	std::chrono::system_clock::time_point start_time;
 	if(report_time)
 		start_time = std::chrono::system_clock::now();
-	if (method == "psp_i") {
-		psp::PSP_I psp_i(&digraph, &cap);
-		psp_i.run();
-		critical_values = psp_i.get_critical_values();
-		partition_list = psp_i.get_psp();
-	}
-    else if (method == "pdt") {
-		parametric::PDT pmf(&digraph, &cap);
-		pmf.run();
-		critical_values = pmf.get_critical_values();
-		partition_list = pmf.get_psp();
-    }
-	else if (method == "pdt_r") {
-		parametric::PDT_R pmf(&digraph, &cap);
-		pmf.run();
-		critical_values = pmf.get_critical_values();
-		partition_list = pmf.get_psp();
-	}
-	else{
-		submodular::DT psp_class(&digraph, &cap);
-		psp_class.run();
-		critical_values = psp_class.get_critical_values();
-		partition_list = psp_class.get_psp();
-	}
+
+    psp::PSP psp_instance(&digraph, &cap);
+    psp_instance.run(method);
+	critical_values = psp_instance.get_critical_values();
+	partition_list = psp_instance.get_partitions();
+	
 	if (report_time) {
 		std::chrono::system_clock::duration dtn;
 		std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
@@ -92,9 +71,9 @@ int main(int argc, const char *argv[]){
 		float time_used = std::chrono::duration_cast<std::chrono::milliseconds>(dtn).count() / 1000.0;
 		std::cout << "Time used : " << time_used << std::endl;
 	}
-	std::list<stl::Partition>::iterator it_2 = partition_list.begin();
+	std::vector<stl::Partition>::iterator it_2 = partition_list.begin();
 	result << *it_2 << std::endl;
-	for (std::list<double>::iterator it_1 = critical_values.begin(); it_1 != critical_values.end(); it_1++) {
+	for (std::vector<double>::iterator it_1 = critical_values.begin(); it_1 != critical_values.end(); it_1++) {
 		it_2++;
 		result << *it_1 << std::endl;
 		result << *it_2 << std::endl;
