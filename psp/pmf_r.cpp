@@ -166,8 +166,11 @@ namespace parametric {
         // construct rightFlowMap
         FlowMap rightFlowMap(dig);
         set_flowMap(dig, pf_reverse_instance.flowMap(), rightFlowMap);
-
-        slice(&dig, &dig_aM, sink_capacity, T_0, T_1, leftFlowMap, rightFlowMap, init_lambda, lambda_3, pf.elevator(), pf_reverse_instance.elevator(), false);
+        Elevator* init_elevator_pointer = pf.elevator();
+        Elevator_Reverse* init_reverse_elevator_pointer = pf_reverse_instance.elevator();
+        slice(&dig, &dig_aM, sink_capacity, T_0, T_1, leftFlowMap, rightFlowMap, init_lambda, lambda_3, init_elevator_pointer, init_reverse_elevator_pointer, false);
+        delete init_elevator_pointer;
+        delete init_reverse_elevator_pointer;
         lambda_list.sort();
         auto is_superset = [](const Set& A, const Set& B){return B.IsSubSet(A);};
         set_list.sort(is_superset);
