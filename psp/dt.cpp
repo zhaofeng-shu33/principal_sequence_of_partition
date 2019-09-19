@@ -39,7 +39,7 @@ namespace submodular {
         for (int i = 0; i <= graph_size; i++) {
             node_filter[_g->nodeFromId(i)] = true;
         }
-        for (int i = graph_size + 1; i < lemon::countNodes(*_g); i++) {
+        for (int i = graph_size + 1; i < NodeSize; i++) {
             node_filter[_g->nodeFromId(i)] = false;
         }
         SubDigraph subgraph(*_g, node_filter);
