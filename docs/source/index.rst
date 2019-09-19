@@ -10,7 +10,8 @@ Introduction
 Principal sequence of partition is a method to obtain a successive finer partitions for an undirect
 or directed graph. It has applications in network reliability, community detection and Potts model in Physics.
 The first non-trival partition is associated with 
-the `graph strength <https://en.wikipedia.org/wiki/Strength_of_a_graph>`_.
+the `graph strength <https://en.wikipedia.org/wiki/Strength_of_a_graph>`_. The following two paragraphs give a very short Introduction
+of what is principal sequence of partition.
 
 Let us consider an undirected graph with weights :math:`c_e`, for a given cost :math:`\lambda\geq 0`, we 
 would like to find a partition :math:`\mathcal{P}` such that the following objective function is minimized:
@@ -31,6 +32,7 @@ This repository contains source code to compute the principal sequence of partit
    :maxdepth: 2
    :caption: Contents:
 
+   install
    usage
    detail
    api

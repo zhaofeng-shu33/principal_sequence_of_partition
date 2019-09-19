@@ -1,7 +1,6 @@
 #include <iostream>
 #include <tuple>
 #include <vector>
-#include <list>
 #include <psp/psp.h>
 
 int main() {

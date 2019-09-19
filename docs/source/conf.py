@@ -29,6 +29,7 @@ author = 'zhaofeng-shu33'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+'sphinx.ext.autodoc',
 'sphinx.ext.mathjax',
 'sphinxcontrib.bibtex',
 'breathe'
