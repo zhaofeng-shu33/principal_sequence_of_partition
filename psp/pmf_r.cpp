@@ -514,7 +514,8 @@ namespace parametric {
         if (TAP_Right.thread_exception_ptr)
             std::rethrow_exception(TAP_Right.thread_exception_ptr);
 
-        delete left, right;
+        delete left;
+        delete right;
 
         double new_flow_value;
         Set T_apostrophe_total;
