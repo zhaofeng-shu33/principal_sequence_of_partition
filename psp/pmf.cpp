@@ -249,6 +249,12 @@ namespace parametric {
         target_value -= submodular::get_cut_value(*g_ptr, *aM, T_r);
         return target_value;
     }
+    std::list<Set> PMF::get_set_list() { return set_list; }
+    std::list<double> PMF::get_lambda_list() { return lambda_list; }
+    void PMF::reset_y_lambda(std::vector<pair> parameter_list) {
+        _y_lambda = parameter_list;
+        sink_capacity.resize(_y_lambda.size());
+    }
     PDT::PDT(const PDT& another_pdt): _y_lambda(another_pdt._y_lambda),
         _g(another_pdt._g),
         _arcMap(another_pdt._arcMap),
@@ -260,6 +266,10 @@ namespace parametric {
         _g(g),
         _arcMap(arcMap),
         pmf(g, arcMap, 0, _y_lambda){
+    }
+    std::list<double> PDT::get_critical_values() { return Lambda_list; }
+    std::list<Partition> PDT::get_psp() {
+        return partition_list;
     }
     void PDT::run() {
         // handle multiple run

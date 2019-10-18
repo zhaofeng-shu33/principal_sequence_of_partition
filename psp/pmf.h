@@ -22,16 +22,13 @@ namespace parametric{
         typedef Preflow::Elevator Elevator;
         PMF(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda);
         void run();
-        std::list<Set> get_set_list() { return set_list; }
-        std::list<double> get_lambda_list() { return lambda_list; }
+        std::list<Set> get_set_list();
+        std::list<double> get_lambda_list();
         void reset_j(std::size_t j);
-        void reset_y_lambda(std::vector<pair> parameter_list) { 
-            _y_lambda = parameter_list; 
-            sink_capacity.resize(_y_lambda.size());
-        }
+        void reset_y_lambda(std::vector<pair> parameter_list);
         double compute_lambda(const std::vector<pair>& parameter_list, const double target_value);
         void set_node_filter(bool value);
-    private:    
+    private:
         void update_dig(double lambda);
         void slice(Set& S, Set& T, const FlowMap& arcMap, double lambda_1, double lambda_3);
         //! modify flow given current dig_aM
@@ -62,10 +59,8 @@ namespace parametric{
         PDT(lemon::ListDigraph* g, ArcMap* arcMap);
         PDT(const PDT& another_pdt);
         void run();
-        std::list<double> get_critical_values(){ return Lambda_list; }
-        std::list<Partition> get_psp() {
-            return partition_list;
-        }
+        std::list<double> get_critical_values();
+        std::list<Partition> get_psp();
     protected:
         std::list<double> Lambda_list;
         std::list<Partition> partition_list;
