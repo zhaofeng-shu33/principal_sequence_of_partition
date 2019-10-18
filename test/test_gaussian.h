@@ -26,6 +26,7 @@ TEST(Gaussian2D, GivenPoint) {
     it++;
     EXPECT_EQ(it->Cardinality(), 4);
 }
+
 TEST(Gaussian2D, GivenPoint8) {
     double a[8][2] = { {3.1, 3.2},
                        {4.0, 4.0 },
@@ -51,20 +52,4 @@ TEST(Gaussian2D, GivenPoint8) {
     }
     EXPECT_EQ(psp_list, psp_list_2);
 }
-
-// This test is used to verify that MaxFlow algorithm works
-TEST_F(Graph4PointTest, TwoCase) {
-    submodular::DT psp_class(&g, &edge_map);
-    psp_class.run();
-    std::list<double> gamma_list = psp_class.get_critical_values();
-    std::list<stl::Partition> psp_list = psp_class.get_psp();
-    std::list<stl::Partition>::iterator it = psp_list.begin();
-    EXPECT_DOUBLE_EQ(*gamma_list.begin(),1+2/3.0);    
-
-    EXPECT_EQ(psp_list.size(), 2);
-    EXPECT_EQ(it->Cardinality(), 1);
-    it++;
-    EXPECT_EQ(it->Cardinality(), 4);
-}
-
 }

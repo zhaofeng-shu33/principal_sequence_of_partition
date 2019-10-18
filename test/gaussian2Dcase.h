@@ -9,6 +9,7 @@
 #include "psp/io_utility.h"
 #include "psp/pmf.h"
 namespace demo {
+    //! {src, dst, capacity}
     typedef std::vector<std::tuple<std::size_t, std::size_t, double>> EdgeListTuple;
     class Gaussian2DGraphBase {
     public:
@@ -19,13 +20,12 @@ namespace demo {
         std::vector<double> x_pos;
         std::vector<double> y_pos;
     private:
-        // {src, dst, capacity}
         std::default_random_engine generator;
         std::normal_distribution<double> distribution;
         lemon::Tolerance<double> _tolerance;
         double _gamma;
         int data_1[4][2] = { {3,3},{3,-3},{-3,-3},{-3,3} };
-        //! use Gaussian similarity function $exp(-||p_1 - p_2||^2/2) $
+        //! use Gaussian similarity function $exp(- \gamma * ||p_1 - p_2||^2/2) $
         double compute_similarity(double x_1, double y_1, double x_2, double y_2);
     };
 

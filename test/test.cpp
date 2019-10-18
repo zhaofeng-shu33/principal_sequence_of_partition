@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-// Graph tests
+// Graph basic utility tests
 #include "test_graph.h"
 // Gaussian test
 #include "test_gaussian.h"
