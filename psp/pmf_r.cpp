@@ -544,7 +544,7 @@ namespace parametric {
             right_contract = false;
         }
 
-        if(T_apostrophe_total != T_r && T_apostrophe_total != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
+        if(T_apostrophe_total != T_r && T_apostrophe_total != T_l && new_flow_value < original_flow_value - 10 * tolerance.epsilon()){
             set_list.push_back(T_apostrophe_total);
             slice(newDig, newArcMap, *new_update_base, T_l, T_apostrophe_total, *leftArcMap_inner, *newFlowMap, lambda_1, lambda_2, left_ele, TAP_Right.ele_reverse_out, left_contract);
             slice(newDig, newArcMap, *new_update_base, T_apostrophe_total, T_r, *newFlowMap, *rightArcMap_inner, lambda_2, lambda_3, TAP_Left.ele_out, right_ele, right_contract);

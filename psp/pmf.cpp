@@ -230,7 +230,7 @@ namespace parametric {
             throw std::logic_error("not subset");
         }
 #endif
-        if(T_apostrophe != T_r && T_apostrophe != T_l && new_flow_value < original_flow_value - tolerance.epsilon()){
+        if(T_apostrophe != T_r && T_apostrophe != T_l && new_flow_value < original_flow_value - 10 * tolerance.epsilon()){
             // if no graph contraction, S \subseteq S_apostrophe and T \subseteq T_apostrophe
             set_list.push_back(T_apostrophe);
             slice(T_l, T_apostrophe, flowMap, lambda_1, lambda_2);
