@@ -47,7 +47,7 @@ TEST(Gaussian2D, GivenPoint8) {
     std::vector<double>::iterator it_2 = gamma_list_2.begin();
     for (std::vector<double>::iterator it = gamma_list.begin(); it != gamma_list.end(); it++) {
         lemon::Tolerance<double> _tolerance;
-        EXPECT_FALSE(_tolerance.different(*it, *it_2));
+        EXPECT_TRUE(abs(*it - *it_2) < 1e-9);
         it_2++;
     }
     EXPECT_EQ(psp_list, psp_list_2);

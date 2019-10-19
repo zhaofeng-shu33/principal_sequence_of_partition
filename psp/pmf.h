@@ -57,7 +57,6 @@ namespace parametric{
     public:
         typedef lemon::ListDigraph::ArcMap<double> ArcMap;
         PDT(lemon::ListDigraph* g, ArcMap* arcMap);
-        PDT(const PDT& another_pdt);
         void run();
         std::list<double> get_critical_values();
         std::list<Partition> get_psp();

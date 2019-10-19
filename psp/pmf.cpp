@@ -252,12 +252,6 @@ namespace parametric {
         _y_lambda = parameter_list;
         sink_capacity.resize(_y_lambda.size());
     }
-    PDT::PDT(const PDT& another_pdt): _y_lambda(another_pdt._y_lambda),
-        _g(another_pdt._g),
-        _arcMap(another_pdt._arcMap),
-        pmf(_g, _arcMap, 0, _y_lambda),
-        Lambda_list(another_pdt.Lambda_list),
-        partition_list(another_pdt.partition_list){}
 
     PDT::PDT(lemon::ListDigraph* g, ArcMap* arcMap):
         _g(g),
