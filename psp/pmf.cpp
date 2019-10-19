@@ -63,9 +63,9 @@ namespace parametric {
     }
 
     PMF::PMF(lemon::ListDigraph* g, ArcMap* arcMap, std::size_t j, std::vector<pair>& y_lambda) :
-        g_ptr(g), aM(arcMap), _j(j),
-        _y_lambda(y_lambda),
-        dig_aM(dig), node_filter(*g_ptr), sub_digraph(*g_ptr, node_filter), tilde_G_size(-1){
+        g_ptr(g), sub_digraph(*g_ptr, node_filter), node_filter(*g_ptr), aM(arcMap), 
+        dig_aM(dig), _y_lambda(y_lambda),
+        tilde_G_size(-1), _j(j){
         sink_capacity.resize(_y_lambda.size());
         node_filter[g_ptr->nodeFromId(0)] = true;
     }
