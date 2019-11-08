@@ -31,11 +31,11 @@ protected:
     }
 };
 
-class FourPointNotComplete : public testing::Test {
+class FourPointNotCompleteGraph : public testing::Test {
     protected:
         lemon::ListDigraph g;
         lemon::ListDigraph::ArcMap<double> arc_map;
-        FourPointNotComplete(): arc_map(g){}
+        FourPointNotCompleteGraph(): arc_map(g){}
         void SetUp() override {
             lemon::ListDigraph::Node n1 = g.addNode();
             lemon::ListDigraph::Node n2 = g.addNode();
@@ -45,6 +45,41 @@ class FourPointNotComplete : public testing::Test {
             lemon::ListDigraph::Arc a2 = g.addArc(n3, n4);
             arc_map[a1] = 1;
             arc_map[a2] = 1;                
+        }
+};
+
+class FourPointNotComplete : public testing::Test {
+    protected:
+        std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
+        std::vector<double> lambda_list;
+        std::vector<parametric::Partition> partition_list;
+        void SetUp() override {
+            edges.push_back(std::make_tuple(0, 1, 1.0));
+            edges.push_back(std::make_tuple(2, 3, 1.0));
+        }
+        void TearDown() override {
+            std::vector<double>::iterator it = lambda_list.begin();
+            EXPECT_DOUBLE_EQ(*it, 0);
+            it++;
+            EXPECT_DOUBLE_EQ(*it, 1);
+
+            EXPECT_EQ(lambda_list.size(), 2);  
+            EXPECT_EQ(partition_list.size(), 3);
+
+            stl::Partition p = stl::Partition::makeDense(4);
+
+            std::vector<parametric::Partition>::iterator it_p = partition_list.begin();
+            EXPECT_EQ(*it_p, p);
+
+            it_p++;
+            p.clear();
+            p.AddElement(stl::CSet(std::string("1100")));
+            p.AddElement(stl::CSet(std::string("0011")));
+            EXPECT_EQ(*it_p, p);
+
+            p = stl::Partition::makeFine(4);
+            it_p++;
+            EXPECT_EQ(*it_p, p);
         }
 };
 

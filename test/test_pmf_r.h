@@ -283,31 +283,9 @@ TEST_F(ThreePointComplete, PDT_R) {
 }
 
 TEST_F(FourPointNotComplete, PDT_R) {
-    parametric::PDT_R pdt_r(&g, &arc_map);
-    pdt_r.run();
-    std::list<double> lambda_list = pdt_r.get_critical_values();
-    std::list<parametric::Partition> partition_list = pdt_r.get_psp();
-    std::list<double>::iterator it = lambda_list.begin();
-    EXPECT_DOUBLE_EQ(*it, 0);
-    it++;
-    EXPECT_DOUBLE_EQ(*it, 1);
-
-    EXPECT_EQ(lambda_list.size(), 2);
-    EXPECT_EQ(partition_list.size(), 3);
-
-    stl::Partition p = stl::Partition::makeDense(4);
-
-    std::list<parametric::Partition>::iterator it_p = partition_list.begin();
-    EXPECT_EQ(*it_p, p);
-
-    it_p++;
-    p.clear();
-    p.AddElement(stl::CSet(std::string("1100")));
-    p.AddElement(stl::CSet(std::string("0011")));
-    EXPECT_EQ(*it_p, p);
-
-    p = stl::Partition::makeFine(4);
-    it_p++;
-    EXPECT_EQ(*it_p, p);
+    psp::PSP ic(edges, 4);
+    ic.run("pdt_r");    
+    lambda_list = ic.get_critical_values();
+    partition_list = ic.get_partitions();    
 }
 }
