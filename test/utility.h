@@ -24,7 +24,7 @@ protected:
     lemon::ListDigraph g;
     lemon::ListDigraph::ArcMap<double> edge_map;
     Graph4PointTest(): edge_map(g){}
-    virtual void SetUp() {
+    void SetUp() override {
         construct_edge_list_tuple_4(edge_list_tuple_1);
 
         submodular::make_dgraph(4,  edge_list_tuple_1,  g, edge_map);            
@@ -37,7 +37,7 @@ class FourPointNotComplete : public testing::Test {
         lemon::ListDigraph g;
         lemon::ListDigraph::ArcMap<double> arc_map;
         FourPointNotComplete(): arc_map(g){}
-        virtual void SetUp() {
+        void SetUp() override {
             lemon::ListDigraph::Node n1 = g.addNode();
             lemon::ListDigraph::Node n2 = g.addNode();
             lemon::ListDigraph::Node n3 = g.addNode();
@@ -52,7 +52,7 @@ class FourPointNotComplete : public testing::Test {
 class ThreePointComplete : public testing::Test {
     protected:
         std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
-        virtual void SetUp() {
+        void SetUp() override {
             edges.push_back(std::make_tuple(0, 1, 1.0));
             edges.push_back(std::make_tuple(0, 2, 1.0));
             edges.push_back(std::make_tuple(1, 2, 5.0));
