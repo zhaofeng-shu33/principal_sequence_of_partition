@@ -30,18 +30,6 @@ TEST_F(Graph4PointTest, MFDT) {
 }
 
 TEST(FourPointNotComplete, MFDT) {
-    lemon::ListDigraph g;
-    lemon::ListDigraph::Node n1 = g.addNode();
-    lemon::ListDigraph::Node n2 = g.addNode();
-    lemon::ListDigraph::Node n3 = g.addNode();
-    lemon::ListDigraph::Node n4 = g.addNode();
-
-    lemon::ListDigraph::ArcMap<double> arc_map(g);
-    lemon::ListDigraph::Arc a1 = g.addArc(n1, n2);
-    lemon::ListDigraph::Arc a2 = g.addArc(n3, n4);
-    arc_map[a1] = 1;
-    arc_map[a2] = 1;
-
     submodular::DilworthTruncation dt(0.1, &g, &arc_map);
     dt.run();
     double min_value = dt.get_min_value();

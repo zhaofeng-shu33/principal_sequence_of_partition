@@ -1,4 +1,5 @@
 #pragma once
+// contains test fixture
 #include <vector>
 #include <tuple>
 #include <lemon/list_graph.h>
@@ -31,5 +32,21 @@ namespace demo {
         }
     };
 
+    class FourPointNotComplete : public testing::Test {
+        protected:
+            lemon::ListDigraph g;
+            lemon::ListDigraph::ArcMap<double> arc_map;
+            FourPointNotComplete(): arc_map(g){}
+            virtual void SetUp() {
+                lemon::ListDigraph::Node n1 = g.addNode();
+                lemon::ListDigraph::Node n2 = g.addNode();
+                lemon::ListDigraph::Node n3 = g.addNode();
+                lemon::ListDigraph::Node n4 = g.addNode();
+                lemon::ListDigraph::Arc a1 = g.addArc(n1, n2);
+                lemon::ListDigraph::Arc a2 = g.addArc(n3, n4);
+                arc_map[a1] = 1;
+                arc_map[a2] = 1;                
+            }
+    }
 }
 

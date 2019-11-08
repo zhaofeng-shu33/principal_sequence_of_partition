@@ -244,13 +244,10 @@ TEST(ThreePointNotComplete, PDT) {
 }
 
 TEST(FourPointNotComplete, PDT) {
-    std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
-    edges.push_back(std::make_tuple(0, 1, 1.0));
-    edges.push_back(std::make_tuple(2, 3, 1.0));
-    psp::PSP ic(edges, 4);
-    ic.run("pdt");
-    std::vector<double> lambda_list = ic.get_critical_values();
-    std::vector<parametric::Partition> partition_list = ic.get_partitions();
+    parametric::PDT pdt(&g, &arc_map);
+    pdt.run();
+    std::vector<double> lambda_list = pdt.get_critical_values();
+    std::vector<parametric::Partition> partition_list = pdt.get_partitions();
     std::vector<double>::iterator it = lambda_list.begin();
     EXPECT_DOUBLE_EQ(*it, 0);
     it++;
