@@ -29,7 +29,7 @@ TEST_F(Graph4PointTest, MFDT) {
     EXPECT_EQ(P_apostrophe, p); // {0, 1, 2, 3}
 }
 
-TEST(FourPointNotComplete, MFDT) {
+TEST_F(FourPointNotComplete, MFDT) {
     submodular::DilworthTruncation dt(0.1, &g, &arc_map);
     dt.run();
     double min_value = dt.get_min_value();

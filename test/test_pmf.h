@@ -243,7 +243,7 @@ TEST(ThreePointNotComplete, PDT) {
     EXPECT_EQ(*it_p, p);
 }
 
-TEST(FourPointNotComplete, PDT) {
+TEST_F(FourPointNotComplete, PDT) {
     parametric::PDT pdt(&g, &arc_map);
     pdt.run();
     std::list<double> lambda_list = pdt.get_critical_values();

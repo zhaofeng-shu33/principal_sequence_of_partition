@@ -47,6 +47,6 @@ namespace demo {
                 arc_map[a1] = 1;
                 arc_map[a2] = 1;                
             }
-    }
+    };
 }
 
