@@ -3,8 +3,8 @@
 #include "utility.h"
 namespace demo {
 // This test is used to verify that MaxFlow algorithm works
-TEST_F(Graph4PointTest, DT) {
-    submodular::DT psp_class(&g, &edge_map);
+TEST_F(Graph4PointTestGraph, DT) {
+    submodular::DT psp_class(&g, &arc_map);
     psp_class.run();
     std::list<double> gamma_list = psp_class.get_critical_values();
     std::list<stl::Partition> psp_list = psp_class.get_psp();
@@ -17,8 +17,8 @@ TEST_F(Graph4PointTest, DT) {
     EXPECT_EQ(it->Cardinality(), 4);
 }
 
-TEST_F(Graph4PointTest, MFDT) {
-    submodular::DilworthTruncation dt(5 / 3.0 + 0.1, &g, &edge_map);
+TEST_F(Graph4PointTestGraph, MFDT) {
+    submodular::DilworthTruncation dt(5 / 3.0 + 0.1, &g, &arc_map);
     dt.run();
     double min_value = dt.get_min_value();
     stl::Partition P_apostrophe = dt.get_min_partition();

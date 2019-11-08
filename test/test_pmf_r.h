@@ -224,21 +224,10 @@ TEST(PMF_R, construct_new_base) {
 }
 namespace demo {
 TEST_F(Graph4PointTest, PDT_R) {
-    psp::PSP ic(edge_list_tuple_1, 4);
+    psp::PSP ic(edges, 4);
     ic.run("pdt_r");
-    std::vector<double> lambda_list = ic.get_critical_values();
-    std::vector<parametric::Partition> partition_list = ic.get_partitions();
-    EXPECT_EQ(lambda_list.size(), 1);
-    std::vector<double>::iterator lambda_it = lambda_list.begin();
-    EXPECT_DOUBLE_EQ(*lambda_it, 1 + 2 / 3.0);
-
-    EXPECT_EQ(partition_list.size(), 2);
-    std::vector<parametric::Partition>::iterator partition_it = partition_list.begin();
-
-    EXPECT_EQ(*partition_it, parametric::Partition::makeDense(4));
-    partition_it++;
-    EXPECT_EQ(*partition_it, parametric::Partition::makeFine(4));
-
+    lambda_list = ic.get_critical_values();
+    partition_list = ic.get_partitions();
 }
 
 TEST(GivenPoint8, PDT_R) {

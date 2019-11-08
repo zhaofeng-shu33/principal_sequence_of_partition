@@ -3,13 +3,13 @@
 #include "utility.h"
 
 namespace demo {
-TEST_F(Graph4PointTest, Contract) {
+TEST_F(Graph4PointTestGraph, Contract) {
     stl::CSet S(std::string("0111"));
-    lemon::digraph_contract(g, edge_map, S, 2);
+    lemon::digraph_contract(g, arc_map, S, 2);
     EXPECT_EQ(lemon::countNodes(g), 2);
     EXPECT_EQ(lemon::countArcs(g), 1);
     lemon::ListDigraph::ArcIt a(g);
-    EXPECT_DOUBLE_EQ(edge_map[a], 2.5);
+    EXPECT_DOUBLE_EQ(arc_map[a], 2.5);
 }
 }
 namespace lemon {

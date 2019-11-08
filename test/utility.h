@@ -8,26 +8,55 @@
 #include "gaussian2Dcase.h"
 
 namespace demo {
-void construct_edge_list_tuple_4(EdgeListTuple& edges) {
-    double edge_1_value = 1.0;
-    double edge_d_1_value = 0.5;
-    edges.push_back(std::make_tuple(0, 1, edge_1_value));
-    edges.push_back(std::make_tuple(1, 2, edge_1_value));
-    edges.push_back(std::make_tuple(2, 3, edge_1_value));
-    edges.push_back(std::make_tuple(0, 3, edge_1_value));
-    edges.push_back(std::make_tuple(0, 2, edge_d_1_value));
-    edges.push_back(std::make_tuple(1, 3, edge_d_1_value));
-}
 
 class Graph4PointTest : public testing::Test {
 protected:
-    EdgeListTuple edge_list_tuple_1;
-    lemon::ListDigraph g;
-    lemon::ListDigraph::ArcMap<double> edge_map;
-    Graph4PointTest(): edge_map(g){}
+    EdgeListTuple edges;
+    std::vector<double> lambda_list;
+    std::vector<parametric::Partition> partition_list;
     void SetUp() override {
-        construct_edge_list_tuple_4(edge_list_tuple_1);
-        submodular::make_dgraph(4,  edge_list_tuple_1,  g, edge_map);
+        edges.push_back(std::make_tuple(0, 1, 1));
+        edges.push_back(std::make_tuple(1, 2, 1));
+        edges.push_back(std::make_tuple(2, 3, 1));
+        edges.push_back(std::make_tuple(0, 3, 1));
+        edges.push_back(std::make_tuple(0, 2, 0.5));
+        edges.push_back(std::make_tuple(1, 3, 0.5));
+    }
+    void TearDown() override {
+        EXPECT_EQ(lambda_list.size(), 1);
+        std::vector<double>::iterator lambda_it = lambda_list.begin();
+        EXPECT_DOUBLE_EQ(*lambda_it, 1 + 2 / 3.0);
+
+        EXPECT_EQ(partition_list.size(), 2);
+        std::vector<parametric::Partition>::iterator partition_it = partition_list.begin();
+            
+        EXPECT_EQ(*partition_it, parametric::Partition::makeDense(4));
+        partition_it++;
+        EXPECT_EQ(*partition_it, parametric::Partition::makeFine(4));
+    }
+};
+
+class Graph4PointTestGraph : public testing::Test {
+protected:
+    lemon::ListDigraph g;
+    lemon::ListDigraph::ArcMap<double> arc_map;
+    Graph4PointTestGraph(): arc_map(g){}
+    void SetUp() override {
+        for (int i = 0; i < 4; i ++){
+            g.addNode();
+        }
+        lemon::ListDigraph::Arc a1 = g.addArc(g.nodeFromId(0), g.nodeFromId(1));
+        lemon::ListDigraph::Arc a2 = g.addArc(g.nodeFromId(1), g.nodeFromId(2));
+        lemon::ListDigraph::Arc a3 = g.addArc(g.nodeFromId(2), g.nodeFromId(3));
+        lemon::ListDigraph::Arc a4 = g.addArc(g.nodeFromId(0), g.nodeFromId(3));
+        lemon::ListDigraph::Arc a5 = g.addArc(g.nodeFromId(0), g.nodeFromId(2));
+        lemon::ListDigraph::Arc a6 = g.addArc(g.nodeFromId(1), g.nodeFromId(3));
+        arc_map[a1] = 1;
+        arc_map[a2] = 1;
+        arc_map[a3] = 1;
+        arc_map[a4] = 1;
+        arc_map[a5] = 0.5;
+        arc_map[a6] = 0.5;
     }
 };
 
@@ -37,12 +66,11 @@ class FourPointNotCompleteGraph : public testing::Test {
         lemon::ListDigraph::ArcMap<double> arc_map;
         FourPointNotCompleteGraph(): arc_map(g){}
         void SetUp() override {
-            lemon::ListDigraph::Node n1 = g.addNode();
-            lemon::ListDigraph::Node n2 = g.addNode();
-            lemon::ListDigraph::Node n3 = g.addNode();
-            lemon::ListDigraph::Node n4 = g.addNode();
-            lemon::ListDigraph::Arc a1 = g.addArc(n1, n2);
-            lemon::ListDigraph::Arc a2 = g.addArc(n3, n4);
+            for (int i = 0; i < 4; i ++){
+                g.addNode();
+            }
+            lemon::ListDigraph::Arc a1 = g.addArc(g.nodeFromId(0), g.nodeFromId(1));
+            lemon::ListDigraph::Arc a2 = g.addArc(g.nodeFromId(2), g.nodeFromId(3));
             arc_map[a1] = 1;
             arc_map[a2] = 1;                
         }
