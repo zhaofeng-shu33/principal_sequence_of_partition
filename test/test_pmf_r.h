@@ -275,11 +275,7 @@ TEST(GivenPoint8, PDT_R) {
     EXPECT_EQ(partition_list, partition_list_2);
 }
 
-TEST(ThreePointComplete, PDT_R) {
-    std::vector<std::tuple<std::size_t, std::size_t, double>> edges;
-    edges.push_back(std::make_tuple(0, 1, 1.0));
-    edges.push_back(std::make_tuple(0, 2, 1.0));
-    edges.push_back(std::make_tuple(1, 2, 5.0));
+TEST_F(ThreePointComplete, PDT_R) {
     psp::PSP ic(edges, 3);
     ic.run("pdt_r");
     std::vector<double> lambda_list = ic.get_critical_values();
