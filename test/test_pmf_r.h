@@ -278,31 +278,8 @@ TEST(GivenPoint8, PDT_R) {
 TEST_F(ThreePointComplete, PDT_R) {
     psp::PSP ic(edges, 3);
     ic.run("pdt_r");
-    std::vector<double> lambda_list = ic.get_critical_values();
-    std::vector<parametric::Partition> partition_list = ic.get_partitions();
-    std::vector<double>::iterator it = lambda_list.begin();
-    EXPECT_DOUBLE_EQ(*it, 2);
-    it++;
-    EXPECT_DOUBLE_EQ(*it, 5);
-
-    EXPECT_EQ(lambda_list.size(), 2);
-    EXPECT_EQ(partition_list.size(), 3);
-
-    stl::Partition p = stl::Partition::makeDense(3);
-
-    std::vector<parametric::Partition>::iterator it_p = partition_list.begin();
-    EXPECT_EQ(*it_p, p);
-
-    it_p++;
-    p.clear();
-    p.AddElement(stl::CSet(std::string("011")));
-    p.AddElement(stl::CSet(std::string("100")));
-    EXPECT_EQ(*it_p, p);
-
-    p = stl::Partition::makeFine(3);
-    it_p++;
-    EXPECT_EQ(*it_p, p);
-
+    lambda_list = ic.get_critical_values();
+    partition_list = ic.get_partitions();
 }
 
 TEST_F(FourPointNotComplete, PDT_R) {
