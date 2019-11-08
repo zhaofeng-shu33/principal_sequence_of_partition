@@ -58,6 +58,6 @@ class ThreePointComplete : public testing::Test {
             edges.push_back(std::make_tuple(1, 2, 5.0));
         }
 };
-}
+
 }
 
