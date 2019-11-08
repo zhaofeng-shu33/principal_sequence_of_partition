@@ -344,7 +344,7 @@ TEST(FourPointNotComplete, PDT_R) {
     parametric::PDT_R pdt_r(&g, &arc_map);
     pdt_r.run();
     std::vector<double> lambda_list = pdt_r.get_critical_values();
-    std::vector<parametric::Partition> partition_list = pdt_r.get_partitions();
+    std::vector<parametric::Partition> partition_list = pdt_r.get_psp();
     std::vector<double>::iterator it = lambda_list.begin();
     EXPECT_DOUBLE_EQ(*it, 0);
     it++;
