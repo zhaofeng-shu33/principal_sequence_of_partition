@@ -3,7 +3,6 @@ matrix:
   include: 
   - os: linux
     dist: xenial
-    sudo: required
     addons:
       apt:
         sources:
@@ -21,6 +20,7 @@ before_install:
   - |
     if [ "$TRAVIS_OS_NAME" == "osx" ]; then 
       brew update
+      brew unlink nss || true
       brew tap zhaofeng-shu33/liblemonformula
     fi
 install:  
