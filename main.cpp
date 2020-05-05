@@ -66,20 +66,17 @@ int main(int argc, const char *argv[]){
 		psp_i.run();
 		critical_values = psp_i.get_critical_values();
 		partition_list = psp_i.get_psp();
-	}
-    else if (method == "pdt") {
+	} else if (method == "pdt") {
 		parametric::PDT pmf(&digraph, &cap);
 		pmf.run();
 		critical_values = pmf.get_critical_values();
 		partition_list = pmf.get_psp();
-    }
-	else if (method == "pdt_r") {
+        } else if (method == "pdt_r") {
 		parametric::PDT_R pmf(&digraph, &cap);
 		pmf.run();
 		critical_values = pmf.get_critical_values();
 		partition_list = pmf.get_psp();
-	}
-	else{
+	} else {
 		submodular::DT psp_class(&digraph, &cap);
 		psp_class.run();
 		critical_values = psp_class.get_critical_values();
