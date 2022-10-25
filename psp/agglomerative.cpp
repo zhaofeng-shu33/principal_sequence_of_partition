@@ -1,3 +1,6 @@
+#ifdef _MSC_VER
+#include <ciso646>
+#endif
 #include "psp/agglomerative.h"
 #include <IC/AIC> // for exact info-clustering solution
 #include <IC/hypergraph> // for hypergraphical source model
@@ -28,7 +31,7 @@ namespace psp {
             }
             p.AddElement(K);
         }
-        psp_list.push_back(p);
+        psp_list.push_front(p);
     }
     void Agglomerative_PSP::run() {
         IC::HypergraphEntropy h(M);

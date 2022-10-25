@@ -13,3 +13,5 @@
 #include "test_pmf_r.h"
 
 #include "test_utility.h"
+
+#include "test_agg_psp.h"
