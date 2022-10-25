@@ -40,7 +40,7 @@ namespace psp {
         void split(int i);
         void contract(const stl::CSet& S, int i);
         int node_size;
-        std::vector<stl::CSet> K;
+        std::vector<stl::CSet> K; // denotes the index of the set (the node in the tree)
         Digraph tree;
         ArcMap tree_edge_map;
         Digraph* _g;
