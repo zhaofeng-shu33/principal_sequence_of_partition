@@ -2,24 +2,68 @@
 #include <ciso646>
 #endif
 #include "psp/agglomerative.h"
+#include <algorithm> 
+#include "psp/graph.h"
 #include <IC/AIC> // for exact info-clustering solution
-#include <IC/hypergraph> // for hypergraphical source model
+
+
 
 namespace psp {
+
+    class DigraphEntropy : public IC::SF {
+    public:
+        typedef lemon::ListDigraph Digraph;
+        typedef Digraph::Node Node;
+        typedef Digraph::Arc Arc;
+        typedef typename Digraph::ArcMap<double> ArcMap;
+        typedef typename lemon::FilterNodes<Digraph> SubDigraph;
+    private:
+        Digraph* g;
+        ArcMap* edge_map; // Incidence matrix
+        int node_num;
+        // int edge_num;
+    public:
+        /**
+        Construct a submodular function as the entropy function of a hypergraphical source specified by the incidence matrix.
+        @param M Incidence matrix.
+        */
+        DigraphEntropy(Digraph* _g, ArcMap* _edge_map):
+            g(_g), edge_map(_edge_map) {
+            node_num = lemon::countNodes(*g);
+            // edge_num = lemon::countArcs(*g);
+        }
+
+
+        /**
+        Calculate the entropy of a hypergraphical source.
+        @param B subvector of elements from the ground set.
+        @return Entropy of the component sources indexed by elements in B.
+        */
+        double operator() (const std::vector<size_t>& B) const {
+            size_t n = B.size();
+            double ent = 0;
+            for (int i = 0; i < n; i++) {
+                for (lemon::ListDigraph::InArcIt a(*g, g->nodeFromId(B[i])); a != lemon::INVALID; ++a) {
+                    if (g->id(g->source(a)) < B[i] && std::find(B.begin(), B.end(), g->id(g->source(a))) !=B.end() ) {
+                        continue;
+                    }
+                    ent += (*edge_map)[a];
+                }
+                for (lemon::ListDigraph::OutArcIt a(*g, g->nodeFromId(B[i])); a != lemon::INVALID; ++a) {
+                    ent += (*edge_map)[a];
+                }
+            }
+            return ent;
+        }
+
+        size_t size() const {
+            return node_num;
+        }
+    };
     Agglomerative_PSP::Agglomerative_PSP(Digraph* g, ArcMap* edge_map):
     _g(g),
     _edge_map(edge_map),
     tree_edge_map(tree) {
-        node_size = lemon::countNodes(*g);
-        int number_of_edges = lemon::countArcs(*g);
-        M = Eigen::MatrixXd::Zero(node_size, number_of_edges);
-        for (lemon::ListDigraph::ArcIt a(*g); a != lemon::INVALID; ++a) {
-            int u = g->id(g->source(a));
-            int v = g->id(g->target(a));
-            int i = g->id(a);
-            M(u, i) = (*_edge_map)[a];
-            M(v, i) = (*_edge_map)[a];
-        }
     }
 
     void Agglomerative_PSP::add_partition(const std::vector<std::vector<size_t>>& q) {
@@ -34,7 +78,7 @@ namespace psp {
         psp_list.push_front(p);
     }
     void Agglomerative_PSP::run() {
-        IC::HypergraphEntropy h(M);
+        DigraphEntropy h(_g, _edge_map);
         IC::AIC _psp(h);
         add_partition(_psp.getCoarsestPartition());
         while (_psp.agglomerate()) {
