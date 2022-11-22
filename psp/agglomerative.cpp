@@ -19,7 +19,7 @@ namespace psp {
         typedef typename lemon::FilterNodes<Digraph> SubDigraph;
     private:
         Digraph* g;
-        ArcMap* edge_map; // Incidence matrix
+        ArcMap* edge_map;
         int node_num;
         // int edge_num;
     public:
