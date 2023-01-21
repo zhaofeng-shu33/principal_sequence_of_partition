@@ -1,6 +1,8 @@
 #pragma once
 #include <lemon/list_graph.h>
+#include <lemon/tolerance.h>
 #include "set/set_stl.h"
+
 namespace psp {
     class DilworthTruncation {
     public:
