@@ -41,21 +41,29 @@ namespace psp {
         }
         else {
             // reset node_filter
-            for (lemon::FilterNodes<Digraph>::NodeIt n(subgraph); n != lemon::INVALID; ++n) {
+            for (Digraph::NodeIt n(*_g); n != lemon::INVALID; ++n) {
                 node_filter[n] = false;
             }
 
             for (const stl::CSet& S : P_apostrophe) {
+                // restrict G to S
                 if (S.Cardinality() == 1)
                     continue;
-                // restrict G to S
                 for (std::size_t i: S) {
                     node_filter[_g->nodeFromId(i)] = true;
                 }
                 split(*S.begin());
+                for (std::size_t i: S) {
+                    node_filter[_g->nodeFromId(i)] = false;
+                }
                 // contract the graph
                 contract(S, *S.begin());
             }
+            // reset node_filter
+            for (Digraph::NodeIt n(*_g); n != lemon::INVALID; ++n) {
+                node_filter[n] = true;
+            }
+
             split(s); 
         }
     }
