@@ -11,6 +11,7 @@ if(AGG_FEATURE)
     target_compile_definitions(psp_static PRIVATE -DAGG)
 endif()
 
+
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(psp_static PRIVATE --coverage)
     target_link_libraries(psp_static INTERFACE --coverage)
