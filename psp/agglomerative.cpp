@@ -1,6 +1,7 @@
 #ifdef _MSC_VER
 #include <ciso646>
 #endif
+#ifdef AGG
 #include "psp/agglomerative.h"
 #include <algorithm> 
 #include "psp/graph.h"
@@ -95,3 +96,4 @@ namespace psp {
         return psp_list;
     }
 }
+#endif

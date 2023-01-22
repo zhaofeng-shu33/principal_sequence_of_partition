@@ -3,8 +3,9 @@
 #include "psp/pmf.h"
 #include "psp/psp_i.h"
 #include "psp/pmf_r.h"
+#ifdef AGG
 #include "psp/agglomerative.h"
-
+#endif
 namespace psp {
     PSP::PSP(const std::vector<std::tuple<std::size_t, std::size_t, double>>& elt, int np) {
         num_points = np;
@@ -39,8 +40,10 @@ namespace psp {
             run_pdt_r();
         else if (method == "psp_i")
             run_psp_i();
+#ifdef AGG
         else if (method == "agg_psp")
             run_agg_psp();
+#endif
         else
             throw std::logic_error(method + " not allowed");
     }
@@ -68,13 +71,14 @@ namespace psp {
         gamma_list = psp_class.get_critical_values();
         psp_list = psp_class.get_psp();
     }
+#ifdef AGG    
     void PSP::run_agg_psp() {
         Agglomerative_PSP psp_class(g, edge_map);
         psp_class.run();
         gamma_list = psp_class.get_critical_values();
         psp_list = psp_class.get_psp();
     }
-
+#endif
     std::vector<double> PSP::get_critical_values() {
         std::vector<double> gamma_vector(gamma_list.size());
         std::copy(gamma_list.begin(), gamma_list.end(), gamma_vector.begin());

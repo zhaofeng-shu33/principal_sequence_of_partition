@@ -1,9 +1,15 @@
 cmake_minimum_required(VERSION 3.5)
+if(AGG_FEATURE)
+    find_package(Eigen REQUIRED)
+endif()
 set(psp_lib digraph_utility.cpp io_utility.cpp pmf.cpp pmf_r.cpp dt.cpp psp_i.cpp psp.cpp agglomerative.cpp)
 
 add_library(psp_static ${psp_lib})
 
 target_compile_definitions(psp_static PRIVATE -DINTERRUPT)
+if(AGG_FEATURE)
+    target_compile_definitions(psp_static PRIVATE -DAGG)
+endif()
 
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(psp_static PRIVATE --coverage)
