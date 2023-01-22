@@ -18,7 +18,6 @@ public:
 private:
     void split(int s);
     void contract(const stl::CSet& S, int i);
-    int j;
     std::vector<int> K; 
     std::vector<double> W;    
     Digraph* _g;

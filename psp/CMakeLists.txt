@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 if(AGG_FEATURE)
     find_package(Eigen REQUIRED)
 endif()
-set(psp_lib digraph_utility.cpp io_utility.cpp pmf.cpp pmf_r.cpp dt.cpp psp_i.cpp psp.cpp agglomerative.cpp)
+set(psp_lib digraph_utility.cpp io_utility.cpp pmf.cpp pmf_r.cpp dt.cpp psp_i.cpp psp.cpp agglomerative.cpp hpsp.cpp)
 
 add_library(psp_static ${psp_lib})
 

@@ -579,7 +579,7 @@ namespace parametric {
 #if _DEBUG
         // check s \in S and t \in T
         if (!S.HasElement(source_node_id) || !T.HasElement(sink_node_id)) {
-            throw std::logic_error("s \in S or t \in T fails");
+            throw std::logic_error("s in S or t in T fails");
         }
         // G should not have nodes
         if (lemon::countNodes(G) > 0) {
