@@ -3,7 +3,7 @@
 
 namespace psp {
     HPSP::HPSP(Digraph* g, ArcMap* edge_map): _g(g), _edge_map(edge_map),
-    node_filter(*g), subgraph(*g, node_filter) {
+        node_filter(*g), subgraph(*g, node_filter) {
         int j = lemon::countNodes(*g);
         K.resize(j);
         W.resize(j);
