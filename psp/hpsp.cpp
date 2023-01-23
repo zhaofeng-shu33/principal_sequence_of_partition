@@ -34,8 +34,10 @@ namespace psp {
                 std::vector<int> & D_j = mit->second;
                 if (K[j] == j)
                     continue;                
-                if (mit_K == D.end())
+                if (mit_K == D.end()){
+                    D_j.push_back(K[j]);
                     D[K[j]] = D_j;
+                }
                 else {
                     mit_K->second.insert(mit_K->second.end(), D_j.begin(), D_j.end());
                 }
