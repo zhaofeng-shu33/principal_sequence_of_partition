@@ -86,6 +86,7 @@ namespace psp {
         while (C.size() > 1) {
             merge(C, D);
         }
+        psp_list.push_back(stl::Partition::makeFine(node_size));
     }
     void HPSP::split(int s) {
         int num_of_children = lemon::countNodes(subgraph);
