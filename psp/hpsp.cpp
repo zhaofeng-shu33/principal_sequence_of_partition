@@ -4,17 +4,87 @@
 namespace psp {
     HPSP::HPSP(Digraph* g, ArcMap* edge_map): _g(g), _edge_map(edge_map),
         node_filter(*g), subgraph(*g, node_filter) {
-        int j = lemon::countNodes(*g);
-        K.resize(j);
-        W.resize(j);
+        node_size = lemon::countNodes(*g);
+        K.resize(node_size);
+        W.resize(node_size);
         for (Digraph::NodeIt n(*g); n != lemon::INVALID; ++n) {
             node_filter[n] = true;
         }
     }
     void HPSP::run() {
         split(0); // 0 is the the id of the first node
+        psp_construct();
     }
-
+    void HPSP::merge(std::list<int>& C, std::map<int, std::vector<int>>& D) {
+        double gamma = -1;
+        for(std::list<int>::iterator it=C.begin(); it!=C.end(); it++) {
+            if (gamma < W[*it])
+                gamma = W[*it];
+        }
+        for(std::list<int>::iterator it=C.begin(); it!=C.end(); it++) {
+            int j = *it;
+            if (W[j] == gamma) {
+                std::list<int>::iterator old_it = it;                
+                C.erase(old_it);              
+            } else {
+                continue;
+            }
+            std::map<int, std::vector<int>>::iterator mit = D.find(j);
+            std::map<int, std::vector<int>>::iterator mit_K = D.find(K[j]);
+            if (mit != D.end()) {
+                std::vector<int> & D_j = mit->second;
+                if (K[j] == j)
+                    continue;                
+                if (mit_K == D.end())
+                    D[K[j]] = D_j;
+                else {
+                    mit_K->second.insert(mit_K->second.end(), D_j.begin(), D_j.end());
+                }
+                D.erase(mit);
+            } else {
+                if (mit_K == D.end())
+                    D[K[j]] = std::vector<int>({j, K[j]});
+                else
+                    D[K[j]].push_back(j);
+            }
+        }
+        stl::Partition P;
+        stl::CSet _total;
+        for(auto it = D.begin(); it != D.end(); it++) {
+            std::vector<int>& D_k = it->second;
+            stl::CSet s;
+            for(auto it_D = D_k.begin(); it_D != D_k.end(); it_D++) {
+                _total.AddElement(*it_D);
+                s.AddElement(*it_D);
+            }
+            P.AddElement(s);
+        }
+        if (_total.Cardinality() < node_size) {
+            stl::CSet div_set = stl::CSet::MakeDense(node_size).Difference(_total);
+            for (auto it = div_set.begin(); it != div_set.end(); it ++){
+                stl::CSet s;
+                s.AddElement(*it);
+                P.AddElement(s);
+            }
+        }
+        psp_list.push_front(P);
+        critical_values.push_front(gamma);
+    }
+    void HPSP::psp_construct() {
+        // n: number of nodes
+        // Q = [[set([i]) for i in range(n)]]
+        // L = []
+        std::list<int> C(node_size);
+        int i = 0;
+        for(std::list<int>::iterator it=C.begin(); it!=C.end(); it++) {
+            *it = i;
+            i++;
+        }
+        std::map<int, std::vector<int>> D;
+        while (C.size() > 1) {
+            merge(C, D);
+        }
+    }
     void HPSP::split(int s) {
         int num_of_children = lemon::countNodes(subgraph);
         double weight_total = 0;
@@ -114,4 +184,12 @@ namespace psp {
     std::vector<int>& HPSP::get_K() {
         return K;
     }
+    std::list<double>& HPSP::get_critical_values() {
+        return critical_values;
+    }
+
+    std::list<stl::Partition>& HPSP::get_psp() {
+        return psp_list;
+    }
+
 }
