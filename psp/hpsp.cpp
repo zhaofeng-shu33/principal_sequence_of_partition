@@ -21,10 +21,12 @@ namespace psp {
             if (gamma < W[*it])
                 gamma = W[*it];
         }
-        for(std::list<int>::iterator it=C.begin(); it!=C.end(); it++) {
+        std::list<int>::iterator it=C.begin();
+        while(it != C.end()) {
             int j = *it;
+            std::list<int>::iterator old_it = it;
+            it++;
             if (W[j] == gamma) {
-                std::list<int>::iterator old_it = it;                
                 C.erase(old_it);              
             } else {
                 continue;
