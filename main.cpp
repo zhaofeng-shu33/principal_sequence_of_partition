@@ -15,7 +15,7 @@ int main(int argc, const char *argv[]){
 	desc.add_options()
 		("help,h", "Show this help screen")
 		("graph", boost::program_options::value<std::string>(), "input graph file, currently only lgf format is supported")
-		("method", boost::program_options::value<std::string>()->default_value("dt"), "method to use, should be within dt, pdt, psp_i, pdt_r, agg_psp")
+		("method", boost::program_options::value<std::string>()->default_value("dt"), "method to use, should be within dt, pdt, psp_i, pdt_r, agg_psp, hpsp")
 		("result", boost::program_options::value<std::string>()->default_value("output.txt"), "result file")
 		("time", boost::program_options::value<bool>()->default_value(false), "report time used");
 
@@ -27,7 +27,7 @@ int main(int argc, const char *argv[]){
         return 0;
     }
 	std::string method = vm["method"].as<std::string>();
-	if (!(method == "dt" || method == "psp_i" || method == "pdt" || method == "pdt_r" || method == "agg_psp")) {
+	if (!(method == "dt" || method == "psp_i" || method == "pdt" || method == "pdt_r" || method == "agg_psp" || method == "hpsp")) {
 		std::cout << "Unknown method, " + method << '\n';
 		std::cout << desc << '\n';
 		return 0;
