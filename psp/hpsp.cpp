@@ -2,17 +2,14 @@
 #include "psp/psp_i.h"
 
 namespace psp {
-    HPSP::HPSP(Digraph* g, ArcMap* edge_map): _g(g), _edge_map(edge_map),
-        node_filter(*g), subgraph(*g, node_filter) {
+    HPSP::HPSP(Digraph* g, ArcMap* edge_map): _g(g), _edge_map(edge_map)
+    {
         node_size = lemon::countNodes(*g);
         K.resize(node_size);
         W.resize(node_size);
-        for (Digraph::NodeIt n(*g); n != lemon::INVALID; ++n) {
-            node_filter[n] = true;
-        }
     }
     void HPSP::run() {
-        split(0); // 0 is the the id of the first node
+        split(0, stl::CSet::MakeDense(node_size)); // 0 is the the id of the first node
         psp_construct();
     }
     void HPSP::merge(std::list<int>& C, std::map<int, std::vector<int>>& D) {
@@ -88,9 +85,14 @@ namespace psp {
         }
         psp_list.push_back(stl::Partition::makeFine(node_size));
     }
-    void HPSP::split(int s) {
-        int num_of_children = lemon::countNodes(subgraph);
+    void HPSP::split(int s, const stl::CSet& children_list) {
+        int num_of_children = children_list.Cardinality();
         double weight_total = 0;
+        lemon::ListDigraph::NodeMap<bool> node_filter(*_g);
+        for(int i : children_list) {
+            node_filter[_g->nodeFromId(i)] = true;
+        }
+        lemon::FilterNodes<Digraph> subgraph(*_g, node_filter);
         for (lemon::FilterNodes<Digraph>::ArcIt a(subgraph); a != lemon::INVALID; ++a)
             weight_total += (*_edge_map)[a];
         double gamma_apostrophe = weight_total / (num_of_children - 1.0);
@@ -113,31 +115,18 @@ namespace psp {
                 }
         }
         else {
-            // reset node_filter
-            for (Digraph::NodeIt n(*_g); n != lemon::INVALID; ++n) {
-                node_filter[n] = false;
-            }
-
+            stl::CSet new_S;
             for (const stl::CSet& S : P_apostrophe) {
+                new_S.AddElement(*S.begin());
                 // restrict G to S
                 if (S.Cardinality() == 1)
                     continue;
-                for (std::size_t i: S) {
-                    node_filter[_g->nodeFromId(i)] = true;
-                }
-                split(*S.begin());
-                for (std::size_t i: S) {
-                    node_filter[_g->nodeFromId(i)] = false;
-                }
+                split(*S.begin(), S);
                 // contract the graph
                 contract(S, *S.begin());
             }
-            // reset node_filter
-            for (Digraph::NodeIt n(*_g); n != lemon::INVALID; ++n) {
-                node_filter[n] = true;
-            }
 
-            split(s); 
+            split(s, new_S); 
         }
     }
     void HPSP::contract(const stl::CSet& S, int i) {

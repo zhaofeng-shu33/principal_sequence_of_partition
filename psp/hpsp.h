@@ -18,7 +18,7 @@ public:
     std::list<stl::Partition>& get_psp();
     void run();
 private:
-    void split(int s);
+    void split(int s, const stl::CSet& children_list);
     void psp_construct();
     void merge(std::list<int>& C, std::map<int, std::vector<int>>& D);
     void contract(const stl::CSet& S, int i);
@@ -27,8 +27,6 @@ private:
     std::vector<double> W;    
     Digraph* _g;
     ArcMap* _edge_map;
-    lemon::ListDigraph::NodeMap<bool> node_filter;
-    lemon::FilterNodes<Digraph> subgraph;
     lemon::Tolerance<double> _tolerance;
     std::list<double> critical_values;
     std::list<stl::Partition> psp_list;
