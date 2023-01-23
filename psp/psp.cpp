@@ -3,6 +3,7 @@
 #include "psp/pmf.h"
 #include "psp/psp_i.h"
 #include "psp/pmf_r.h"
+#include "psp/hpsp.h"
 #ifdef AGG
 #include "psp/agglomerative.h"
 #endif
@@ -40,6 +41,8 @@ namespace psp {
             run_pdt_r();
         else if (method == "psp_i")
             run_psp_i();
+        else if (method == "hpsp")
+            run_hpsp();
 #ifdef AGG
         else if (method == "agg_psp")
             run_agg_psp();
@@ -67,6 +70,12 @@ namespace psp {
     }
     void PSP::run_psp_i() {
         PSP_I psp_class(g, edge_map);
+        psp_class.run();
+        gamma_list = psp_class.get_critical_values();
+        psp_list = psp_class.get_psp();
+    }
+    void PSP::run_hpsp() {
+        HPSP psp_class(g, edge_map);
         psp_class.run();
         gamma_list = psp_class.get_critical_values();
         psp_list = psp_class.get_psp();

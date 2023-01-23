@@ -37,6 +37,9 @@ namespace psp {
         void run_pdt();
         void run_pdt_r();
         void run_psp_i();
+        void run_hpsp();
+#ifdef AGG        
         void run_agg_psp();
+#endif
     };
 }
