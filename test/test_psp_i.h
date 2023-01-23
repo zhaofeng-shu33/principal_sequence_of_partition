@@ -53,14 +53,11 @@ TEST(PSP_I, GivenPoint8) {
     std::vector<double> gamma_list_2 = g2g.get_critical_values();
     std::vector<stl::Partition> psp_list_2 = g2g.get_partitions();
 
-    demo::EdgeListTuple et = g2g.get_edge_list_tuple();
-    lemon::ListDigraph g;
-    lemon::ListDigraph::ArcMap<double> edge_map(g);
-    submodular::make_dgraph(8, et, g, edge_map);
 
-    g2g.run("psp_i");
-    std::vector<double> gamma_list = g2g.get_critical_values();
-    std::vector<stl::Partition> psp_list = g2g.get_partitions();
+    Gaussian2DGraph g2g_2(8, 1.0, a);
+    g2g_2.run("psp_i");
+    std::vector<double> gamma_list = g2g_2.get_critical_values();
+    std::vector<stl::Partition> psp_list = g2g_2.get_partitions();
 
     std::vector<double>::iterator it_2 = gamma_list_2.begin();
 

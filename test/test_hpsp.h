@@ -1,5 +1,7 @@
 #include <lemon/list_graph.h>
 #include "psp/hpsp.h"
+#include "utility.h"
+
 #include "psp/graph.h"
 typedef lemon::ListDigraph Digraph;
 typedef Digraph::ArcMap<double> ArcMap;
@@ -99,4 +101,36 @@ TEST(HPSP, NESTED_FOUR_POINT) {
     EXPECT_EQ(*it_2, stl::Partition::makeFine(4));    
     delete edge_map;
     delete g;
+}
+
+
+TEST(HPSP, GivenPoint8) {
+    double a[8][2] = { {3.1, 3.2},
+                        {4.0, 4.0 },
+                        {1.1, -2.2},
+                        {3.9, -2.0},
+                        {-3.9, -2.0},
+                        {-2.2, -3.5},
+                        {-3.9, 2.4},
+                        {-3.1, 2.6}
+    };
+    demo::Gaussian2DGraph g2g(8, 1.0, a);
+    g2g.run("hpsp");
+    std::vector<double> gamma_list_2 = g2g.get_critical_values();
+    std::vector<stl::Partition> psp_list_2 = g2g.get_partitions();
+
+
+    demo::Gaussian2DGraph g2g_2(8, 1.0, a);
+    g2g_2.run("psp_i");
+    std::vector<double> gamma_list = g2g_2.get_critical_values();
+    std::vector<stl::Partition> psp_list = g2g_2.get_partitions();
+
+    std::vector<double>::iterator it_2 = gamma_list_2.begin();
+
+    EXPECT_EQ(psp_list, psp_list_2);
+
+    for (std::vector<double>::iterator it = gamma_list.begin(); it != gamma_list.end(); it++) {
+        EXPECT_DOUBLE_EQ(*it, *it_2);
+        it_2++;
+    }
 }
