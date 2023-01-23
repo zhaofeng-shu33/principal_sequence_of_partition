@@ -109,9 +109,9 @@ namespace psp {
         }
         if (!(P_apostrophe.Cardinality() != 1 && P_apostrophe.Cardinality() != num_of_children && min_value < -1 * gamma_apostrophe - _tolerance.epsilon())) {
             add_lambda:
-                for (lemon::FilterNodes<Digraph>::NodeIt n(subgraph); n != lemon::INVALID; ++n) {
-                    W[subgraph.id(n)] = gamma_apostrophe;
-                    K[subgraph.id(n)] = s;
+                for (std::size_t n : children_list) {
+                    W[n] = gamma_apostrophe;
+                    K[n] = s;
                 }
         }
         else {
@@ -119,8 +119,11 @@ namespace psp {
             for (const stl::CSet& S : P_apostrophe) {
                 new_S.AddElement(*S.begin());
                 // restrict G to S
-                if (S.Cardinality() == 1)
+                if (S.Cardinality() == 1){
+                    // W[*S.begin()] = gamma_apostrophe;
+                    // K[*S.begin()] = s;
                     continue;
+                }
                 split(*S.begin(), S);
                 // contract the graph
                 contract(S, *S.begin());
